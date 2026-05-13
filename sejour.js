@@ -54,7 +54,7 @@ const SEJOUR = {
       liens: [
         { label: "Voir +", url: "https://www.tourisme-deux-sevres.com/activite/geocaching-terra-aventura-pic-nic-douille-cest-toi-la-pigouille/" }
       ],
-      description: "Zarthus vous emmène dans les ruelles et sur les quais de Coulon, capitale de la Venise Verte. En cherchant les indices, vous découvrez la pêche à l'anguille, les anciennes taxes sur les marchandises, la libellule géante de la place, les mojettes et les pigouilles. Une façon maline et amusante d'entrer dans le marais — les filles vont adorer résoudre les énigmes. Le chien est le bienvenu. 💡 Le mot mystère trouvé dans la cache donne droit à un tarif réduit à la Maison du Marais Poitevin.",
+      description: "Zarthus vous emmène dans les ruelles et sur les quais de Coulon, capitale de la Venise Verte. En cherchant les indices, vous découvrez la pêche à l'anguille, les anciennes taxes sur les marchandises, la libellule géante de la place, les mojettes et les pigouilles. Une façon maline et amusante d'entrer dans le marais — les filles vont adorer résoudre les énigmes. Alma est la bienvenue. 💡 Le mot mystère trouvé dans la cache donne droit à un tarif réduit à la Maison du Marais Poitevin.",
       poi: [
         "🎣 Quais de Coulon — pêche à l'anguille, nasses en osier, techniques ancestrales des maraîchins",
         "🦋 Libellule géante de Brigitte Belaud — sculpture place de la Coutume, 54 espèces dans le marais",
@@ -108,7 +108,7 @@ const SEJOUR = {
       liens: [
         { label: "Découvrir", url: "https://www.niortmaraispoitevin.com/activites/geocaching-terra-aventura-flamme-bleue-en-venise-verte/" }
       ],
-      description: "Zahan, le maraîchin, doit rejoindre ses bœufs dans les pâtures — mais quelqu'un allume des feux dans le marais. Avec lui, on traverse les conches, les chemins ombragés, les prairies humides de Saint-Georges-de-Rex, réserve naturelle de 250 hectares gérée par le Conservatoire Régional. Pigeonnier, four à pain, port, gardien du marais en bric-à-brac, cyprès chauve aux racines-tubas, hôtel à insectes… le parcours est riche en découvertes. Le chien sera dans son élément. Départ depuis le parking de la salle des fêtes, puis venelle sur la droite jusqu'au lavoir de la Grande Fontaine.",
+      description: "Zahan, le maraîchin, doit rejoindre ses bœufs dans les pâtures — mais quelqu'un allume des feux dans le marais. Avec lui, on traverse les conches, les chemins ombragés, les prairies humides de Saint-Georges-de-Rex, réserve naturelle de 250 hectares gérée par le Conservatoire Régional. Pigeonnier, four à pain, port, gardien du marais en bric-à-brac, cyprès chauve aux racines-tubas, hôtel à insectes… le parcours est riche en découvertes. Alma sera dans son élément. Départ depuis le parking de la salle des fêtes, puis venelle sur la droite jusqu'au lavoir de la Grande Fontaine.",
       poi: [
         "🌿 Conches du marais sauvage — canaux envahis de végétation, réserve de 250 hectares",
         "🕊️ Pigeonnier (ou fuye) — les «boulins» symbolisaient la richesse foncière",
@@ -248,7 +248,7 @@ const SEJOUR = {
         {
           id: "j1-4", plage: "aprem", heure: "14h00",
           titre: "🎮 Terra Aventura — Pic nic douille, c'est toi la pigouille",
-          description: "1,5 km · ~1h · Dif 1/5. Départ depuis le parking de l'Autremont — juste à côté du CC. Avec Zarthus, on part chasser des indices dans les ruelles et sur les quais de Coulon. Pêche à l'anguille, libellule géante, anciennes taxes sur les marchandises, pigouilles et mojettes — une mise en bouche parfaite du marais. Tout le monde suit, le chien aussi.",
+          description: "1,5 km · ~1h · Dif 1/5. Départ depuis le parking de l'Autremont — juste à côté du CC. Avec Zarthus, on part chasser des indices dans les ruelles et sur les quais de Coulon. Pêche à l'anguille, libellule géante, anciennes taxes sur les marchandises, pigouilles et mojettes — une mise en bouche parfaite du marais. Tout le monde suit, Alma aussi.",
           type: "activite",
           maps: mapsUrl(46.3211667, -0.5893333, "Parking Autremont Coulon départ TA Pic nic douille"),
           liens: [
@@ -292,8 +292,8 @@ const SEJOUR = {
     {
       id: "j2", numero: 2,
       label: "Vendredi 15 mai",
-      titre: "La Garette & retour",
-      emoji: "🥾",
+      titre: "Le marais comme les maraîchins",
+      emoji: "🚣",
       km_balade: "~10 km · grande journée",
       ambiance: "La boucle du jour : Coulon → La Garette → Coulon. À pied, le long des canaux. Pique-nique à La Garette en chemin. Après-midi tranquille au CC.",
       histoire: "Hier on a posé les yeux sur le marais. Aujourd'hui on y entre vraiment — à pied, comme les maraîchins qui parcouraient les berges pour aller de village en village.\n\nAvant que les routes existent, les canaux étaient les seules rues du marais. Chaque hameau avait son port, chaque famille sa barque. La Garette, notre destination du matin, est l'un des villages les mieux préservés de ce monde disparu : une longue rue piétonne bordée de maisons de pêcheurs-paysans, chacune avec son embarcadère privé côté canal.\n\nCes maisons sont construites sur des buttes artificielles — des mottes de terre surélevées — pour ne pas être inondées en hiver quand le marais se remplit. Les habitants vivaient dans une semi-autarcie : ils pêchaient l'anguille, cultivaient les mojettes (haricots blancs), fauchaient le foin pour leurs vaches maraîchines, et taillaient les frênes têtards pour le bois de chauffage.\n\nCette taille régulière donnait aux arbres leur silhouette si particulière — un tronc trapu surmonté de branches qui repartent comme des bras levés. Aujourd'hui, les frênes têtards sont menacés par un champignon. Se souvenir d'eux en marchant, c'est déjà les préserver un peu.",
@@ -337,7 +337,7 @@ const SEJOUR = {
         {
           id: "j2-5", plage: "aprem", heure: "16h00",
           titre: "Repos · Flânerie libre",
-          description: "Aprem au calme. On traîne autour du CC, on joue, on flâne sur les quais si l'envie reprend. Le chien profite de la Sèvre.",
+          description: "Aprem au calme. On traîne autour du CC, on joue, on flâne sur les quais si l'envie reprend. Alma profite de la Sèvre.",
           type: "balade",
           maps: null,
           liens: []
@@ -384,7 +384,7 @@ const SEJOUR = {
         {
           id: "j3-3", plage: "matin", heure: "10h15",
           titre: "🎮 Terra Aventura — Flamme Bleue en Venise Verte",
-          description: "5,5 km · 2h à 3h · Dif 3/5. Avec Zahan le maraîchin, on plonge dans le marais sauvage de Saint-Georges-de-Rex — conches, prairies humides, pigeonnier, port, gardien en bric-à-brac, cyprès chauve aux racines-tubas. Le grand parcours du séjour. On prend le temps, on fait des pauses, le chien adore.\n\nDépart : parking de la salle des fêtes. Suivre la venelle sur la droite jusqu'au lavoir de la Grande Fontaine.",
+          description: "5,5 km · 2h à 3h · Dif 3/5. Avec Zahan le maraîchin, on plonge dans le marais sauvage de Saint-Georges-de-Rex — conches, prairies humides, pigeonnier, port, gardien en bric-à-brac, cyprès chauve aux racines-tubas. Le grand parcours du séjour. On prend le temps, on fait des pauses, Alma adore.\n\nDépart : parking de la salle des fêtes. Suivre la venelle sur la droite jusqu'au lavoir de la Grande Fontaine.",
           type: "activite",
           maps: mapsUrl(46.2787833, -0.6519167, "Parking salle des fêtes Saint-Georges-de-Rex"),
           liens: [
@@ -433,7 +433,7 @@ const SEJOUR = {
         {
           id: "j3-8", plage: "aprem", heure: "16h30",
           titre: "🏘️ Flânerie — Arçais",
-          description: "On pose le CC et on flâne en roue libre. Port pittoresque, venelles, maisons maraîchines. Grues en bois sur le quai. Atmosphère douce. Le chien fait ce qu'il veut.",
+          description: "On pose le CC et on flâne en roue libre. Port pittoresque, venelles, maisons maraîchines. Grues en bois sur le quai. Atmosphère douce. Alma fait ce qu'il veut.",
           type: "balade",
           maps: null,
           liens: []
