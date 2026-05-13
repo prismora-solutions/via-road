@@ -229,8 +229,6 @@ body {
   padding-top: 12px;
 }
 .jour-histoire-content.open { display: block; }
-.jour-histoire-content p { margin-bottom: 10px; }
-.jour-histoire-content p:last-child { margin-bottom: 0; }
 
 
 .planb-wrap {
