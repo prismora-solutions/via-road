@@ -183,18 +183,12 @@ const SEJOUR = {
 
   checklist: [
     { id: 1,  categorie: "📞 Réservations", texte: "Réserver barque Montfaucon — sam 16 aprem ☎️ 05 49 35 34 97 · confirmer chien (animaux bienvenus ✅)", fait: false },
-    { id: 2,  categorie: "📞 Réservations", texte: "Réserver La Passerelle Coulon — si on y va, animaux bienvenus ✅ ☎️ 05 49 35 80 03", fait: false },
-    { id: 3,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Coulon hors connexion dans l'app (Pic nic douille)", fait: false },
-    { id: 4,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours St-Georges hors connexion (Flamme Bleue)", fait: false },
-    { id: 5,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Magné hors connexion (Maraîchin contre Bras Rouge)", fait: false },
-    { id: 6,  categorie: "📱 Apps", texte: "Visorando — télécharger GPX n°257714 (La Garette, ven) et n°733280 (Arçais, dim)", fait: false },
-    { id: 7,  categorie: "📱 Apps", texte: "Camping-Car Park — télécharger + inscription si besoin", fait: false },
-    { id: 8,  categorie: "📱 Apps", texte: "Météo France — ajouter Coulon (INSEE 79430)", fait: false },
-    { id: 9,  categorie: "🐕 Chien", texte: "Gamelle pliable + eau en stock", fait: false },
-    { id: 10, categorie: "🐕 Chien", texte: "Laisse courte pour les parcours", fait: false },
-    { id: 11, categorie: "🐕 Chien", texte: "Sacs à déjections", fait: false },
-    { id: 12, categorie: "🐕 Chien", texte: "Répulsif moustiques — surtout le soir en bord de canal", fait: false },
-    { id: 13, categorie: "🐕 Chien", texte: "Chaussures imperméables ou bottes — TA Flamme Bleue (sam matin)", fait: false }
+    { id: 2,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Coulon hors connexion dans l'app (Pic nic douille)", fait: false },
+    { id: 3,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours St-Georges hors connexion (Flamme Bleue)", fait: false },
+    { id: 4,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Magné hors connexion (Maraîchin contre Bras Rouge)", fait: false },
+    { id: 5,  categorie: "📱 Apps", texte: "Visorando — télécharger GPX n°257714 (La Garette, ven) et n°733280 (Arçais, dim)", fait: false },
+    { id: 6,  categorie: "📱 Apps", texte: "Camping-Car Park — télécharger + inscription si besoin", fait: false },
+    { id: 7,  categorie: "📱 Apps", texte: "Météo France — ajouter Coulon (INSEE 79430)", fait: false },
   ],
 
   jours: [
