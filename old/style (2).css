@@ -190,47 +190,7 @@ body {
 .tag-warning { background: var(--rouge-bg);  color: var(--rouge); }
 .tag-resa    { background: var(--orange-bg); color: var(--orange); }
 
-/* ===== BLOC HISTOIRE ===== */
-.jour-histoire {
-  background: white;
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  box-shadow: var(--ombre);
-  overflow: hidden;
-  border-left: 4px solid #7C3AED;
-}
-
-.jour-histoire-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  font-size: .82rem;
-  font-weight: 800;
-  color: #7C3AED;
-  cursor: pointer;
-  user-select: none;
-}
-.jour-histoire-header:active { background: #F5F3FF; }
-
-.jour-histoire-arrow {
-  font-size: 1rem;
-  font-weight: 400;
-  transition: transform .2s;
-}
-
-.jour-histoire-content {
-  display: none;
-  padding: 0 16px 16px;
-  font-size: .83rem;
-  color: var(--texte-doux);
-  line-height: 1.65;
-  border-top: 1px solid #EDE9FE;
-  padding-top: 12px;
-}
-.jour-histoire-content.open { display: block; }
-
-
+/* ===== PLAN B ===== */
 .planb-wrap {
   margin-top: 10px;
 }

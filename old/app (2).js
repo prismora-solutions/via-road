@@ -103,14 +103,6 @@ function rendreJour(index) {
         <div class="jour-km">🥾 ${jour.km_balade}</div>
       </div>
     </div>
-    ${jour.histoire ? `
-    <div class="jour-histoire">
-      <div class="jour-histoire-header" onclick="toggleHistoire('histoire-j${index}')">
-        📖 Histoire & géographie
-        <span class="jour-histoire-arrow" id="arrow-j${index}">▸</span>
-      </div>
-      <div class="jour-histoire-content" id="histoire-j${index}">${jour.histoire}</div>
-    </div>` : ''}
     <div class="jour-ambiance">${jour.ambiance}</div>`;
 
   ['matin','midi','aprem','soir'].forEach(plage => {
@@ -204,14 +196,6 @@ function rendrePlanB(planB) {
 function togglePlanB(id) {
   const el = document.getElementById(id);
   el.classList.toggle('open');
-}
-
-function toggleHistoire(id) {
-  const el = document.getElementById(id);
-  const num = id.split('histoire-j')[1];
-  const arrow = document.getElementById(`arrow-j${num}`);
-  el.classList.toggle('open');
-  arrow.textContent = el.classList.contains('open') ? '▾' : '▸';
 }
 
 // ===== ONGLET RANDOS =====
