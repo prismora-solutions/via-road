@@ -106,7 +106,7 @@ function rendreJour(index) {
     ${jour.histoire ? `
     <div class="jour-histoire">
       <div class="jour-histoire-header" onclick="toggleHistoire('histoire-j${index}')">
-        📖 Histoire & géographie
+        📖 Le saviez-vous ?
         <span class="jour-histoire-arrow" id="arrow-j${index}">▸</span>
       </div>
       <div class="jour-histoire-content" id="histoire-j${index}">${jour.histoire}</div>
