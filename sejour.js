@@ -286,7 +286,7 @@ const SEJOUR = {
           titre: "Nuit — Aire CC Arçais",
           description: "26 Rue du Marais, Arçais. 60 places, électricité, sanitaires, WiFi. ~11,50€/nuit. Supérette à 300m.",
           type: "hebergement",
-          maps: "https://maps.google.com/?cid=14766843175578452329",
+          maps: "https://maps.app.goo.gl/a9yS9skjTY4Dqy12A",
           tag: null
         }
       ]
