@@ -360,7 +360,7 @@ const SEJOUR = {
       km_balade: "~8 km avec pauses",
       ambiance: "Le grand TA le matin dans le marais sauvage, le petit l'après-midi à Magné. On finit en flânant à Arçais où on pose le CC pour la nuit.",
       histoire: "On s'éloigne aujourd'hui de Coulon pour aller voir le marais moins connu — celui que les touristes ne voient pas. Saint-Georges-de-Rex est un village maraîchin fondé autour d'un château du Xe siècle et d'un prieuré de moines. C'est justement ces moines qui ont creusé les premiers canaux du marais poitevin au Moyen Âge — les premiers architectes de ce paysage.\n\nLa réserve naturelle de Saint-Georges fait partie des 250 hectares gérés par le Conservatoire Régional des Espaces Naturels. Ici, le marais est resté sauvage : pas de barques touristiques, des prairies humides à perte de vue, des insectes rares, des plantes étranges comme la fritillaire pintade dont les pétales forment un damier rose et pourpre.\n\nC'est dans ce marais-là qu'on voit encore des feux follets la nuit — ce phénomène naturel produit par le gaz qui remonte de la tourbe, que les bateliers pouvaient enflammer du bout de leur pigouille.\n\nL'après-midi, Magné nous rappelle que ce marais était aussi une île — cernée par la Sèvre et ses bras, depuis que l'océan s'insinuait jusqu'ici dans l'Antiquité. Les Vikings remontaient la Sèvre en drakkar au IXe siècle, ce qui avait forcé le roi de France à faire fortifier l'île. Ce soir on dort à Arçais, Petite Cité de Caractère depuis 2013.",
-      photo: { url: "https://media.routard.com/image/92/8/photo.1438928.w430.jpg", credit: "Wikimedia Commons" },
+      photo: { url: "https://media.routard.com/image/90/7/photo.1592907.w1000.jpg", credit: "Wikimedia Commons" },
       etapes: [
         {
           id: "j3-1", plage: "matin", heure: "08h30",
@@ -457,7 +457,7 @@ const SEJOUR = {
       km_balade: "~10 km · demi-tour possible",
       ambiance: "Un dernier grand bol d'air sur les canaux d'Arçais. Pique-nique tardif. Route retour sans pression.",
       histoire: "Dernier matin. Arçais, d'où on repart pour cette dernière balade, est un village du marais mouillé — celui qu'on a traversé à pied, vu de l'eau, exploré en énigmes. Mais on n'a fait qu'effleurer l'histoire de cet endroit.\n\nLe Marais Poitevin c'est aussi la bataille permanente entre l'eau et la terre — depuis les moines du Moyen Âge jusqu'aux agriculteurs d'aujourd'hui qui débattent de la gestion des niveaux d'eau. C'est un territoire fragile : les zones humides disparaissent trois fois plus vite que les forêts dans le monde.\n\nIci, des associations, des éleveurs et des naturalistes se battent pour maintenir les prairies inondées en hiver, habitat des oiseaux migrateurs et des plantes rares. Sans eux, le marais se transformerait peu à peu en champs ordinaires.\n\nAvant de partir, on traverse une dernière fois ces canaux plats, ces frênes têtards, ces prairies d'herbe grasse. On croise peut-être des hérons, des ragondins, des libellules. Dans quelques heures on sera sur l'autoroute. Mais le marais, lui, continuera de fonctionner à son rythme d'eau et de silence — comme il le fait depuis que les moines ont commencé à creuser, il y a plus de mille ans.",
-      photo: { url: "https://media.routard.com/image/90/7/photo.1592907.w1000.jpg", credit: "Wikimedia Commons" },
+      photo: { url: "https://media.routard.com/image/92/8/photo.1438928.w430.jpg", credit: "Wikimedia Commons" },
       etapes: [
         {
           id: "j4-1", plage: "matin", heure: "08h30",
