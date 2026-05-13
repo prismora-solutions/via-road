@@ -26,7 +26,7 @@ const SEJOUR = {
   sous_titre: "Pont de l'Ascension — Van Tongeren en vadrouille",
   dates: "14 – 17 mai 2026",
   depart: "Asques (33240)",
-  destination: "Coulon · Arçais · Damvix",
+  destination: "Coulon · La Garette · Arçais",
   hebergement: {
     type: "Camping-Car",
     lieu: "Aire CC Coulon (J1+J2) · Aire CC Arçais (J3)",
@@ -210,7 +210,7 @@ const SEJOUR = {
           titre: "Départ Asques",
           description: "Pique-nique du midi dans le sac. ~2h15 de route via A10 puis N11.",
           type: "trajet",
-          maps: mapsUrl(44.8903, 0.4278, "Asques 33240"),
+          maps: null,
           liens: []
         },
         {
