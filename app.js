@@ -2,23 +2,14 @@
 let jourActif = 0;
 let checklistEtat = {};
 
-// ===== ICÔNES PAR TYPE =====
 const ICONES = {
-  trajet:      '🚐',
-  hebergement: '🏕️',
-  repas:       '🍽️',
-  activite:    '🎯',
-  culture:     '🏛️',
-  balade:      '🐾',
-  routine:     '☀️',
-  arrivee:     '🏠'
+  trajet: '🚐', hebergement: '🏕️', repas: '🍽️',
+  activite: '🎯', balade: '🐾', routine: '☀️', arrivee: '🏠'
 };
 
 const PLAGES = {
-  matin:  '🌅 Matin',
-  midi:   '☀️ Midi',
-  aprem:  '🌤️ Après-midi',
-  soir:   '🌙 Soir'
+  matin: '🌅 Matin', midi: '☀️ Midi',
+  aprem: '🌤️ Après-midi', soir: '🌙 Soir'
 };
 
 // ===== INIT =====
@@ -31,26 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===== LIENS MAPS iOS =====
+// google.com/maps/search ouvre l'app Google Maps si installée
+// Fallback : maps.apple.com natif iOS
 function lienMaps(mapsObj) {
   if (!mapsObj) return '';
-  const apple  = mapsObj.apple || '#';
-  const google = mapsObj.google || mapsObj.web || '#';
-  return `<a class="btn-maps" href="${apple}"
-    onclick="ouvrirMaps(event,'${google.replace(/'/g,"\\'")}','${apple.replace(/'/g,"\\'")}')">
-    📍 Maps
-  </a>`;
-}
-
-function ouvrirMaps(e, googleUrl, appleUrl) {
-  e.preventDefault();
-  // Tente Google Maps app via iframe silencieux
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = googleUrl;
-  document.body.appendChild(iframe);
-  setTimeout(() => document.body.removeChild(iframe), 500);
-  // Fallback Apple Plans
-  setTimeout(() => { window.location.href = appleUrl; }, 300);
+  const gUrl = mapsObj.google || '#';
+  const aUrl = mapsObj.apple  || '#';
+  // On tente Google Maps via un lien universel qui ouvre l'app
+  // Si non installée, le navigateur ouvre Google Maps web
+  return `<a class="btn-maps" href="${gUrl}" target="_blank">📍 Maps</a>`;
 }
 
 // ===== HEADER =====
@@ -136,20 +116,28 @@ function rendreJour(index) {
 
 // ===== RENDU ÉTAPE =====
 function rendreEtape(etape) {
-  const icone  = ICONES[etape.type] || '📌';
-  const tag    = rendreTag(etape.tag);
+  const icone   = ICONES[etape.type] || '📌';
+  const tag     = rendreTag(etape.tag);
   const btnMaps = lienMaps(etape.maps);
 
   const btnsLiens = (etape.liens || []).map(l => {
-    const isTel = l.url.startsWith('tel:');
-    return `<a class="btn-lien${isTel ? ' btn-tel' : ''}" href="${l.url}"${isTel ? '' : ' target="_blank"'}>${l.label}</a>`;
+    const isTel  = l.url.startsWith('tel:');
+    const isSite = l.url.startsWith('https://') && !isTel;
+    const cls    = isTel ? 'btn-lien btn-tel' : isSite ? 'btn-lien btn-site' : 'btn-lien';
+    return `<a class="${cls}" href="${l.url}"${isTel ? '' : ' target="_blank"'}>${l.label}</a>`;
   }).join('');
 
   const footer = (tag || btnMaps || btnsLiens)
     ? `<div class="etape-footer">${btnMaps}${btnsLiens}${tag}</div>`
     : '';
 
-  const desc = (etape.description || '').replace(/\n\n/g, '</p><p class="etape-desc etape-desc--suite">');
+  // Séparateur visuel pour les plans B (double saut de ligne dans description)
+  const desc = (etape.description || '')
+    .split('\n\n')
+    .map((bloc, i) => {
+      if (i === 0) return `<p class="etape-desc">${bloc}</p>`;
+      return `<p class="etape-desc etape-planb">${bloc}</p>`;
+    }).join('');
 
   return `
     <div class="etape-card type-${etape.type}">
@@ -158,7 +146,7 @@ function rendreEtape(etape) {
       <div class="etape-corps">
         <div class="etape-heure">${etape.heure}</div>
         <div class="etape-titre">${etape.titre}</div>
-        <p class="etape-desc">${desc}</p>
+        ${desc}
         ${footer}
       </div>
     </div>`;
@@ -167,7 +155,7 @@ function rendreEtape(etape) {
 function rendreTag(tag) {
   if (!tag) return '';
   if (tag.includes('Terra'))  return `<span class="etape-tag tag-terra">${tag}</span>`;
-  if (tag.includes('🐕'))     return `<span class="etape-tag tag-chien">${tag}</span>`;
+  if (tag.includes('🐕') || tag.includes('Animaux')) return `<span class="etape-tag tag-chien">${tag}</span>`;
   if (tag.includes('⚠️'))     return `<span class="etape-tag tag-warning">${tag}</span>`;
   if (tag.includes('📞'))     return `<span class="etape-tag tag-resa">${tag}</span>`;
   return `<span class="etape-tag" style="background:var(--gris-bg);color:var(--gris)">${tag}</span>`;
@@ -188,9 +176,9 @@ function rendreRandos() {
     </div>`;
 
   SEJOUR.randos.forEach(r => {
-    const btnMaps  = lienMaps(r.maps);
+    const btnMaps   = lienMaps(r.maps);
     const btnsLiens = (r.liens || []).map(l =>
-      `<a class="btn-lien" href="${l.url}" target="_blank">${l.label}</a>`
+      `<a class="btn-lien btn-site" href="${l.url}" target="_blank">${l.label}</a>`
     ).join('');
     const poi = r.poi.map(p => `<li class="rando-poi-item">${p}</li>`).join('');
     const alertes = r.alertes.map(a => `<div class="rando-alerte">${a}</div>`).join('');
