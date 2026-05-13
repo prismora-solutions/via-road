@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ViaRoad — Marais Poitevin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <span class="logo">🗺️ ViaRoad</span>
+      <button class="btn-checklist" onclick="ouvrirChecklist()">✅ Checklist</button>
+    </div>
+    <div class="sejour-hero">
+      <h1 class="sejour-titre" id="sejour-titre"></h1>
+      <p class="sejour-meta" id="sejour-meta"></p>
+      <div class="sejour-badges" id="sejour-badges"></div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION JOURS -->
+  <nav class="nav-jours" id="nav-jours"></nav>
+
+  <!-- CONTENU JOUR -->
+  <main class="main" id="main-content"></main>
+
+  <!-- MODAL CHECKLIST -->
+  <div class="modal-overlay" id="modal-overlay" onclick="fermerChecklist()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>✅ Checklist avant départ</h2>
+        <button class="modal-close" onclick="fermerChecklist()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-checklist-content"></div>
+    </div>
+  </div>
+
+  <script src="sejour.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
