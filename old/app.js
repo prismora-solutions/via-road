@@ -131,9 +131,6 @@ function rendreEtape(etape) {
     ? `<div class="etape-footer">${btnMaps}${btnsLiens}${tag}</div>`
     : '';
 
-  // Plan B accordéon (uniquement sur les étapes hébergement)
-  const planBHtml = rendrePlanB(etape.planB);
-
   // Séparateur visuel pour les plans B (double saut de ligne dans description)
   const desc = (etape.description || '')
     .split('\n\n')
@@ -151,7 +148,6 @@ function rendreEtape(etape) {
         <div class="etape-titre">${etape.titre}</div>
         ${desc}
         ${footer}
-        ${planBHtml}
       </div>
     </div>`;
 }
@@ -163,39 +159,6 @@ function rendreTag(tag) {
   if (tag.includes('⚠️'))     return `<span class="etape-tag tag-warning">${tag}</span>`;
   if (tag.includes('📞'))     return `<span class="etape-tag tag-resa">${tag}</span>`;
   return `<span class="etape-tag" style="background:var(--gris-bg);color:var(--gris)">${tag}</span>`;
-}
-
-// ===== PLAN B — accordéon sur les étapes hébergement =====
-function rendrePlanB(planB) {
-  if (!planB || planB.length === 0) return '';
-  const id = 'planb-' + Math.random().toString(36).slice(2, 7);
-
-  const items = planB.map(p => {
-    const btnMaps = p.maps ? lienMaps(p.maps) : '';
-    const btnP4n = `<a class="btn-lien btn-p4n" href="${p.p4n}" target="_blank">Park4night</a>`;
-    return `
-      <div class="planb-item">
-        <div class="planb-nom">${p.nom}</div>
-        <div class="planb-note">${p.note}</div>
-        <div class="planb-actions">${btnMaps}${btnP4n}</div>
-      </div>`;
-  }).join('');
-
-  return `
-    <div class="planb-wrap">
-      <button class="planb-toggle" onclick="togglePlanB('${id}')">
-        🅱️ Plan B — Si c'est complet
-      </button>
-      <div class="planb-content" id="${id}">
-        <div class="planb-intro">Parkings Park4night dans le secteur — gratuits, autonome requis (pas d'élec/eau sauf mention)</div>
-        ${items}
-      </div>
-    </div>`;
-}
-
-function togglePlanB(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle('open');
 }
 
 // ===== ONGLET RANDOS =====

@@ -226,11 +226,6 @@ const SEJOUR = {
           maps: mapsGoo(null, 46.3230, -0.5892, "Aire CC Coulon 42 rue Autremont"),
           liens: [
             { label: "Camping-Car Park", url: "https://www.campingcarpark.com/fr_FR/camping-car/nouvelle-aquitaine/deux-sevres/coulon" }
-          ],
-          planB: [
-            { nom: "Parking stade — Magné (8 km)", note: "Plat, calme, gratuit. Super U à 5 min. Même parking que le départ TA Bras Rouge.", maps: mapsUrl(46.3134167, -0.5428167, "Parking stade Magné"), p4n: "https://park4night.com/fr/place/7282" },
-            { nom: "Parking bord de Sèvre — Coulon (2 km)", note: "Route des Bords de Sèvre. Bord d'eau, calme. Route passante en journée, tranquille la nuit.", maps: mapsUrl(46.3148, -0.6079, "Parking bord Sèvre Coulon"), p4n: "https://park4night.com/fr/place/33777" },
-            { nom: "Parking — Le Vanneau-Irleau (8 km)", note: "Route d'Arçais. Calme, village tranquille. Point de départ de randos Visorando.", maps: mapsUrl(46.3374, -0.5272, "Le Vanneau-Irleau parking"), p4n: "https://park4night.com/fr/place/27120" }
           ]
         },
         {
@@ -268,11 +263,7 @@ const SEJOUR = {
           description: "Retour à pied (500m). On s'installe, on souffle. Nuit sur place.",
           type: "hebergement",
           maps: null,
-          liens: [],
-          planB: [
-            { nom: "Parking stade — Magné (8 km)", note: "Plat, calme, gratuit. Super U à 5 min.", maps: mapsUrl(46.3134167, -0.5428167, "Parking stade Magné"), p4n: "https://park4night.com/fr/place/7282" },
-            { nom: "Parking village — Arçais (10 km)", note: "Rue du Coursault. Calme, proche port et supérette.", maps: mapsUrl(46.299, -0.541, "Arçais parking village"), p4n: "https://park4night.com/fr/place/157855" }
-          ]
+          liens: []
         },
         {
           id: "j1-7", plage: "soir", heure: "19h30",
@@ -326,11 +317,7 @@ const SEJOUR = {
           description: "Retour à pied jusqu'au CC. On s'installe, on souffle. Après 10 km, le CC n'a jamais semblé aussi confortable.",
           type: "hebergement",
           maps: null,
-          liens: [],
-          planB: [
-            { nom: "Parking stade — Magné (8 km)", note: "Plat, calme, gratuit. Bonne base pour le TA du lendemain.", maps: mapsUrl(46.3134167, -0.5428167, "Parking stade Magné"), p4n: "https://park4night.com/fr/place/7282" },
-            { nom: "Parking — Le Vanneau-Irleau (8 km)", note: "Route d'Arçais. Calme, village tranquille.", maps: mapsUrl(46.3374, -0.5272, "Le Vanneau-Irleau parking"), p4n: "https://park4night.com/fr/place/27120" }
-          ]
+          liens: []
         },
         {
           id: "j2-5", plage: "aprem", heure: "16h00",
@@ -420,11 +407,8 @@ const SEJOUR = {
           description: "~8 km · ~10 min. 26 Rue du Marais, 79210 Arçais. ~11,50€/nuit. Électricité, sanitaires, WiFi. Supérette à 300m.",
           type: "hebergement",
           maps: mapsGoo("https://www.google.com/maps/place/aire+de+services+camping+car/@46.2966216,-0.6881994,17z/data=!3m1!4b1!4m6!3m5!1s0x4806d7505a596ab5:0xc3ecec50cd4dd17a!8m2!3d46.2966216!4d-0.6881994!16s%2Fg%2F11mw7lf08r", 46.2966216, -0.6881994, "Aire CC Arçais"),
-          liens: [],
-          planB: [
-            { nom: "Parking village — Arçais (même village)", note: "5 Rue du Coursault. Calme, gratuit, 500m du port.", maps: mapsUrl(46.299, -0.541, "Arçais parking Rue du Coursault"), p4n: "https://park4night.com/fr/place/157855" },
-            { nom: "Parking — Saint-Georges-de-Rex (8 km)", note: "4 Impasse Lombarde. Calme, village maraîchin. Parfait si vous revenez de Flamme Bleue.", maps: mapsUrl(46.2787833, -0.6519167, "Saint-Georges-de-Rex parking Impasse Lombarde"), p4n: "https://park4night.com/fr/place/142297" },
-            { nom: "Parking stade — Magné (8 km)", note: "Calme, plat, gratuit. Super U à 5 min.", maps: mapsUrl(46.3134167, -0.5428167, "Parking stade Magné"), p4n: "https://park4night.com/fr/place/7282" }
+          liens: [
+            { label: "Voir +", url: "https://www.niortmaraispoitevin.com/aires-camping-cars/aire-communale-du-praineau/" }
           ]
         },
         {
