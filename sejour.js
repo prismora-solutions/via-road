@@ -1,11 +1,7 @@
 // ============================================================
-// ViaRoad — Données du séjour
-// Remplacer plus tard par fetch() vers Google Sheets
+// ViaRoad — Données du séjour Marais Poitevin 2026
 // ============================================================
 
-// Lien Maps optimisé iPhone :
-// google.com/maps/search ouvre l'app Google Maps si installée, sinon le navigateur
-// maps.apple.com en fallback natif iOS
 function mapsUrl(lat, lng, label) {
   const enc = encodeURIComponent(label || '');
   return {
@@ -15,7 +11,6 @@ function mapsUrl(lat, lng, label) {
   };
 }
 
-// Pour les liens goo.gl existants et vérifiés
 function mapsGoo(gooUrl, lat, lng, label) {
   const enc = encodeURIComponent(label || '');
   return {
@@ -49,24 +44,52 @@ const SEJOUR = {
       emoji: "🎮",
       titre: "Pic nic douille, c'est toi la pigouille",
       poiz: "Zarthus",
-      theme: "Nature & Biodiversité",
+      theme: "Points de vue · Nature",
       distance: "1,5 km",
       duree: "1h",
       difficulte: "1/5",
       terrain: "1/5",
-      depart: "Quais de Coulon (79510)",
-      maps: mapsUrl(46.3233, -0.5861, "Quais de Coulon départ TA"),
+      depart: "Parking de l'Autremont — 42 rue de l'Autremont, Coulon (même parking que l'aire CC)",
+      maps: mapsUrl(46.3211667, -0.5893333, "Parking Autremont Coulon départ TA"),
       liens: [
-        { label: "Tourisme 79", url: "https://www.tourisme-deux-sevres.com/activite/geocaching-terra-aventura-pic-nic-douille-cest-toi-la-pigouille/" }
+        { label: "Voir +", url: "https://www.tourisme-deux-sevres.com/activite/geocaching-terra-aventura-pic-nic-douille-cest-toi-la-pigouille/" }
       ],
-      description: "Le parcours d'entrée en matière idéal. Avec Zarthus pour guide, on part à la découverte des ruelles et des bords de Sèvre de Coulon — 1,5 km de charme maraîchin, de maisons colorées et de canaux. Court, doux, accessible à tout le monde. Le chien est le bienvenu. 💡 Bonus : le mot mystère donne droit à un tarif réduit sur place.",
+      description: "Zarthus vous emmène dans les ruelles et sur les quais de Coulon, capitale de la Venise Verte. En cherchant les indices, vous découvrez la pêche à l'anguille, les anciennes taxes sur les marchandises, la libellule géante de la place, les mojettes et les pigouilles. Une façon maline et amusante d'entrer dans le marais — les filles vont adorer résoudre les énigmes. Le chien est le bienvenu. 💡 Le mot mystère trouvé dans la cache donne droit à un tarif réduit à la Maison du Marais Poitevin.",
       poi: [
-        "🏘️ Ruelles maraîchines de Coulon — maisons colorées, volets bois, jardinières fleuries",
-        "🌿 Bords de Sèvre Niortaise — chemin de halage, barques traditionnelles amarrées",
-        "⛵ Quais historiques — embarcadères, point de départ des bateliers",
-        "💡 Bonus : le mot mystère = tarif réduit à la Maison du Marais"
+        "🎣 Quais de Coulon — pêche à l'anguille, nasses en osier, techniques ancestrales des maraîchins",
+        "🦋 Libellule géante de Brigitte Belaud — sculpture place de la Coutume, 54 espèces dans le marais",
+        "🏛️ Place de la Coutume — ancien lieu de taxation des marchandises, plus de 2 500 bateaux en 1840",
+        "⛪ Église Sainte-Trinité — tradition de la Bachellerie, personnages sculptés grimaçants",
+        "🪤 Poulies de la rue de l'Église — servaient à monter les sacs de mojettes dans les greniers",
+        "⛵ Amiral Clochard — premier à avoir balladé les touristes dans le marais au début du XXe siècle"
       ],
       alertes: []
+    },
+    {
+      id: "viso2",
+      type: "visorando",
+      jour: "Vendredi 15 — matin (boucle complète)",
+      emoji: "🥾",
+      titre: "Coulon · La Garette · Coulon",
+      distance: "~10 km",
+      duree: "~2h30-3h",
+      difficulte: "Facile",
+      depart: "Coulon — Parking de l'Autremont (aire CC)",
+      maps: mapsUrl(46.3211667, -0.5893333, "Parking Autremont Coulon départ rando"),
+      liens: [
+        { label: "Visorando n°257714", url: "https://www.visorando.com/randonnee-la-venise-verte-la-garette-coulon/" }
+      ],
+      description: "Au cœur de la Venise Verte, on part de Coulon pour rejoindre La Garette par les berges et canaux, avant de revenir par le même esprit — à pied, sans le CC. La Garette est l'un des villages les plus typiques du marais : une rue piétonne de 800 mètres bordée d'anciennes maisons de pêcheurs-paysans, chacune avec son embarcadère côté canal. Coulon, capitale du marais mouillé, est le point d'orgue de cette boucle. Pique-nique à La Garette en milieu de parcours avant de rentrer. Saisir le n°257714 dans l'app Visorando.",
+      poi: [
+        "🏘️ La Garette — rue piétonne de 800m, maisons de pêcheurs, embarcadères privés côté canal",
+        "🌿 Canaux de la Venise Verte — frênes têtards, conches, reflets d'eau verte",
+        "⛵ Bords de Sèvre Niortaise — chemin de halage, barques traditionnelles",
+        "🌊 Barrage-écluse du Chail — passerelle en bois sur pilotis à La Garette",
+        "🏘️ Coulon — capitale du marais mouillé, quais historiques, village fleuri"
+      ],
+      alertes: [
+        "ℹ️ Boucle à faire sans le CC — on repart à pied depuis l'aire CC"
+      ]
     },
     {
       id: "ta2",
@@ -74,29 +97,30 @@ const SEJOUR = {
       jour: "Samedi 16 — matin",
       emoji: "🎮",
       titre: "Flamme Bleue en Venise Verte",
-      poiz: "Zécolo",
-      theme: "Sites préservés & Écologie",
-      distance: "6 km",
+      poiz: "Zahan",
+      theme: "Animaux · Marais sauvage",
+      distance: "5,5 km",
       duree: "2h à 3h",
       difficulte: "3/5",
       terrain: "2/5",
-      depart: "Lavoir de la Grande Fontaine — Saint-Georges-de-Rex (79210)",
-      maps: mapsUrl(46.270, -0.540, "Lavoir Grande Fontaine Saint-Georges-de-Rex"),
+      depart: "Parking salle des fêtes — Saint-Georges-de-Rex (N46°16.727' / W000°39.115')",
+      maps: mapsUrl(46.2787833, -0.6519167, "Parking salle des fêtes Saint-Georges-de-Rex"),
       liens: [
-        { label: "Niort Marais Tourisme", url: "https://www.niortmaraispoitevin.com/activites/geocaching-terra-aventura-flamme-bleue-en-venise-verte/" }
+        { label: "Découvrir", url: "https://www.niortmaraispoitevin.com/activites/geocaching-terra-aventura-flamme-bleue-en-venise-verte/" }
       ],
-      description: "Le grand parcours du séjour — celui qu'on racontera au retour. Avec Zécolo, on s'enfonce dans les conches, ces bras de canaux où la végétation se referme au-dessus de la tête. Chemins ombragés, marais sauvage, énigmes à résoudre dans le silence. 3/5 en difficulté : quelques passages bourbeux possibles, les chaussures imperméables ou bottes s'imposent. Le chien est dans son élément.",
+      description: "Zahan, le maraîchin, doit rejoindre ses bœufs dans les pâtures — mais quelqu'un allume des feux dans le marais. Avec lui, on traverse les conches, les chemins ombragés, les prairies humides de Saint-Georges-de-Rex, réserve naturelle de 250 hectares gérée par le Conservatoire Régional. Pigeonnier, four à pain, port, gardien du marais en bric-à-brac, cyprès chauve aux racines-tubas, hôtel à insectes… le parcours est riche en découvertes. Le chien sera dans son élément. Départ depuis le parking de la salle des fêtes, puis venelle sur la droite jusqu'au lavoir de la Grande Fontaine.",
       poi: [
-        "🌿 Conches du marais — bras de canaux envahis de végétation, reflets d'eau verte",
-        "🌳 Frênes têtards — arbres taillés depuis des siècles, emblème du marais",
-        "🐦 Hérons cendrés, aigrettes, martin-pêcheurs — discrets mais présents sur les berges",
-        "⛲ Lavoir de la Grande Fontaine — patrimoine villageois XIXe, départ du parcours",
-        "🌾 Prairies humides — horizon à 360°, paysage ouvert sur le marais desséché"
+        "🌿 Conches du marais sauvage — canaux envahis de végétation, réserve de 250 hectares",
+        "🕊️ Pigeonnier (ou fuye) — les «boulins» symbolisaient la richesse foncière",
+        "🍞 Four à pain et outils anciens — tarare bleu, râteau à foin, vie maraîchine",
+        "⚓ Port de Saint-Georges-de-Rex — accès encore possible à Niort et la Baie de l'Aiguillon",
+        "🌾 Gardien du marais — sculpture en bric-à-brac, frênes têtards aux branches dressées",
+        "🌺 Fritillaire pintade — fleur clochette damier rose et pourpre, abri légendaire des feux follets",
+        "🌳 Cyprès chauve — racines-tubas qui jaillissent à l'air libre pour vivre en milieu inondé"
       ],
       alertes: [
-        "⚠️ Chaussures imperméables ou bottes — passages bourbeux possible",
-        "⚠️ Accès interdit en cas d'évail (crue) — vérifier avant de partir",
-        "⚠️ Vérifier dates de battues au gibier : mairie de Saint-Georges-de-Rex"
+        "⚠️ Chaussures imperméables ou bottes si temps humide",
+        "⚠️ Accès interdit en cas d'évail (crue) — vérifier avant de partir"
       ]
     },
     {
@@ -108,20 +132,23 @@ const SEJOUR = {
       poiz: "Zisséo",
       theme: "Patrimoine maritime",
       distance: "2,5 km",
-      duree: "1h à 1h30",
+      duree: "1h",
       difficulte: "2/5",
       terrain: "1/5",
-      depart: "Parking Espace du Bief — Magné (79460)",
-      maps: mapsUrl(46.340, -0.527, "Parking Espace du Bief Magné"),
+      depart: "Parking du stade — Magné (N46°18.829' / W000°32.544')",
+      maps: mapsUrl(46.3134167, -0.5428167, "Parking du stade Magné sentier port en port"),
       liens: [
-        { label: "Tourisme 79", url: "https://www.tourisme-deux-sevres.com/geocaching-terra-aventura-maraichin-contre-bras-rouge/magne/ascaqu079v502wq5" }
+        { label: "Découvrir", url: "https://www.tourisme-deux-sevres.com/geocaching-terra-aventura-maraichin-contre-bras-rouge/magne/ascaqu079v502wq5" }
       ],
-      description: "Zisséo est parti pêcher, mais le Bras Rouge rôde sur les berges de la Sèvre. Le sentier «De port en port» se suit grâce à des balises métalliques au sol — plat, large, sans surprise. Court et fun, idéal pour finir la journée en légèreté quand les jambes ont déjà donné le matin.",
+      description: "Zisséo est parti pêcher et n'est pas rentré — le Bras Rouge l'aurait-il capturé ? Le sentier «De port en port» est balisé par des plaques métalliques au sol représentant une plate (barque traditionnelle). On passe par l'île du Bras Rouge, l'exposition sur la pêche à l'anguille, le four à pain restauré, le quai de Sèvre, l'église Sainte-Catherine et le pont-levis métallique. Magné est une île cernée par la Sèvre et ses bras — héritage du Golfe des Pictons. Court, plat, fun. Parfait pour finir la journée.",
       poi: [
-        "⚓ Sentier «De port en port» — balises métalliques, patrimoine portuaire maraîchin",
-        "🏚️ Anciens ports de chargement — traces du commerce du XIXe sur la Sèvre",
-        "🌊 Bords de Sèvre Niortaise — vues dégagées sur le fleuve, barques amarrées",
-        "🐟 Zones de pêche traditionnelle — nasses, épuisettes, gestes ancestraux"
+        "⚓ Sentier «De port en port» — balises métalliques au sol représentant une plate maraîchine",
+        "🎣 Exposition pêche à l'anguille — bourgnon, nasses en osier, outils ancestraux",
+        "🦞 Île du Bras Rouge — peupliers de remplacement pour les frênes têtards menacés",
+        "🍞 Four à pain du Pontet — restauré par une association, fonctionne encore pour des événements",
+        "🌊 Quai de Sèvre — ancienne voie commerciale entre Niort et la mer, gabares et chamoiseries",
+        "⛪ Église Sainte-Catherine — tourelle d'escalier, architecte de l'hôtel de ville de Niort",
+        "🔩 Pont-levis métallique — franchissait 9 barrages-écluses de Niort à Marans"
       ],
       alertes: []
     },
@@ -131,48 +158,49 @@ const SEJOUR = {
       jour: "Dimanche 17 — matin",
       emoji: "🥾",
       titre: "Le Marais Poitevin à Arçais",
-      distance: "~10 km (demi-tour possible à tout moment)",
-      duree: "~2h30 · selon allure",
+      distance: "~10 km (demi-tour possible)",
+      duree: "~2h30",
       difficulte: "Facile",
-      depart: "Parking Arçais — à définir au départ",
-      maps: mapsUrl(46.299, -0.541, "Arçais départ rando Visorando"),
+      depart: "Arçais — depuis l'aire CC",
+      maps: null,
       liens: [
-        { label: "🗺️ Visorando Arçais", url: "https://www.visorando.com/randonnee-le-marais-poitevin-a-arcais/" }
+        { label: "Visorando n°733280", url: "https://www.visorando.com/randonnee-le-marais-poitevin-a-arcais/" }
       ],
-      description: "La grande boucle depuis Arçais, le long des canaux du marais mouillé. 10 km sur le papier, mais le terrain est plat et le rythme est libre — on fait demi-tour quand on veut, on s'arrête où on veut. Prairies, conches, maisons sur l'eau, silence. Le dernier grand bol d'air avant la route.",
+      description: "La grande boucle finale depuis Arçais, le long des canaux du marais mouillé. Terrain totalement plat, horizon dégagé, silence. On fait autant qu'on veut — demi-tour possible à tout moment, sans pression. Saisir le n°733280 dans l'app Visorando. Pique-nique tardif en chemin avant la route retour.",
       poi: [
-        "⛵ Port d'Arçais — point de départ, barques plates, quais maraîchins",
+        "⛵ Port d'Arçais — barques plates, quais maraîchins, grues en bois sur le quai",
         "🌿 Canaux du marais mouillé — végétation dense, reflets, silence absolu",
         "🏘️ Hameaux sur l'eau — maisons basses aux jardins sur les berges",
-        "🌾 Prairies humides — horizon dégagé, vols de hérons, odeur de terre mouillée",
-        "🥖 Boulangerie + supérette Arçais — ravitaillement avant de partir"
+        "🌾 Prairies humides — horizon dégagé, vols de hérons",
+        "🥖 Boulangerie + supérette Arçais — ravitaillement possible avant de partir"
       ],
       alertes: [
+        "ℹ️ Saisir le n°733280 dans l'app Visorando",
         "ℹ️ Demi-tour possible à tout moment — pas d'obligation de boucler"
       ]
     }
   ],
 
   checklist: [
-    { id: 1,  categorie: "📞 Réservations", texte: "Réserver barque Montfaucon — ven aprem ☎️ 05 49 35 34 97 · confirmer chien (animaux bienvenus ✅)", fait: false },
-    { id: 2,  categorie: "📞 Réservations", texte: "Réserver La Passerelle Coulon — ven soir, animaux bienvenus ✅ ☎️ 05 49 35 80 03", fait: false },
+    { id: 1,  categorie: "📞 Réservations", texte: "Réserver barque Montfaucon — sam 16 aprem ☎️ 05 49 35 34 97 · confirmer chien (animaux bienvenus ✅)", fait: false },
+    { id: 2,  categorie: "📞 Réservations", texte: "Réserver La Passerelle Coulon — si on y va, animaux bienvenus ✅ ☎️ 05 49 35 80 03", fait: false },
     { id: 3,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Coulon hors connexion dans l'app (Pic nic douille)", fait: false },
     { id: 4,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours St-Georges hors connexion (Flamme Bleue)", fait: false },
-    { id: 5,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Magné hors connexion (Bras Rouge)", fait: false },
-    { id: 6,  categorie: "📱 Apps", texte: "Visorando — télécharger GPX Arçais (dim matin)", fait: false },
+    { id: 5,  categorie: "🎮 Terra Aventura", texte: "Télécharger parcours Magné hors connexion (Maraîchin contre Bras Rouge)", fait: false },
+    { id: 6,  categorie: "📱 Apps", texte: "Visorando — télécharger GPX n°257714 (La Garette, ven) et n°733280 (Arçais, dim)", fait: false },
     { id: 7,  categorie: "📱 Apps", texte: "Camping-Car Park — télécharger + inscription si besoin", fait: false },
     { id: 8,  categorie: "📱 Apps", texte: "Météo France — ajouter Coulon (INSEE 79430)", fait: false },
     { id: 9,  categorie: "🐕 Chien", texte: "Gamelle pliable + eau en stock", fait: false },
     { id: 10, categorie: "🐕 Chien", texte: "Laisse courte pour les parcours", fait: false },
     { id: 11, categorie: "🐕 Chien", texte: "Sacs à déjections", fait: false },
     { id: 12, categorie: "🐕 Chien", texte: "Répulsif moustiques — surtout le soir en bord de canal", fait: false },
-    { id: 13, categorie: "🐕 Chien", texte: "Chaussures imperméables pour TA Flamme Bleue (sam matin)", fait: false }
+    { id: 13, categorie: "🐕 Chien", texte: "Chaussures imperméables ou bottes — TA Flamme Bleue (sam matin)", fait: false }
   ],
 
   jours: [
 
     // ─────────────────────────────
-    // JEUDI 14 — Route + arrivée
+    // JEUDI 14 — Route + Coulon
     // ─────────────────────────────
     {
       id: "j1", numero: 1,
@@ -180,7 +208,7 @@ const SEJOUR = {
       titre: "On arrive",
       emoji: "🚐",
       km_balade: "~3 km · journée douce",
-      ambiance: "Arrivée en douceur. On pose les sacs, on respire, on découvre Coulon au rythme du marais.",
+      ambiance: "Bienvenue dans le Marais Poitevin — 2e zone humide de France, façonnée par l'homme depuis le Moyen Âge. On pose le CC, on respire, on laisse le marais venir à nous.",
       etapes: [
         {
           id: "j1-1", plage: "matin", heure: "09h30",
@@ -188,156 +216,124 @@ const SEJOUR = {
           description: "Pique-nique du midi dans le sac. ~2h15 de route via A10 puis N11.",
           type: "trajet",
           maps: mapsUrl(44.8903, 0.4278, "Asques 33240"),
-          liens: [], tag: null
+          liens: []
         },
         {
           id: "j1-2", plage: "midi", heure: "12h00",
           titre: "Arrivée — Aire CC Coulon",
-          description: "42 rue de l'Autremont, 79510 Coulon. 90 emplacements, sol stabilisé, électricité, sanitaires, WiFi. À 500m des quais à pied. On prend le temps de s'installer.",
+          description: "42 rue de l'Autremont, 79510 Coulon. 90 emplacements, sol stabilisé, électricité, sanitaires, WiFi. Le CC reste là jusqu'à demain soir — on explore le coin à pied.",
           type: "hebergement",
           maps: mapsGoo(null, 46.3230, -0.5892, "Aire CC Coulon 42 rue Autremont"),
           liens: [
             { label: "Camping-Car Park", url: "https://www.campingcarpark.com/fr_FR/camping-car/nouvelle-aquitaine/deux-sevres/coulon" }
-          ],
-          tag: null
+          ]
         },
         {
           id: "j1-3", plage: "midi", heure: "12h30",
           titre: "Pique-nique — Quais de Coulon",
-          description: "On rejoint les quais à pied (500m). Bancs face à la Sèvre, barques qui glissent, village fleuri. Premier contact avec le marais.",
+          description: "500m à pied depuis l'aire. Bancs face à la Sèvre, barques qui glissent, village fleuri. Premier contact avec le marais mouillé.",
           type: "repas",
           maps: mapsUrl(46.3233, -0.5861, "Quais de Coulon"),
-          liens: [], tag: "🐕 Chien OK"
+          liens: [
+            { label: "Découvrir Coulon", url: "https://www.niortmaraispoitevin.com/decouvrir/les-incontournables/coulon/" },
+            { label: "Marais Poitevin", url: "https://www.parc-marais-poitevin.fr/" }
+          ]
         },
         {
           id: "j1-4", plage: "aprem", heure: "14h00",
-          titre: "🎮 Terra Aventura — Pic nic douille",
-          description: "1,5 km · ~1h · Dif 1/5. Le parcours d'entrée en matière parfait. On part chasser des indices dans les ruelles de Coulon avec Zarthus. Court, fun, tout le monde suit. Le chien choisit le rythme.",
+          titre: "🎮 Terra Aventura — Pic nic douille, c'est toi la pigouille",
+          description: "1,5 km · ~1h · Dif 1/5. Départ depuis le parking de l'Autremont — juste à côté du CC. Avec Zarthus, on part chasser des indices dans les ruelles et sur les quais de Coulon. Pêche à l'anguille, libellule géante, anciennes taxes sur les marchandises, pigouilles et mojettes — une mise en bouche parfaite du marais. Tout le monde suit, le chien aussi.",
           type: "activite",
-          maps: mapsUrl(46.3233, -0.5861, "Départ TA Coulon quais"),
+          maps: mapsUrl(46.3211667, -0.5893333, "Parking Autremont Coulon départ TA Pic nic douille"),
           liens: [
-            { label: "Tourisme 79", url: "https://www.tourisme-deux-sevres.com/activite/geocaching-terra-aventura-pic-nic-douille-cest-toi-la-pigouille/" }
-          ],
-          tag: "Terra Aventura"
+            { label: "Voir +", url: "https://www.tourisme-deux-sevres.com/activite/geocaching-terra-aventura-pic-nic-douille-cest-toi-la-pigouille/" }
+          ]
         },
         {
           id: "j1-5", plage: "aprem", heure: "15h30",
-          titre: "🐾 Balade — Chemin de halage",
-          description: "~1,5 km · ~30-40 min le long de la Sèvre. On longe l'eau sans objectif. Le chien se défoule, on regarde les barques passer. Premier souffle de marais.",
+          titre: "🐾 Flânerie — Quais et chemin de halage",
+          description: "On rejoint les quais et on flâne sans objectif. Le chemin de halage longe la Sèvre vers l'aval — on y va autant qu'on veut, on revient quand on veut. Le marais commence à chuchoter. À éviter : le secteur autour du parking Autremont déjà fait avec le TA.",
           type: "balade",
-          maps: mapsUrl(46.3233, -0.5861, "Chemin de halage Coulon Sèvre"),
-          liens: [], tag: "🐕 Chien OK"
+          maps: null,
+          liens: []
         },
         {
           id: "j1-6", plage: "soir", heure: "18h30",
           titre: "Retour — Aire CC",
           description: "Retour à pied (500m). On s'installe, on souffle. Nuit sur place.",
           type: "hebergement",
-          maps: mapsGoo(null, 46.3230, -0.5892, "Aire CC Coulon"),
-          liens: [], tag: null
+          maps: null,
+          liens: []
         },
         {
           id: "j1-7", plage: "soir", heure: "19h30",
           titre: "Dîner — à bord",
           description: "Repas préparé maison. Dehors si la météo le permet.",
           type: "repas",
-          maps: null, liens: [], tag: null
+          maps: null,
+          liens: []
         }
       ]
     },
 
     // ─────────────────────────────
-    // VENDREDI 15 — La Garette + Barque + Resto
+    // VENDREDI 15 — Grande rando + repos
     // ─────────────────────────────
     {
       id: "j2", numero: 2,
       label: "Vendredi 15 mai",
-      titre: "La journée carte postale",
-      emoji: "🚣",
-      km_balade: "~3-4 km · journée riche",
-      ambiance: "La Garette le matin, la barque l'après-midi, La Passerelle le soir. La journée qu'on garde.",
+      titre: "La Garette & retour",
+      emoji: "🥾",
+      km_balade: "~10 km · grande journée",
+      ambiance: "La boucle du jour : Coulon → La Garette → Coulon. À pied, le long des canaux. Pique-nique à La Garette en chemin. Après-midi tranquille au CC.",
       etapes: [
         {
           id: "j2-1", plage: "matin", heure: "08h30",
           titre: "Petit-déjeuner — CC",
-          description: "Café chaud, sortie chien bords de Sèvre. On prépare le pique-nique pour midi. Décollage vers 10h.",
+          description: "Café chaud, sortie chien. Pique-nique préparé pour La Garette. Décollage vers 10h. Le CC reste garé à Coulon toute la journée.",
           type: "routine",
-          maps: null, liens: [], tag: "🐕 Chien OK"
+          maps: null,
+          liens: []
         },
         {
           id: "j2-2", plage: "matin", heure: "10h00",
-          titre: "Trajet — La Garette",
-          description: "~8 km · ~12 min depuis Coulon. On longe la Sèvre par la D1.",
-          type: "trajet",
-          maps: mapsUrl(46.308, -0.602, "La Garette Sansais parking"),
-          liens: [], tag: null
-        },
-        {
-          id: "j2-3", plage: "matin", heure: "10h15",
-          titre: "🏘️ Balade — La Garette",
-          description: "Village emblématique du marais. Une longue rue piétonne — pas de voitures — bordée de maisons de pêcheurs avec chacune son embarcadère privé côté canal. La passerelle en bois sur pilotis, le barrage-écluse du Chail. Le chien trace librement sur les berges.\n\n☀️ Si jambes vaillantes : Visorando La Garette→Coulon (9,6 km, 2h45) le long de la Sèvre — vous finissez à Coulon, il faut revenir chercher le CC.",
-          type: "balade",
-          maps: mapsUrl(46.308, -0.602, "La Garette village rue piétonne"),
-          liens: [
-            { label: "🗺️ Visorando La Garette→Coulon (option longue)", url: "https://www.visorando.com/randonnee-la-venise-verte-la-garette-coulon/" }
-          ],
-          tag: "🐕 Chien OK"
-        },
-        {
-          id: "j2-4", plage: "midi", heure: "12h00",
-          titre: "Pique-nique — La Garette",
-          description: "Bancs ou aire de pique-nique au village. On mange face aux canaux avant de reprendre la route vers Montfaucon.",
-          type: "repas",
-          maps: mapsUrl(46.308, -0.602, "Aire pique-nique La Garette"),
-          liens: [], tag: null
-        },
-        {
-          id: "j2-5", plage: "aprem", heure: "13h00",
-          titre: "Trajet — Port de Montfaucon",
-          description: "~18 km · ~20 min via D9 direction Saint-Hilaire-la-Palud.",
-          type: "trajet",
-          maps: mapsUrl(46.2692, -0.7140, "Embarcadère Port de Montfaucon Saint-Hilaire-la-Palud"),
-          liens: [], tag: null
-        },
-        {
-          id: "j2-6", plage: "aprem", heure: "13h30",
-          titre: "🚣 Barque guidée — Port de Montfaucon",
-          description: "~1h à 2h. Une plate traditionnelle guidée à la pigouille. Les canaux se resserrent, les frênes têtards forment une voûte, les hérons décollent en silence. C'est lent, doux, inoubliable.\n\nTarif : ~18€/adulte · 9,50€/enfant · Animaux bienvenus ✅\n\n⛅ Plan B si pluie ou indisponible : flânerie libre à Coulon l'après-midi — quais, ruelles, repos au CC.",
+          titre: "🥾 Visorando — Boucle Coulon · La Garette · Coulon",
+          description: "~10 km · ~2h30-3h · Facile. On part à pied depuis l'aire CC, le long des canaux et berges de la Sèvre. Direction La Garette, l'un des villages les plus typiques du marais : rue piétonne de 800m bordée d'anciennes maisons de pêcheurs-paysans, embarcadères privés côté canal. On pique-nique là-bas avant de rentrer par le même univers d'eau et de verdure.\n\nSaisir le n°257714 dans l'app Visorando.",
           type: "activite",
-          maps: mapsUrl(46.2692, -0.7140, "Embarcadère Port de Montfaucon"),
-          liens: [
-            { label: "🌐 Site officiel embarcadère", url: "https://www.embarcadere-port-montfaucon.fr/" },
-            { label: "📞 Réserver ☎️ 05 49 35 34 97", url: "tel:0549353497" }
-          ],
-          tag: "📞 Réserver à l'avance"
+          maps: mapsUrl(46.3211667, -0.5893333, "Départ rando Coulon parking Autremont"),
+          liens: []
         },
         {
-          id: "j2-7", plage: "aprem", heure: "15h30",
-          titre: "Retour Coulon — quais",
-          description: "~25 km · ~30 min retour. On flâne sur les quais, on regarde les barques, on recharge les batteries avant le dîner.",
-          type: "balade",
-          maps: mapsUrl(46.3233, -0.5861, "Quais de Coulon"),
-          liens: [], tag: "🐕 Chien OK"
-        },
-        {
-          id: "j2-8", plage: "soir", heure: "19h30",
-          titre: "🍽️ Dîner — La Passerelle",
-          description: "86 Quai Louis Tardy, 79510 Coulon. En terrasse face à la Sèvre, vue sur les embarcadères. Spécialités maraîchines : anguilles, mogettes, farci poitevin. Animaux bienvenus en terrasse ✅",
+          id: "j2-3", plage: "midi", heure: "12h30",
+          titre: "Pique-nique — La Garette",
+          description: "On s'installe à La Garette en plein milieu de la boucle. Face aux canaux, maisons de pêcheurs tout autour. On prend le temps avant de repartir vers Coulon.",
           type: "repas",
-          maps: mapsUrl(46.3220, -0.5882, "La Passerelle 86 quai Louis Tardy Coulon"),
-          liens: [
-            { label: "🌐 Site La Passerelle", url: "https://lapasserelle-coulon.fr/" },
-            { label: "📞 Réserver ☎️ 05 49 35 80 03", url: "tel:0549358003" }
-          ],
-          tag: "🐕 Animaux bienvenus"
+          maps: mapsUrl(46.308, -0.602, "La Garette village"),
+          liens: []
         },
         {
-          id: "j2-9", plage: "soir", heure: "21h30",
+          id: "j2-4", plage: "aprem", heure: "15h00",
           titre: "Retour — Aire CC Coulon",
-          description: "Dernière nuit à Coulon.",
+          description: "Retour à pied jusqu'au CC. On s'installe, on souffle. Après 10 km, le CC n'a jamais semblé aussi confortable.",
           type: "hebergement",
-          maps: mapsGoo(null, 46.3230, -0.5892, "Aire CC Coulon"),
-          liens: [], tag: null
+          maps: null,
+          liens: []
+        },
+        {
+          id: "j2-5", plage: "aprem", heure: "16h00",
+          titre: "Repos · Flânerie libre",
+          description: "Aprem au calme. On traîne autour du CC, on joue, on flâne sur les quais si l'envie reprend. Le chien profite de la Sèvre.",
+          type: "balade",
+          maps: null,
+          liens: []
+        },
+        {
+          id: "j2-6", plage: "soir", heure: "19h30",
+          titre: "Dîner — à bord · Nuit Coulon",
+          description: "Repas à bord. Dernière nuit à Coulon avant de prendre la route demain matin.",
+          type: "repas",
+          maps: null,
+          liens: []
         }
       ]
     },
@@ -348,89 +344,86 @@ const SEJOUR = {
     {
       id: "j3", numero: 3,
       label: "Samedi 16 mai",
-      titre: "La grande journée TA",
+      titre: "Terra Aventura x2 + Arçais",
       emoji: "🎮",
-      km_balade: "~8-9 km avec pauses",
-      ambiance: "Le grand TA le matin, le petit l'après-midi. On finit en flânant à Arçais avant de s'y poser pour la nuit.",
+      km_balade: "~8 km avec pauses",
+      ambiance: "Le grand TA le matin dans le marais sauvage, le petit l'après-midi à Magné. On finit en flânant à Arçais où on pose le CC pour la nuit.",
       etapes: [
         {
           id: "j3-1", plage: "matin", heure: "08h30",
           titre: "Petit-déjeuner + préparation",
-          description: "Chaussures imperméables ou bottes — passages bourbeux possible sur Flamme Bleue. Eau, pique-nique dans le sac. Décollage vers 10h.",
+          description: "Chaussures imperméables ou bottes dans le sac — passages boueux possible sur Flamme Bleue. Eau, pique-nique. Décollage vers 10h.",
           type: "routine",
-          maps: null, liens: [], tag: null
+          maps: null,
+          liens: []
         },
         {
           id: "j3-2", plage: "matin", heure: "10h00",
           titre: "Trajet — Saint-Georges-de-Rex",
-          description: "~15 km · ~20 min depuis Coulon. Dernier trajet depuis l'aire de Coulon.",
+          description: "~15 km · ~20 min depuis Coulon. On quitte l'aire CC avec le camping-car.",
           type: "trajet",
-          maps: mapsUrl(46.270, -0.540, "Lavoir Grande Fontaine Saint-Georges-de-Rex"),
-          liens: [], tag: null
+          maps: mapsUrl(46.2787833, -0.6519167, "Parking salle des fêtes Saint-Georges-de-Rex"),
+          liens: []
         },
         {
           id: "j3-3", plage: "matin", heure: "10h15",
           titre: "🎮 Terra Aventura — Flamme Bleue en Venise Verte",
-          description: "6 km · 2h à 3h · Dif 3/5. Le grand parcours du séjour. Conches, frênes têtards, chemins qui se perdent dans le vert. On prend le temps, on fait des pauses. Le chien adore.",
+          description: "5,5 km · 2h à 3h · Dif 3/5. Avec Zahan le maraîchin, on plonge dans le marais sauvage de Saint-Georges-de-Rex — conches, prairies humides, pigeonnier, port, gardien en bric-à-brac, cyprès chauve aux racines-tubas. Le grand parcours du séjour. On prend le temps, on fait des pauses, le chien adore.\n\nDépart : parking de la salle des fêtes. Suivre la venelle sur la droite jusqu'au lavoir de la Grande Fontaine.",
           type: "activite",
-          maps: mapsUrl(46.270, -0.540, "Lavoir Grande Fontaine Saint-Georges-de-Rex"),
+          maps: mapsUrl(46.2787833, -0.6519167, "Parking salle des fêtes Saint-Georges-de-Rex"),
           liens: [
-            { label: "Niort Marais Tourisme", url: "https://www.niortmaraispoitevin.com/activites/geocaching-terra-aventura-flamme-bleue-en-venise-verte/" }
-          ],
-          tag: "Terra Aventura ⚠️ Bottes conseillées"
+            { label: "Découvrir", url: "https://www.niortmaraispoitevin.com/activites/geocaching-terra-aventura-flamme-bleue-en-venise-verte/" }
+          ]
         },
         {
           id: "j3-4", plage: "midi", heure: "13h00",
-          titre: "Pique-nique — Lavoir ou herbe",
-          description: "Tables de pique-nique au lavoir ou sous les arbres à l'entrée du village. On souffle, on récupère.",
+          titre: "Pique-nique — Saint-Georges-de-Rex",
+          description: "Tables de pique-nique au village ou sous les arbres. On souffle avant la route vers Magné.",
           type: "repas",
-          maps: mapsUrl(46.270, -0.540, "Lavoir Saint-Georges-de-Rex"),
-          liens: [], tag: null
+          maps: mapsUrl(46.2787833, -0.6519167, "Saint-Georges-de-Rex village"),
+          liens: []
         },
         {
           id: "j3-5", plage: "aprem", heure: "14h15",
           titre: "Trajet — Magné",
-          description: "~12 km · ~15 min. Direction parking Espace du Bief.",
+          description: "~12 km · ~15 min. Direction parking du stade.",
           type: "trajet",
-          maps: mapsUrl(46.340, -0.527, "Parking Espace du Bief Magné"),
-          liens: [], tag: null
+          maps: mapsUrl(46.3134167, -0.5428167, "Parking stade Magné"),
+          liens: []
         },
         {
           id: "j3-6", plage: "aprem", heure: "14h30",
           titre: "🎮 Terra Aventura — Maraîchin contre Bras Rouge",
-          description: "2,5 km · 1h · Dif 2/5. Le format léger de l'après-midi. Sentier «De port en port» balisé au sol. Plat, large, fun. Parfait pour des jambes qui ont déjà donné le matin.",
+          description: "2,5 km · 1h · Dif 2/5. Zisséo n'est pas rentré de la pêche — le Bras Rouge l'a-t-il capturé ? Sentier «De port en port» balisé au sol par des plaques représentant une plate. On traverse l'île du Bras Rouge, le quai de Sèvre, le pont-levis. Court, plat, fun — parfait après le grand TA du matin.\n\nDépart : parking du stade, sentier à proximité immédiate.",
           type: "activite",
-          maps: mapsUrl(46.340, -0.527, "Parking Espace du Bief Magné"),
+          maps: mapsUrl(46.3134167, -0.5428167, "Parking stade Magné départ sentier port en port"),
           liens: [
-            { label: "Tourisme 79", url: "https://www.tourisme-deux-sevres.com/geocaching-terra-aventura-maraichin-contre-bras-rouge/magne/ascaqu079v502wq5" }
-          ],
-          tag: "Terra Aventura"
+            { label: "Découvrir", url: "https://www.tourisme-deux-sevres.com/geocaching-terra-aventura-maraichin-contre-bras-rouge/magne/ascaqu079v502wq5" }
+          ]
         },
         {
           id: "j3-7", plage: "aprem", heure: "16h00",
-          titre: "Trajet + installation — Arçais",
-          description: "~8 km · ~10 min. On rejoint l'aire d'Arçais pour la nuit. 26 Rue du Marais, 79210 Arçais. ~11,50€/nuit. Électricité, sanitaires, WiFi. Supérette à 300m.",
+          titre: "Trajet + installation — Aire CC Arçais",
+          description: "~8 km · ~10 min. 26 Rue du Marais, 79210 Arçais. ~11,50€/nuit. Électricité, sanitaires, WiFi. Supérette à 300m.",
           type: "hebergement",
-          maps: mapsUrl(46.2990, -0.5418, "Aire CC Arçais 26 rue du Marais"),
-          liens: [], tag: null
+          maps: mapsGoo("https://www.google.com/maps/place/aire+de+services+camping+car/@46.2966216,-0.6881994,17z/data=!3m1!4b1!4m6!3m5!1s0x4806d7505a596ab5:0xc3ecec50cd4dd17a!8m2!3d46.2966216!4d-0.6881994!16s%2Fg%2F11mw7lf08r", 46.2966216, -0.6881994, "Aire CC Arçais"),
+          liens: []
         },
         {
           id: "j3-8", plage: "aprem", heure: "16h30",
-          titre: "🏘️ Flânerie — Port d'Arçais",
-          description: "Port pittoresque, venelles, maisons maraîchines. Grues en bois sur le quai. Chemin de halage le long de la Sèvre. Boutiques artisanat en saison. On s'arrête où on veut, on ne va nulle part en particulier.",
+          titre: "🏘️ Flânerie — Arçais",
+          description: "On pose le CC et on flâne en roue libre. Port pittoresque, venelles, maisons maraîchines. Grues en bois sur le quai. Atmosphère douce. Le chien fait ce qu'il veut.",
           type: "balade",
-          maps: mapsUrl(46.299, -0.541, "Port d'Arçais"),
-          liens: [
-            { label: "📍 Chemin de halage Arçais", url: "https://maps.apple.com/?q=Chemin+halage+Arcais&ll=46.300,-0.540&z=15" }
-          ],
-          tag: "🐕 Chien OK"
+          maps: null,
+          liens: []
         },
         {
           id: "j3-9", plage: "soir", heure: "19h30",
           titre: "Dîner — à bord · Nuit Arçais",
-          description: "Repas préparé. Nuit tranquille à l'aire d'Arçais — supérette à 300m si besoin.",
+          description: "Repas préparé. Supérette à 300m si besoin.",
           type: "repas",
-          maps: null, liens: [], tag: null
+          maps: null,
+          liens: []
         }
       ]
     },
@@ -443,34 +436,34 @@ const SEJOUR = {
       label: "Dimanche 17 mai",
       titre: "Dernier bol d'air · Route",
       emoji: "🏠",
-      km_balade: "~10 km Visorando · demi-tour possible",
-      ambiance: "Un grand bol d'air sur les canaux d'Arçais. Pique-nique tardif. Route retour sans pression.",
+      km_balade: "~10 km · demi-tour possible",
+      ambiance: "Un dernier grand bol d'air sur les canaux d'Arçais. Pique-nique tardif. Route retour sans pression.",
       etapes: [
         {
           id: "j4-1", plage: "matin", heure: "08h30",
           titre: "Petit-déjeuner — CC",
-          description: "Café tranquille. Pique-nique de route préparé. On part à 10h.",
+          description: "Café tranquille. Pique-nique de route préparé. On part vers 10h.",
           type: "routine",
-          maps: null, liens: [], tag: null
+          maps: null,
+          liens: []
         },
         {
           id: "j4-2", plage: "matin", heure: "10h00",
           titre: "🥾 Visorando — Le Marais Poitevin à Arçais",
-          description: "~10 km · ~2h30 · Facile. Départ depuis l'aire ou le port d'Arçais. Boucle le long des canaux du marais mouillé, prairies, conches, silence. Terrain totalement plat.\n\nDemi-tour possible à tout moment — on fait autant qu'on veut.",
+          description: "~10 km · ~2h30 · Facile. Départ depuis l'aire ou le port d'Arçais. Boucle le long des canaux du marais mouillé, prairies, conches, silence. Terrain totalement plat. On fait autant qu'on veut — demi-tour possible à tout moment.\n\nSaisir le n°733280 dans l'app Visorando.",
           type: "activite",
-          maps: mapsUrl(46.299, -0.541, "Départ rando Arçais port"),
+          maps: null,
           liens: [
-            { label: "🗺️ Visorando Arçais", url: "https://www.visorando.com/randonnee-le-marais-poitevin-a-arcais/" }
-          ],
-          tag: "🐕 Chien OK"
+            { label: "Visorando n°733280", url: "https://www.visorando.com/randonnee-le-marais-poitevin-a-arcais/" }
+          ]
         },
         {
           id: "j4-3", plage: "midi", heure: "12h30",
-          titre: "Pique-nique — Bords de canal ou aire",
+          titre: "Pique-nique — Bords de canal",
           description: "On s'installe où c'est joli. Dernier repas au marais — on prend le temps.",
           type: "repas",
           maps: mapsUrl(46.299, -0.541, "Arçais bords de canal"),
-          liens: [], tag: null
+          liens: []
         },
         {
           id: "j4-4", plage: "aprem", heure: "13h30",
@@ -478,7 +471,7 @@ const SEJOUR = {
           description: "Via A83 puis A10 · ~240 km · ~2h30.",
           type: "trajet",
           maps: mapsUrl(44.8903, 0.4278, "Asques 33240"),
-          liens: [], tag: null
+          liens: []
         },
         {
           id: "j4-5", plage: "aprem", heure: "16h00",
@@ -486,7 +479,7 @@ const SEJOUR = {
           description: "La maison.",
           type: "arrivee",
           maps: mapsUrl(44.8903, 0.4278, "Asques 33240"),
-          liens: [], tag: null
+          liens: []
         }
       ]
     }
