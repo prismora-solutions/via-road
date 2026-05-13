@@ -76,10 +76,10 @@ const SEJOUR = {
           plage: "aprem",
           heure: "15h00",
           titre: "Maison du Marais Poitevin",
-          description: "Écomusée, ~45 min. ⚠️ Vérifier accueil chien.",
+          description: "Écomusée, ~45 min. 5 place de la Coutume, Coulon. ⚠️ Animaux acceptés ✓",
           type: "culture",
-          maps: null,
-          tag: "⚠️ Vérifier chien"
+          maps: "https://maps.app.goo.gl/bQpj3Cz1EuHX3N7T7",
+          tag: "🐕 Animaux OK"
         },
         {
           id: "j1-6",
@@ -109,6 +109,16 @@ const SEJOUR = {
           description: "Repas préparé, provisions maison.",
           type: "repas",
           maps: null,
+          tag: null
+        },
+        {
+          id: "j1-9",
+          plage: "soir",
+          heure: "19h00",
+          titre: "Retour aire CC — Coulon",
+          description: "Nuit à l'aire de Coulon.",
+          type: "hebergement",
+          maps: "https://maps.app.goo.gl/6LoNAZdViieS8uG17",
           tag: null
         }
       ]
@@ -174,11 +184,21 @@ const SEJOUR = {
           id: "j2-6",
           plage: "soir",
           heure: "19h30",
-          titre: "🍽️ Dîner au restaurant — Coulon",
-          description: "Le seul resto du séjour. Terrasse bords de Sèvre, spécialités maraîchines. «Au Marais» ou «La Passerelle» — vérifier avis.",
+          titre: "🍽️ Dîner au restaurant — La Passerelle",
+          description: "86 Quai Louis Tardy, Coulon. Terrasse bords de Sèvre, spécialités maraîchines. ☎️ 05 49 35 80 03 — réserver terrasse chien.",
           type: "repas",
-          maps: null,
+          maps: "https://maps.google.com/?cid=7731877993026232721",
           tag: "📞 Réserver terrasse chien"
+        },
+        {
+          id: "j2-7",
+          plage: "soir",
+          heure: "21h30",
+          titre: "Retour aire CC — Coulon",
+          description: "Retour à l'aire de stationnement.",
+          type: "hebergement",
+          maps: "https://maps.app.goo.gl/6LoNAZdViieS8uG17",
+          tag: null
         }
       ]
     },
@@ -204,9 +224,9 @@ const SEJOUR = {
           plage: "matin",
           heure: "09h00",
           titre: "🎮 Terra Aventura — Les Gardiens du Marais",
-          description: "6 km, 2-3h. Départ lavoir de la Grande Fontaine, Saint-Georges-de-Rex. Conches, chemins ombragés.",
+          description: "6 km, 2-3h. Départ : Lavoir de la Grande Fontaine, Rue de la Grande Fontaine, Saint-Georges-de-Rex. Conches, chemins ombragés. Chien OK.",
           type: "activite",
-          maps: null,
+          maps: "https://maps.google.com/?cid=9888651706987683487",
           tag: "Terra Aventura"
         },
         {
@@ -230,13 +250,23 @@ const SEJOUR = {
           tag: "Terra Aventura"
         },
         {
+          id: "j3-4",
+          plage: "aprem",
+          heure: "14h15",
+          titre: "🎮 Terra Aventura — Maraîchin contre Bras Rouge",
+          description: "2,5 km, ~1h. Départ : Parking de l'Espace du Bief, Magné 79460. Sentier «De port en port», balises métalliques au sol.",
+          type: "activite",
+          maps: "https://maps.google.com/?q=Parking+Espace+du+Bief+Magn%C3%A9+79460",
+          tag: "Terra Aventura"
+        },
+        {
           id: "j3-5",
           plage: "aprem",
           heure: "15h30",
           titre: "Goûter + flânerie — Arçais",
-          description: "Boulangerie à Magné ou Arçais. Port, venelles, boutiques artisanat local.",
+          description: "Port, venelles, boutiques artisanat local. Boulangerie sur place.",
           type: "balade",
-          maps: null,
+          maps: "https://maps.google.com/?cid=2240494483059318201",
           tag: null
         },
         {
@@ -244,9 +274,19 @@ const SEJOUR = {
           plage: "soir",
           heure: "19h30",
           titre: "Dîner — CC",
-          description: "Repas préparé.",
+          description: "Repas préparé. Nuit à l'aire d'Arçais (vs Coulon) — plus proche pour le lendemain Damvix.",
           type: "repas",
           maps: null,
+          tag: null
+        },
+        {
+          id: "j3-7",
+          plage: "soir",
+          heure: "20h00",
+          titre: "Nuit — Aire CC Arçais",
+          description: "26 Rue du Marais, Arçais. 60 places, électricité, sanitaires, WiFi. ~11,50€/nuit. Supérette à 300m.",
+          type: "hebergement",
+          maps: "https://maps.google.com/?cid=14766843175578452329",
           tag: null
         }
       ]
@@ -273,9 +313,9 @@ const SEJOUR = {
           plage: "matin",
           heure: "09h30",
           titre: "Balade — Damvix",
-          description: "Ruelles pavées, maisons maraîchines, canaux. ~1h, chien en laisse. Calme le dimanche matin.",
+          description: "Ruelles pavées, maisons maraîchines, canaux. ~1h, chien en laisse. Parking : Place André Audouin, Damvix. Calme le dimanche matin.",
           type: "balade",
-          maps: null,
+          maps: "https://maps.google.com/?cid=2386742155706802736",
           tag: "🐕 Chien OK"
         },
         {
@@ -305,7 +345,7 @@ const SEJOUR = {
           titre: "Retour Asques 🏠",
           description: "La maison !",
           type: "arrivee",
-          maps: null,
+          maps: "https://maps.google.com/?q=Asques+33240",
           tag: null
         }
       ]
