@@ -103,12 +103,6 @@ function rendreJour(index) {
         <div class="jour-km">🥾 ${jour.km_balade}</div>
       </div>
     </div>
-    ${jour.photo ? `
-    <div class="jour-photo-wrap">
-      <img class="jour-photo" src="${jour.photo.url}" alt="${jour.titre}" loading="lazy"
-           onerror="this.closest('.jour-photo-wrap').style.display='none'">
-      <span class="jour-photo-credit">${jour.photo.credit}</span>
-    </div>` : ''}
     ${jour.histoire ? `
     <div class="jour-histoire">
       <div class="jour-histoire-header" onclick="toggleHistoire('histoire-j${index}')">
