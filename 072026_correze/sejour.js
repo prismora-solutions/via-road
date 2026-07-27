@@ -8,7 +8,7 @@ const SEJOUR = {
   titre: "Corrèze — Treignac",
   dates: "29 juillet → 5 août 2026",
   destination: "Treignac (19) · Rayon 40 km",
-  introPopup: "Une semaine entre gorges de la Vézère et plateau de Millevaches, avec Alma en laisse et les filles pour dénicher cascades, panoramas et parcours Terra Aventura. Rien n'est figé — ce carnet se construit au fil du séjour, on ajoute, on raye, on colle des photos à mesure qu'on avance.",
+  introPopup: "Une semaine entre gorges de la Vézère et plateau de Millevaches, avec Alma en laisse et les enfants pour dénicher cascades, panoramas et parcours Terra Aventura. Rien n'est figé — ce carnet se construit au fil du séjour, on ajoute, on raye, on colle des photos à mesure qu'on avance.",
 
   // ===== CAMPING =====
   camping: {

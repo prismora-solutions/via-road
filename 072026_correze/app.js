@@ -42,7 +42,7 @@ const RESSOURCE_CATEGORIES = [
 ];
 
 const ONGLETS = [
-  { id: 'camping',       icone: ICONE.camping,       label: 'Camping' },
+  { id: 'camping',       icone: ICONE.camping,       label: 'Bienvenue' },
   { id: 'terraAventura', icone: ICONE.terraAventura, label: 'Terra Aventura' },
   { id: 'randos',        icone: ICONE.randos,        label: 'Randos' },
   { id: 'visites',       icone: ICONE.visites,       label: 'Visites' },
@@ -224,8 +224,16 @@ function rendrePhotosHtml(id, photos) {
 // ===== UTILS =====
 function ajourdhuiISO() { return new Date().toISOString().slice(0, 10); }
 function formaterDate(iso) { if (!iso) return ''; const d = new Date(iso + 'T12:00:00'); return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }); }
+function formaterDateCourte(iso) { if (!iso) return ''; const d = new Date(iso + 'T12:00:00'); return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); }
 function echapper(txt) { const div = document.createElement('div'); div.textContent = txt || ''; return div.innerHTML; }
 function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+
+function entreesVecuTriees() {
+  return tousLesItemsTracables()
+    .map(({ id, cat, item }) => ({ id, cat, item, v: vecuEtat[id] }))
+    .filter(e => e.v && e.v.fait)
+    .sort((a, b) => a.v.date.localeCompare(b.v.date));
+}
 
 // ===== HEADER =====
 function rendreHeader() {
@@ -236,13 +244,24 @@ function rendreHeader() {
     { icone: ICONE.caravane, texte: 'Caravane' }, { icone: ICONE.chien, texte: 'Alma' }, { icone: ICONE.famille, texte: 'Famille' }
   ].map(b => `<span class="badge">${ic(b.icone)} ${b.texte}</span>`).join('');
 
+  const entrees = entreesVecuTriees();
   const total = tousLesItemsTracables().length;
-  const faits = Object.values(vecuEtat).filter(v => v.fait).length;
-  const pct = total ? Math.round(faits / total * 100) : 0;
+
+  const friseHtml = entrees.length
+    ? `<div class="header-frise">${entrees.map(e => `
+        <div class="header-frise-chip" title="${echapper(e.item.nom)}">
+          ${ic(ONGLETS.find(o => o.id === e.cat).icone)}
+          <div class="header-frise-chip-texte">
+            <span class="header-frise-date">${formaterDateCourte(e.v.date)}</span>
+            <span class="header-frise-titre">${echapper(e.item.nom)}</span>
+          </div>
+        </div>`).join('')}</div>`
+    : `<div class="header-frise-vide">Coche ta première étape pour démarrer la frise</div>`;
+
   badges.innerHTML += `
     <div style="width:100%;margin-top:8px">
-      <div class="progress-label">${ic(ICONE.sejour)} Séjour vécu : ${faits}/${total} étapes</div>
-      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="progress-label">${ic(ICONE.sejour)} Séjour vécu : ${entrees.length}/${total} étapes</div>
+      ${friseHtml}
     </div>`;
   rafraichirIcones();
 }
@@ -636,7 +655,16 @@ function rendreCamping() {
         </div>
       </div>`).join('')}`;
 
+  const bienvenueHtml = `
+    <div class="accueil-bienvenue">
+      <div class="intro-tampon">${ic('compass')}</div>
+      <div class="intro-titre">Bienvenue en Corrèze</div>
+      ${c.intro ? `<div class="intro-texte">${c.intro}</div>` : ''}
+    </div>`;
+
   return `
+    ${bienvenueHtml}
+    ${histoireHtml}
     <div class="onglet-header">
       ${ic(ICONE.camping, 'onglet-icone')}
       <div class="onglet-header-texte">
@@ -644,8 +672,6 @@ function rendreCamping() {
         <div class="onglet-sub">${c.adresse}</div>
       </div>
     </div>
-    ${c.intro ? `<div class="intro-texte">${c.intro}</div>` : ''}
-    ${histoireHtml}
     <div class="item-carte">
       <div class="item-footer" style="margin-top:0;margin-bottom:14px">
         <a class="btn-maps" href="${c.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>
@@ -734,10 +760,7 @@ async function supprimerRessource(id) {
 // ===== ONGLET CARNET — frise auto-générée + export PDF =====
 function rendreCarnet() {
   const main = document.getElementById('main-content');
-  const entrees = tousLesItemsTracables()
-    .map(({ id, cat, item }) => ({ id, cat, item, v: vecuEtat[id] }))
-    .filter(e => e.v && e.v.fait)
-    .sort((a, b) => a.v.date.localeCompare(b.v.date));
+  const entrees = entreesVecuTriees();
 
   if (!entrees.length) {
     main.innerHTML = `
