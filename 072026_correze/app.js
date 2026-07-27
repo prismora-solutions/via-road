@@ -22,7 +22,7 @@ const ICONE = {
   ajouter: 'circle-plus', supprimer: 'x', ampoule: 'lightbulb', chevron: 'chevron-right',
   supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print', autre: 'store',
   panier: 'shopping-basket', avertissement: 'triangle-alert', interdit: 'ban', export: 'download',
-  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles'
+  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera'
 };
 
 const CHIEN_LABEL = {
@@ -72,6 +72,7 @@ function normaliserSpot(row) {
     chien: { statut: row.chien_statut, note: row.chien_note },
     tarif: row.tarif, description: row.description,
     anecdote: row.anecdote, anecdoteSource: row.anecdote_source || [],
+    imagePath: row.image_path, imageUrl: row.image_url, imageCredit: row.image_credit,
     maps: { google: row.maps_url },
     sources: row.sources || []
   };
@@ -178,6 +179,24 @@ async function televerserPhotos(id, fichiers) {
   return chemins;
 }
 function urlPhoto(chemin) { return sb.storage.from(BUCKET).getPublicUrl(chemin).data.publicUrl; }
+
+function declencherPhotoSpot(id) {
+  document.getElementById(`photo-spot-${id}`).click();
+}
+async function televerserPhotoSpotEtEnregistrer(id) {
+  const input = document.getElementById(`photo-spot-${id}`);
+  const fichier = input.files[0];
+  if (!fichier) return;
+  const chemin = `${SEJOUR.id}/spots/${id}-${Date.now()}-${cheminSanitize(fichier.name)}`;
+  try {
+    const { error: errUp } = await sb.storage.from(BUCKET).upload(chemin, fichier);
+    if (errUp) throw errUp;
+    const { error: errMaj } = await sb.from('spots').update({ image_path: chemin, updated_at: new Date().toISOString() }).eq('id', id);
+    if (errMaj) throw errMaj;
+  } catch (e) { alert("Impossible d'ajouter la photo — vérifie ta connexion."); return; }
+  await chargerCatalogueDistant();
+  rendreOnglet(ongletActif);
+}
 function rendrePhotosHtml(id, photos) {
   if (!photos || !photos.length) return '';
   return `<div class="vecu-photos">${photos.map(chemin => `
@@ -291,8 +310,19 @@ function rendreCarteItem(item, cat) {
       </div>
     </div>` : '';
 
+  let photoHtml;
+  if (item.imageUrl) {
+    photoHtml = `<div class="item-photo-wrap"><img class="item-photo" src="${item.imageUrl}" loading="lazy">${item.imageCredit ? `<div class="item-photo-legende">${echapper(item.imageCredit)}</div>` : ''}</div>`;
+  } else if (item.imagePath) {
+    photoHtml = `<div class="item-photo-wrap" onclick="declencherPhotoSpot('${id}')"><img class="item-photo" src="${urlPhoto(item.imagePath)}" loading="lazy"></div>`;
+  } else {
+    photoHtml = `<div class="item-photo-vide" onclick="declencherPhotoSpot('${id}')">${ic(ICONE.photo)}<span>Ajouter une photo</span></div>`;
+  }
+  const inputPhotoCache = `<input type="file" id="photo-spot-${id}" accept="image/*" style="display:none" onchange="televerserPhotoSpotEtEnregistrer('${id}')">`;
+
   return `
     <div class="item-carte">
+      ${photoHtml}${inputPhotoCache}
       <div class="item-header">
         <div class="item-titre">${item.nom}</div>
         <div class="item-actions">

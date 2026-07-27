@@ -1,35 +1,36 @@
-/* ===== VARIABLES (identiques V1 pour cohérence de marque) ===== */
+/* ===== VARIABLES — carnet de voyage ===== */
 :root {
-  --vert:       #2D7D46;
-  --vert-clair: #4CAF70;
-  --vert-bg:    #E8F5EE;
-  --orange:     #E07B39;
-  --orange-bg:  #FDF0E8;
-  --bleu:       #3A7FC1;
-  --bleu-bg:    #E8F0FA;
-  --jaune:      #F0B429;
-  --rouge:      #D94F4F;
-  --rouge-bg:   #FDEAEA;
-  --violet:     #7C3AED;
-  --violet-bg:  #EDE9FE;
-  --gris:       #6B7280;
-  --gris-bg:    #F3F4F6;
-  --ligne:      #C9C2B4;
-  --fond:       #F7F5F0;
-  --texte:      #1A1A2E;
-  --texte-doux: #4B5563;
-  --ombre:      0 2px 12px rgba(0,0,0,0.08);
-  --ombre-lg:   0 8px 32px rgba(0,0,0,0.12);
-  --radius:     16px;
-  --radius-sm:  10px;
+  --papier:       #F3ECDD;
+  --papier-carte: #FFFDF8;
+  --encre:        #2B2620;
+  --encre-doux:   #6B5F52;
+  --rouille:      #B5562A;
+  --rouille-bg:   #F3E3D8;
+  --ocre:         #C89A3C;
+  --ocre-bg:      #F6ECD6;
+  --sauge:        #6B7F5E;
+  --sauge-bg:     #E9EDE4;
+  --bleu:         #4A6B7A;
+  --bleu-bg:      #E4EBEC;
+  --rouge:        #B0392B;
+  --rouge-bg:     #F5E0DC;
+  --gris:         #8A7F70;
+  --gris-bg:      #EDE6D8;
+  --ligne:        #D8CBB0;
+  --ombre:        0 2px 12px rgba(43,38,32,0.10);
+  --ombre-lg:     0 8px 28px rgba(43,38,32,0.16);
+  --radius:       14px;
+  --radius-sm:    9px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Nunito', sans-serif;
-  background: var(--fond);
-  color: var(--texte);
+  background: var(--papier);
+  background-image: radial-gradient(rgba(107,95,82,.05) 1px, transparent 1px);
+  background-size: 18px 18px;
+  color: var(--encre);
   min-height: 100vh;
   overscroll-behavior: none;
 }
@@ -42,47 +43,48 @@ body {
 }
 
 /* ===== ICÔNES (Lucide) ===== */
-.ic { width: 15px; height: 15px; stroke-width: 2.2; vertical-align: -3px; flex-shrink: 0; }
+.ic { width: 15px; height: 15px; stroke-width: 2.1; vertical-align: -3px; flex-shrink: 0; }
 .logo .ic { width: 18px; height: 18px; vertical-align: -4px; }
-.nav-icone { width: 19px; height: 19px; stroke-width: 2; display: block; margin: 0 auto; }
-.onglet-icone { width: 30px; height: 30px; stroke-width: 1.8; color: var(--vert); flex-shrink: 0; }
-.ressource-icone { width: 20px; height: 20px; stroke-width: 1.8; color: var(--vert); flex-shrink: 0; margin-top: 2px; }
-.frise-icone { width: 22px; height: 22px; stroke-width: 1.8; color: var(--vert); flex-shrink: 0; }
-.carnet-vide-icone { width: 40px; height: 40px; stroke-width: 1.5; color: var(--ligne); margin-bottom: 10px; }
+.nav-icone { width: 19px; height: 19px; stroke-width: 1.9; display: block; margin: 0 auto; }
+.onglet-icone { width: 28px; height: 28px; stroke-width: 1.6; color: var(--rouille); flex-shrink: 0; }
+.ressource-icone { width: 20px; height: 20px; stroke-width: 1.7; color: var(--rouille); flex-shrink: 0; margin-top: 2px; }
+.frise-icone { width: 22px; height: 22px; stroke-width: 1.7; color: var(--rouille); flex-shrink: 0; }
+.carnet-vide-icone { width: 40px; height: 40px; stroke-width: 1.4; color: var(--ligne); margin-bottom: 10px; }
 
 .etoile { width: 15px; height: 15px; margin-right: 1px; }
-.etoile.pleine { fill: var(--jaune); stroke: var(--jaune); }
-.etoile.vide   { fill: none; stroke: #D8D5CC; }
+.etoile.pleine { fill: var(--ocre); stroke: var(--ocre); }
+.etoile.vide   { fill: none; stroke: var(--ligne); }
 
 .jour-histoire-arrow { display: inline-flex; transition: transform .2s; }
 .jour-histoire-arrow.open { transform: rotate(90deg); }
 
-/* ===== HEADER ===== */
+/* ===== HEADER — couverture de carnet, sobre ===== */
 .header {
-  background: linear-gradient(145deg, #2D7D46 0%, #1A5C32 100%);
-  color: white; padding: 0 0 16px;
+  background: var(--encre);
+  background-image: linear-gradient(160deg, #34291F 0%, #201A14 100%);
+  color: #F3ECDD; padding: 0 0 14px;
   max-width: 560px; margin: 0 auto;
   box-shadow: var(--ombre-lg);
+  border-bottom: 3px solid var(--rouille);
 }
-.header-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 10px; }
-.logo { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; opacity: .95; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; }
+.header-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px 8px; }
+.logo { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; font-style: italic; opacity: .95; color: #F3ECDD; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; }
 .sejour-hero { padding: 4px 18px 0; }
-.sejour-titre { font-family: 'Baloo 2', cursive; font-size: 1.65rem; font-weight: 800; line-height: 1.15; margin-bottom: 4px; }
-.sejour-meta  { font-size: .88rem; opacity: .82; font-weight: 600; margin-bottom: 10px; }
+.sejour-titre { font-family: 'Fraunces', serif; font-size: 1.55rem; font-weight: 600; line-height: 1.15; margin-bottom: 4px; }
+.sejour-meta  { font-family: 'Caveat', cursive; font-size: 1.15rem; opacity: .85; font-weight: 600; margin-bottom: 8px; }
 .sejour-badges { display: flex; gap: 8px; flex-wrap: wrap; }
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
-  color: white; padding: 4px 10px; border-radius: 50px; font-size: .75rem; font-weight: 700;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(243,236,221,.25);
+  color: #F3ECDD; padding: 4px 10px; border-radius: 50px; font-size: .74rem; font-weight: 700;
 }
 
-/* ===== NAV ONGLETS ===== */
-/* Seule la nav reste figée en haut au scroll — le header, lui, défile normalement */
+/* ===== NAV ONGLETS — figée au scroll ===== */
 .nav-jours {
-  display: flex; background: white; border-bottom: 2px solid #E5E7EB;
+  display: flex; background: var(--papier-carte); border-bottom: 2px solid var(--ligne);
   overflow-x: auto; scrollbar-width: none;
   max-width: 560px; margin: 0 auto;
-  position: sticky; top: 0; z-index: 99; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  position: sticky; top: 0; z-index: 99; box-shadow: 0 2px 8px rgba(43,38,32,.08);
 }
 .nav-jours::-webkit-scrollbar { display: none; }
 .nav-jour-btn {
@@ -91,82 +93,111 @@ body {
   transition: all .2s; white-space: nowrap;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
 }
-.nav-label { font-size: .72rem; font-weight: 700; }
-.nav-jour-btn.actif { color: var(--vert); border-bottom-color: var(--vert); }
+.nav-label { font-size: .71rem; font-weight: 700; }
+.nav-jour-btn.actif { color: var(--rouille); border-bottom-color: var(--rouille); }
+.nav-jour-btn.actif .nav-icone { color: var(--rouille); }
 
 /* ===== MAIN ===== */
 .main { padding: 16px 14px 80px; max-width: 560px; margin: 0 auto; }
 
 /* ===== EN-TÊTE D'ONGLET ===== */
 .onglet-header {
-  background: white; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px;
+  background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius); padding: 15px 17px; margin-bottom: 14px;
   box-shadow: var(--ombre); display: flex; align-items: center; gap: 14px;
 }
 .onglet-header-texte { flex: 1; min-width: 0; }
-.onglet-titre { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; }
-.onglet-sub   { font-size: .82rem; color: var(--gris); font-weight: 600; margin-top: 2px; }
+.onglet-titre { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; }
+.onglet-sub   { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--gris); font-weight: 700; margin-top: 1px; }
 
 .btn-ajouter-spot {
   display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
-  background: var(--vert-bg); color: var(--vert); border: none;
+  background: var(--rouille-bg); color: var(--rouille); border: 1px dashed var(--rouille);
   padding: 8px 13px; border-radius: 50px; font-family: 'Nunito', sans-serif;
   font-size: .78rem; font-weight: 800; cursor: pointer;
 }
-.btn-ajouter-spot:active { background: var(--vert-clair); color: white; }
+.btn-ajouter-spot:active { background: var(--rouille); color: white; }
 
-/* ===== INTRO SÉJOUR (accroche, au-dessus des équipements) ===== */
+/* ===== INTRO SÉJOUR ===== */
 .intro-texte {
-  background: var(--vert-bg); color: var(--vert);
-  font-size: .88rem; font-weight: 600; font-style: italic; line-height: 1.55;
-  padding: 14px 18px; border-radius: var(--radius-sm); margin-bottom: 14px;
+  background: var(--rouille-bg); color: #7A3D1D;
+  font-family: 'Fraunces', serif; font-size: .95rem; font-weight: 500; font-style: italic; line-height: 1.6;
+  padding: 15px 18px; border-radius: var(--radius-sm); margin-bottom: 14px;
+  border-left: 3px solid var(--rouille);
 }
 
-/* ===== LE SAVIEZ-VOUS ===== */
+/* ===== LE SAVIEZ-VOUS / ANECDOTE ===== */
 .jour-histoire {
-  background: white; border-radius: var(--radius); margin-bottom: 14px;
-  box-shadow: var(--ombre); overflow: hidden; border-left: 4px solid var(--violet);
+  background: var(--papier-carte); border: 1px solid var(--bleu-bg); border-radius: var(--radius); margin-bottom: 14px;
+  box-shadow: var(--ombre); overflow: hidden; border-left: 3px solid var(--bleu);
 }
 .jour-histoire-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 16px; font-size: .82rem; font-weight: 800; color: var(--violet);
+  padding: 12px 16px; font-family: 'Fraunces', serif; font-size: .88rem; font-weight: 600; color: var(--bleu);
   cursor: pointer; user-select: none;
 }
-.jour-histoire-header:active { background: var(--violet-bg); }
+.jour-histoire-header:active { background: var(--bleu-bg); }
 .jour-histoire-content {
-  display: none; padding: 0 16px 16px; font-size: .85rem; color: var(--texte-doux);
-  line-height: 1.6; border-top: 1px solid var(--violet-bg); padding-top: 12px;
+  display: none; padding: 0 16px 16px; font-size: .87rem; color: var(--encre-doux);
+  line-height: 1.65; border-top: 1px solid var(--bleu-bg); padding-top: 12px;
 }
 .jour-histoire-content.open { display: block; }
 .jour-histoire-content p { margin-bottom: 10px; }
 .jour-histoire-content p:last-child { margin-bottom: 0; }
 
-.anecdote-carte { border-left-color: var(--jaune); margin-top: 10px; margin-bottom: 0; }
-.anecdote-carte .jour-histoire-header { color: #92400E; }
-.anecdote-carte .jour-histoire-header:active { background: #FEF3C7; }
-.anecdote-carte .jour-histoire-content { border-top-color: #FEF3C7; }
+.anecdote-carte { border-left-color: var(--ocre); border-color: var(--ocre-bg); margin-top: 12px; margin-bottom: 0; }
+.anecdote-carte .jour-histoire-header { color: #8A6114; }
+.anecdote-carte .jour-histoire-header:active { background: var(--ocre-bg); }
+.anecdote-carte .jour-histoire-content { border-top-color: var(--ocre-bg); }
+
+/* ===== PHOTO ILLUSTRATION — façon polaroid ===== */
+.item-photo-wrap {
+  background: white; padding: 8px 8px 26px; margin: 2px 8px 16px;
+  box-shadow: var(--ombre-lg); position: relative;
+  transform: rotate(-1.4deg);
+}
+.item-carte:nth-child(even) .item-photo-wrap { transform: rotate(1.2deg); }
+.item-photo-wrap::before {
+  content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+  width: 46px; height: 18px; background: rgba(200,154,60,.55);
+}
+.item-photo { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--gris-bg); }
+.item-photo-legende { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--encre-doux); text-align: center; margin-top: 4px; }
+
+.item-photo-vide {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  background: var(--papier); border: 2px dashed var(--ligne); border-radius: var(--radius-sm);
+  padding: 20px; margin: 2px 0 14px; cursor: pointer; color: var(--gris);
+}
+.item-photo-vide .ic { width: 22px; height: 22px; }
+.item-photo-vide span { font-family: 'Caveat', cursive; font-size: 1.05rem; font-weight: 700; }
 
 /* ===== CARTE ITEM ===== */
 .item-carte {
-  background: white; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+  background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px;
   box-shadow: var(--ombre);
 }
 .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.item-titre { font-family: 'Fraunces', serif; font-size: 1.08rem; font-weight: 600; line-height: 1.3; }
 .item-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .btn-icone {
   background: var(--gris-bg); border: none; width: 26px; height: 26px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gris); flex-shrink: 0;
 }
-.btn-icone:active { background: var(--vert-bg); color: var(--vert); }
+.btn-icone:active { background: var(--rouille-bg); color: var(--rouille); }
 .btn-icone .ic { width: 13px; height: 13px; vertical-align: 0; }
-.item-titre { font-family: 'Baloo 2', cursive; font-size: 1.08rem; font-weight: 800; line-height: 1.25; }
+
+/* Badge incontournable façon tampon de voyageur */
 .badge-incontournable {
-  flex-shrink: 0; background: var(--orange-bg); color: var(--orange);
-  font-size: .68rem; font-weight: 800; padding: 3px 9px; border-radius: 50px; white-space: nowrap;
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px;
+  border: 1.5px dashed var(--rouille); color: var(--rouille); background: transparent;
+  font-family: 'Caveat', cursive; font-size: .95rem; font-weight: 700;
+  padding: 2px 10px; border-radius: 50px; transform: rotate(-3deg); white-space: nowrap;
 }
-.item-lieu { font-size: .78rem; color: var(--gris); font-weight: 700; margin-bottom: 4px; }
+
+.item-lieu { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--gris); font-weight: 700; margin-bottom: 4px; }
 .item-etoiles { font-size: .9rem; margin-bottom: 8px; letter-spacing: 1px; }
-.item-infos { display: flex; gap: 10px; flex-wrap: wrap; font-size: .78rem; font-weight: 700; color: var(--texte-doux); margin-bottom: 8px; }
-.item-desc { font-size: .85rem; color: var(--texte-doux); line-height: 1.5; margin-bottom: 10px; }
+.item-infos { display: flex; gap: 10px; flex-wrap: wrap; font-size: .78rem; font-weight: 700; color: var(--encre-doux); margin-bottom: 8px; }
+.item-desc { font-size: .87rem; color: var(--encre-doux); line-height: 1.55; margin-bottom: 10px; }
 
 /* ===== TAG CHIEN ===== */
 .chien-tag {
@@ -174,75 +205,76 @@ body {
   margin-bottom: 12px; line-height: 1.4;
 }
 .chien-tag .chien-note { font-weight: 500; }
-.chien-ok   { background: var(--vert-bg); color: var(--vert); }
-.chien-warn { background: #FEF3C7; color: #92400E; }
+.chien-ok   { background: var(--sauge-bg); color: var(--sauge); }
+.chien-warn { background: var(--ocre-bg); color: #8A6114; }
 .chien-non  { background: var(--rouge-bg); color: var(--rouge); }
 
 /* ===== FOOTER ITEM (liens) ===== */
 .item-footer { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .btn-maps {
-  display: inline-flex; align-items: center; gap: 4px; background: var(--bleu); color: white;
+  display: inline-flex; align-items: center; gap: 4px; background: var(--encre); color: var(--papier);
   padding: 5px 13px; border-radius: 50px; font-size: .75rem; font-weight: 700; text-decoration: none;
 }
 .btn-lien {
   display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 50px;
-  font-size: .75rem; font-weight: 700; text-decoration: none; background: var(--vert-bg); color: var(--vert);
+  font-size: .75rem; font-weight: 700; text-decoration: none; background: var(--sauge-bg); color: var(--sauge);
 }
-.btn-tel  { background: var(--orange-bg); color: var(--orange); }
+.btn-tel  { background: var(--ocre-bg); color: #8A6114; }
 .btn-source {
   display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 50px;
-  font-size: .72rem; font-weight: 700; text-decoration: none; background: var(--violet-bg); color: var(--violet);
+  font-size: .72rem; font-weight: 700; text-decoration: none; background: var(--bleu-bg); color: var(--bleu);
 }
 
-/* ===== RESSOURCES PRATIQUES ===== */
+/* ===== RESSOURCES ===== */
 .ressource-carte {
   display: flex; gap: 12px; align-items: flex-start;
-  background: white; border-radius: var(--radius-sm); padding: 12px 14px;
+  background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius-sm); padding: 12px 14px;
   margin-bottom: 8px; box-shadow: var(--ombre);
 }
 .ressource-corps { flex: 1; min-width: 0; }
-.ressource-nom { font-weight: 800; font-size: .92rem; color: var(--texte); }
-.ressource-adresse { font-size: .78rem; color: var(--texte-doux); margin-top: 1px; }
+.ressource-nom-ligne { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.ressource-nom { font-family: 'Fraunces', serif; font-weight: 600; font-size: .95rem; color: var(--encre); }
+.ressource-adresse { font-size: .78rem; color: var(--encre-doux); margin-top: 1px; }
 .ressource-horaires { font-size: .75rem; color: var(--gris); font-weight: 600; margin-top: 3px; }
-.ressource-note { font-size: .78rem; color: var(--vert); font-weight: 600; margin-top: 4px; font-style: italic; }
+.ressource-note { font-size: .78rem; color: var(--sauge); font-weight: 600; margin-top: 4px; font-style: italic; }
 
 /* ===== FICHE CAMPING ===== */
 .camping-equip-titre { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--gris); margin-bottom: 8px; }
 .camping-equip-liste { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.camping-equip-liste li { font-size: .85rem; color: var(--texte-doux); background: var(--fond); padding: 8px 12px; border-radius: var(--radius-sm); }
+.camping-equip-liste li { font-size: .85rem; color: var(--encre-doux); background: var(--papier); padding: 8px 12px; border-radius: var(--radius-sm); }
 
 /* ===== BLOC VÉCU (coche, formulaire, photos) ===== */
-.vecu-bloc { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #E5E7EB; }
+.vecu-bloc { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--ligne); }
 
 .btn-vecu {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  width: 100%; background: var(--vert-bg); color: var(--vert); border: 1.5px dashed var(--vert-clair);
+  width: 100%; background: var(--sauge-bg); color: var(--sauge); border: 1.5px dashed var(--sauge);
   padding: 10px; border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif;
   font-size: .85rem; font-weight: 800; cursor: pointer;
 }
-.btn-vecu:active { background: var(--vert-clair); color: white; }
+.btn-vecu:active { background: var(--sauge); color: white; }
 
-.vecu-fait { background: var(--vert-bg); border-radius: var(--radius-sm); padding: 12px; }
+.vecu-fait { background: var(--sauge-bg); border-radius: var(--radius-sm); padding: 12px; }
 .vecu-fait-ligne { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.vecu-fait-tag { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 800; color: var(--vert); }
-.vecu-modifier { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; font-size: .75rem; font-weight: 700; color: var(--vert); cursor: pointer; padding: 2px 4px; }
-.vecu-commentaire { font-size: .83rem; color: var(--texte-doux); line-height: 1.5; margin-top: 8px; font-style: italic; }
+.vecu-fait-tag { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 800; color: var(--sauge); }
+.vecu-modifier { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; font-size: .75rem; font-weight: 700; color: var(--sauge); cursor: pointer; padding: 2px 4px; }
+.vecu-commentaire { font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--encre-doux); line-height: 1.4; margin-top: 8px; }
 
 .vecu-form {
-  margin-top: 10px; background: var(--fond); border-radius: var(--radius-sm); padding: 14px;
+  margin-top: 10px; background: var(--papier); border-radius: var(--radius-sm); padding: 14px;
 }
 .vecu-label { display: block; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: var(--gris); margin-bottom: 4px; margin-top: 10px; }
 .vecu-label:first-child { margin-top: 0; }
 .vecu-input, .vecu-textarea, .vecu-file {
-  width: 100%; border: 1.5px solid #E5E7EB; border-radius: var(--radius-sm);
-  padding: 8px 10px; font-family: 'Nunito', sans-serif; font-size: .85rem; color: var(--texte); background: white;
+  width: 100%; border: 1.5px solid var(--ligne); border-radius: var(--radius-sm);
+  padding: 8px 10px; font-family: 'Nunito', sans-serif; font-size: .85rem; color: var(--encre); background: var(--papier-carte);
 }
 .vecu-textarea { min-height: 64px; resize: vertical; }
 .vecu-file { padding: 6px 8px; font-size: .78rem; }
-.vecu-form-actions { display: flex; gap: 8px; margin-top: 14px; }
+.vecu-form-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .btn-vecu-save {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  flex: 1; background: var(--vert); color: white; border: none; padding: 10px; border-radius: var(--radius-sm);
+  flex: 1; background: var(--rouille); color: white; border: none; padding: 10px; border-radius: var(--radius-sm);
   font-family: 'Nunito', sans-serif; font-size: .85rem; font-weight: 800; cursor: pointer;
 }
 .btn-vecu-annuler {
@@ -251,73 +283,59 @@ body {
   font-family: 'Nunito', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer;
 }
 
-/* ===== FORMULAIRE FICHE (spot / ressource) — même langage que vecu-form, teinte violette ===== */
+/* ===== FORMULAIRE FICHE (spot / ressource) ===== */
 .spot-form {
-  margin-top: 12px; background: var(--violet-bg); border: 1.5px dashed var(--violet);
+  margin-top: 12px; background: var(--bleu-bg); border: 1.5px dashed var(--bleu);
   border-radius: var(--radius-sm); padding: 14px;
 }
-.spot-form .vecu-input, .spot-form .vecu-textarea { border-color: rgba(124,58,237,.25); }
+.spot-form .vecu-input, .spot-form .vecu-textarea { border-color: rgba(74,107,122,.3); }
 .spot-form-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .spot-form-grille .vecu-label { margin-top: 10px; }
 .vecu-check {
   display: flex; align-items: center; gap: 8px; margin-top: 14px;
-  font-size: .85rem; font-weight: 700; color: var(--texte); cursor: pointer;
+  font-size: .85rem; font-weight: 700; color: var(--encre); cursor: pointer;
 }
-.vecu-check input { width: 18px; height: 18px; accent-color: var(--violet); }
+.vecu-check input { width: 18px; height: 18px; accent-color: var(--bleu); }
 .btn-vecu-suppr {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--rouge-bg); color: var(--rouge); border: none; padding: 10px 14px; border-radius: var(--radius-sm);
   font-family: 'Nunito', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer;
 }
 
-.ressource-nom-ligne { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-
-/* ===== PHOTOS ===== */
+/* ===== PHOTOS (vécu/carnet) ===== */
 .vecu-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .vecu-photo-wrap { position: relative; width: 84px; height: 84px; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--ombre); }
 .vecu-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
 .vecu-photo-suppr {
   position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
-  background: rgba(0,0,0,.55); color: white; border: none; font-size: .68rem; cursor: pointer;
+  background: rgba(43,38,32,.6); color: white; border: none; font-size: .68rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
 
 /* ===== CARNET — ÉTAT VIDE ===== */
 .carnet-vide {
-  background: white; border-radius: var(--radius); padding: 32px 24px; text-align: center;
+  background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius); padding: 32px 24px; text-align: center;
   box-shadow: var(--ombre);
 }
 .carnet-vide-emoji { font-size: 2.4rem; margin-bottom: 10px; }
-.carnet-vide p { font-size: .88rem; color: var(--texte-doux); line-height: 1.6; max-width: 320px; margin: 0 auto; }
-
-/* ===== FRISE DU CARNET ===== */
-.frise { position: relative; padding-left: 30px; }
-svg.frise-ligne { position: absolute; left: 0; top: 0; height: 100%; width: 30px; overflow: visible; }
-svg.frise-ligne path { fill: none; stroke: var(--ligne, #C9C2B4); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1 9; }
-.frise-etape { position: relative; margin-bottom: 20px; }
-.frise-date { font-size: .72rem; font-weight: 800; color: var(--vert); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
-.frise-carte { background: white; border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--ombre); }
-.frise-carte-header { display: flex; gap: 10px; align-items: flex-start; }
-.frise-emoji { font-size: 1.5rem; line-height: 1; }
-.frise-titre { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1rem; line-height: 1.25; }
-.frise-categorie { font-size: .75rem; color: var(--gris); font-weight: 700; margin-top: 2px; }
+.carnet-vide p { font-size: .88rem; color: var(--encre-doux); line-height: 1.6; max-width: 320px; margin: 0 auto; }
 
 /* ===== EXPORT PDF ===== */
 .carnet-header-flex { justify-content: space-between; }
 .onglet-header-gauche { display: flex; align-items: center; gap: 14px; }
 .btn-export-pdf {
-  display: inline-flex; align-items: center; gap: 6px; background: var(--vert); color: white;
+  display: inline-flex; align-items: center; gap: 6px; background: var(--rouille); color: white;
   border: none; padding: 9px 16px; border-radius: 50px;
   font-family: 'Nunito', sans-serif; font-size: .8rem; font-weight: 800; cursor: pointer; flex-shrink: 0;
 }
-.btn-export-pdf:active { background: #245F37; }
+.btn-export-pdf:active { background: #8A3F1C; }
 
-/* ===== IMPRESSION (export PDF via le navigateur) ===== */
+/* ===== IMPRESSION ===== */
 @media print {
-  .header-top, .nav-jours, .sejour-badges, .btn-export-pdf { display: none !important; }
+  .header-top, .nav-jours, .sejour-badges, .btn-export-pdf, .item-photo-vide { display: none !important; }
   body { background: white; }
-  .header { position: static; box-shadow: none; background: white; color: var(--texte); }
-  .sejour-titre, .sejour-meta { color: var(--texte); }
+  .header { position: static; box-shadow: none; background: white; color: var(--encre); }
+  .sejour-titre, .sejour-meta { color: var(--encre); }
   .main { padding: 0; max-width: 100%; }
   .frise-etape { break-inside: avoid; }
   .vecu-photo-wrap { break-inside: avoid; }
@@ -326,7 +344,18 @@ svg.frise-ligne path { fill: none; stroke: var(--ligne, #C9C2B4); stroke-width: 
   .frise { padding-left: 0; }
 }
 
+/* ===== FRISE DU CARNET ===== */
+.frise { position: relative; padding-left: 30px; }
+svg.frise-ligne { position: absolute; left: 0; top: 0; height: 100%; width: 30px; overflow: visible; }
+svg.frise-ligne path { fill: none; stroke: var(--ligne); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1 9; }
+.frise-etape { position: relative; margin-bottom: 20px; }
+.frise-date { font-family: 'Caveat', cursive; font-size: 1.1rem; font-weight: 700; color: var(--rouille); margin-bottom: 4px; }
+.frise-carte { background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--ombre); }
+.frise-carte-header { display: flex; gap: 10px; align-items: flex-start; }
+.frise-titre { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; line-height: 1.3; }
+.frise-categorie { font-size: .75rem; color: var(--gris); font-weight: 700; margin-top: 2px; }
+
 /* ===== PROGRESS ===== */
-.progress-bar-wrap { background: rgba(255,255,255,.2); border-radius: 50px; height: 6px; margin-top: 10px; overflow: hidden; }
-.progress-bar { height: 100%; background: white; border-radius: 50px; transition: width .4s; }
-.progress-label { font-size: .75rem; opacity: .85; font-weight: 700; margin-top: 4px; }
+.progress-bar-wrap { background: rgba(243,236,221,.2); border-radius: 50px; height: 6px; margin-top: 10px; overflow: hidden; }
+.progress-bar { height: 100%; background: var(--rouille); border-radius: 50px; transition: width .4s; }
+.progress-label { font-family: 'Caveat', cursive; font-size: 1rem; opacity: .9; font-weight: 700; margin-top: 4px; }
