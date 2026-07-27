@@ -6,7 +6,9 @@ const BUCKET = 'carnet-photos';
 
 // ===== ÉTAT =====
 let ongletActif = 'camping';
-let vecuEtat = {}; // { [id]: { fait, date, commentaire, photos: [chemin,...] } }
+let vecuEtat = {};    // { [spotId]: { fait, date, commentaire, photos: [chemin,...] } }
+let CATALOGUE = { terraAventura: [], randos: [], visites: [] }; // rempli depuis Supabase (table "spots")
+let RESSOURCES = [];  // rempli depuis Supabase (table "ressources")
 let horsLigne = false;
 
 // Icônes Lucide (https://lucide.dev) — un nom par usage
@@ -17,9 +19,9 @@ const ICONE = {
   maps: 'map-pin', source: 'link', tel: 'phone', incontournable: 'lock',
   fait: 'check-circle-2', modifier: 'pencil', enregistrer: 'save', decocher: 'undo-2',
   ajouter: 'circle-plus', supprimer: 'x', ampoule: 'lightbulb', chevron: 'chevron-right',
-  supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print',
+  supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print', autre: 'store',
   panier: 'shopping-basket', avertissement: 'triangle-alert', interdit: 'ban', export: 'download',
-  horsligne: 'wifi-off', synchro: 'refresh-cw'
+  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles'
 };
 
 const CHIEN_LABEL = {
@@ -30,19 +32,26 @@ const CHIEN_LABEL = {
 };
 
 const CATEGORIE_LABEL = { terraAventura: 'Terra Aventura', randos: 'Rando / balade', visites: 'Visite' };
+const CHIEN_OPTIONS = [
+  ['accepte', 'Accepté'], ['laisse', 'Accepté (laisse)'], ['a_verifier', 'À vérifier'], ['interdit', 'Interdit']
+];
+const RESSOURCE_CATEGORIES = [
+  ['supermarche', 'Supermarché'], ['epicerie', 'Épicerie / commerce'], ['boulangerie', 'Boulangerie'],
+  ['pharmacie', 'Pharmacie'], ['veterinaire', 'Vétérinaire'], ['autre', 'Autre']
+];
 
 const ONGLETS = [
   { id: 'camping',       icone: ICONE.camping,       label: 'Camping' },
   { id: 'terraAventura', icone: ICONE.terraAventura, label: 'Terra Aventura' },
   { id: 'randos',        icone: ICONE.randos,        label: 'Randos' },
-  { id: 'visites',       icone: ICONE.visites,        label: 'Visites' },
+  { id: 'visites',       icone: ICONE.visites,       label: 'Visites' },
   { id: 'carnet',        icone: ICONE.carnet,        label: 'Carnet' }
 ];
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   rendreNavOnglets();
-  await chargerVecuDistant();
+  await Promise.all([chargerCatalogueDistant(), chargerVecuDistant()]);
   rendreHeader();
   rendreOnglet('camping');
   ecouterTempsReel();
@@ -50,90 +59,96 @@ document.addEventListener('DOMContentLoaded', async () => {
   synchroniserFileAttente();
 });
 
-// Rafraîchit les icônes Lucide après chaque injection de HTML dynamique
-function rafraichirIcones() {
-  if (window.lucide) lucide.createIcons();
+function rafraichirIcones() { if (window.lucide) lucide.createIcons(); }
+function ic(nom, classe) { return `<i data-lucide="${nom}" class="ic ${classe || ''}"></i>`; }
+
+// ===== NORMALISATION DES LIGNES SUPABASE =====
+function normaliserSpot(row) {
+  return {
+    id: row.id, nom: row.nom, poiz: row.poiz, lieu: row.lieu,
+    distanceKm: row.distance_km, longueur: row.longueur, duree: row.duree,
+    etoiles: row.etoiles, incontournable: row.incontournable,
+    chien: { statut: row.chien_statut, note: row.chien_note },
+    tarif: row.tarif, description: row.description,
+    anecdote: row.anecdote, anecdoteSource: row.anecdote_source || [],
+    maps: { google: row.maps_url },
+    sources: row.sources || []
+  };
+}
+function normaliserRessource(row) {
+  return {
+    id: row.id, nom: row.nom, categorie: row.categorie, adresse: row.adresse,
+    tel: row.tel ? 'tel:' + row.tel.replace(/\s+/g, '') : null, telAffiche: row.tel,
+    horaires: row.horaires, note: row.note,
+    maps: { google: row.maps_url }
+  };
 }
 
-// Icône Lucide en tag <i>, prête à être injectée dans un template string
-function ic(nom, classe) {
-  return `<i data-lucide="${nom}" class="ic ${classe || ''}"></i>`;
-}
-
-// ===== IDENTIFIANTS STABLES =====
-function idItem(categorie, index) { return `${categorie}-${index}`; }
-
-function tousLesItemsTracables() {
-  const liste = [];
-  ['terraAventura', 'randos', 'visites'].forEach(cat => {
-    SEJOUR[cat].forEach((item, i) => liste.push({ id: idItem(cat, i), cat, item }));
-  });
-  return liste;
-}
-
-// ===== PERSISTANCE — Supabase (données + photos) avec file d'attente hors-ligne =====
-async function chargerVecuDistant() {
+// ===== CHARGEMENT DU CATALOGUE (spots + ressources) =====
+async function chargerCatalogueDistant() {
   try {
-    const { data, error } = await sb.from('vecu_entries').select('*').eq('sejour_id', SEJOUR.id);
-    if (error) throw error;
-    vecuEtat = {};
-    (data || []).forEach(row => {
-      vecuEtat[row.item_id] = { fait: row.fait, date: row.date, commentaire: row.commentaire, photos: row.photos || [] };
-    });
-    definirStatutReseau(false);
-  } catch (e) {
-    // Pas de réseau au chargement — on repart de la file d'attente locale en attendant
-    definirStatutReseau(true);
-  }
+    const [{ data: spots, error: e1 }, { data: ress, error: e2 }] = await Promise.all([
+      sb.from('spots').select('*').eq('sejour_id', SEJOUR.id),
+      sb.from('ressources').select('*').eq('sejour_id', SEJOUR.id)
+    ]);
+    if (e1 || e2) throw (e1 || e2);
+    CATALOGUE = { terraAventura: [], randos: [], visites: [] };
+    (spots || []).forEach(row => CATALOGUE[row.categorie].push(normaliserSpot(row)));
+    RESSOURCES = (ress || []).map(normaliserRessource);
+  } catch (e) { /* pas de réseau — le catalogue reste vide ou celui déjà chargé */ }
 }
 
 function ecouterTempsReel() {
   sb.channel(`vecu-${SEJOUR.id}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'vecu_entries', filter: `sejour_id=eq.${SEJOUR.id}` },
       (payload) => {
-        if (payload.eventType === 'DELETE') {
-          delete vecuEtat[payload.old.item_id];
-        } else {
-          const r = payload.new;
-          vecuEtat[r.item_id] = { fait: r.fait, date: r.date, commentaire: r.commentaire, photos: r.photos || [] };
-        }
-        rendreHeader();
-        rendreOnglet(ongletActif);
-      })
-    .subscribe();
+        if (payload.eventType === 'DELETE') delete vecuEtat[payload.old.item_id];
+        else { const r = payload.new; vecuEtat[r.item_id] = { fait: r.fait, date: r.date, commentaire: r.commentaire, photos: r.photos || [] }; }
+        rendreHeader(); rendreOnglet(ongletActif);
+      }).subscribe();
+
+  sb.channel(`spots-${SEJOUR.id}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'spots', filter: `sejour_id=eq.${SEJOUR.id}` },
+      async () => { await chargerCatalogueDistant(); rendreHeader(); rendreOnglet(ongletActif); }).subscribe();
+
+  sb.channel(`ressources-${SEJOUR.id}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'ressources', filter: `sejour_id=eq.${SEJOUR.id}` },
+      async () => { await chargerCatalogueDistant(); rendreOnglet(ongletActif); }).subscribe();
 }
 
-// File d'attente locale — uniquement les champs texte (coche/date/note), pas les photos (besoin du réseau)
-function lireFileAttente() {
-  const s = localStorage.getItem(`file-attente-${SEJOUR.id}`);
-  return s ? JSON.parse(s) : [];
+// ===== IDENTIFIANTS TRAÇABLES (vécu) =====
+function tousLesItemsTracables() {
+  const liste = [];
+  ['terraAventura', 'randos', 'visites'].forEach(cat => {
+    CATALOGUE[cat].forEach(item => liste.push({ id: item.id, cat, item }));
+  });
+  return liste;
 }
-function ecrireFileAttente(file) {
-  localStorage.setItem(`file-attente-${SEJOUR.id}`, JSON.stringify(file));
+
+// ===== PERSISTANCE VÉCU — Supabase + file d'attente hors-ligne =====
+async function chargerVecuDistant() {
+  try {
+    const { data, error } = await sb.from('vecu_entries').select('*').eq('sejour_id', SEJOUR.id);
+    if (error) throw error;
+    vecuEtat = {};
+    (data || []).forEach(row => { vecuEtat[row.item_id] = { fait: row.fait, date: row.date, commentaire: row.commentaire, photos: row.photos || [] }; });
+    definirStatutReseau(false);
+  } catch (e) { definirStatutReseau(true); }
 }
-function ajouterFileAttente(operation) {
-  const file = lireFileAttente();
-  file.push(operation);
-  ecrireFileAttente(file);
-}
+
+function lireFileAttente() { const s = localStorage.getItem(`file-attente-${SEJOUR.id}`); return s ? JSON.parse(s) : []; }
+function ecrireFileAttente(f) { localStorage.setItem(`file-attente-${SEJOUR.id}`, JSON.stringify(f)); }
+function ajouterFileAttente(op) { const f = lireFileAttente(); f.push(op); ecrireFileAttente(f); }
 
 async function synchroniserFileAttente() {
   let file = lireFileAttente();
   if (!file.length) { definirStatutReseau(false); return; }
-
   const restantes = [];
   for (const op of file) {
     try {
-      if (op.type === 'upsert') {
-        const { error } = await sb.from('vecu_entries').upsert(op.donnees, { onConflict: 'sejour_id,item_id' });
-        if (error) throw error;
-      } else if (op.type === 'delete') {
-        const { error } = await sb.from('vecu_entries').delete().eq('sejour_id', SEJOUR.id).eq('item_id', op.id);
-        if (error) throw error;
-      }
-    } catch (e) {
-      restantes.push(op); // toujours pas de réseau, on la garde pour la prochaine tentative
-    }
+      if (op.type === 'upsert') { const { error } = await sb.from('vecu_entries').upsert(op.donnees, { onConflict: 'sejour_id,item_id' }); if (error) throw error; }
+      else if (op.type === 'delete') { const { error } = await sb.from('vecu_entries').delete().eq('sejour_id', SEJOUR.id).eq('item_id', op.id); if (error) throw error; }
+    } catch (e) { restantes.push(op); }
   }
   ecrireFileAttente(restantes);
   definirStatutReseau(restantes.length > 0);
@@ -142,13 +157,12 @@ async function synchroniserFileAttente() {
 
 function definirStatutReseau(actif) {
   horsLigne = actif;
-  const witness = document.getElementById('statut-reseau');
-  if (witness) witness.style.display = horsLigne ? 'flex' : 'none';
+  const w = document.getElementById('statut-reseau');
+  if (w) w.style.display = horsLigne ? 'flex' : 'none';
 }
 
 // ===== PHOTOS (Supabase Storage) =====
 function cheminSanitize(nom) { return nom.replace(/[^a-zA-Z0-9.\-]/g, '_'); }
-
 async function televerserPhotos(id, fichiers) {
   const chemins = [];
   for (let i = 0; i < fichiers.length; i++) {
@@ -158,9 +172,7 @@ async function televerserPhotos(id, fichiers) {
   }
   return chemins;
 }
-function urlPhoto(chemin) {
-  return sb.storage.from(BUCKET).getPublicUrl(chemin).data.publicUrl;
-}
+function urlPhoto(chemin) { return sb.storage.from(BUCKET).getPublicUrl(chemin).data.publicUrl; }
 function rendrePhotosHtml(id, photos) {
   if (!photos || !photos.length) return '';
   return `<div class="vecu-photos">${photos.map(chemin => `
@@ -172,27 +184,17 @@ function rendrePhotosHtml(id, photos) {
 
 // ===== UTILS =====
 function ajourdhuiISO() { return new Date().toISOString().slice(0, 10); }
-function formaterDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso + 'T12:00:00');
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-}
-function echapper(txt) {
-  const div = document.createElement('div');
-  div.textContent = txt;
-  return div.innerHTML;
-}
+function formaterDate(iso) { if (!iso) return ''; const d = new Date(iso + 'T12:00:00'); return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }); }
+function echapper(txt) { const div = document.createElement('div'); div.textContent = txt || ''; return div.innerHTML; }
+function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
 // ===== HEADER =====
 function rendreHeader() {
   document.getElementById('sejour-titre').textContent = SEJOUR.titre;
   document.getElementById('sejour-meta').textContent = `${SEJOUR.dates} · ${SEJOUR.destination}`;
-
   const badges = document.getElementById('sejour-badges');
   badges.innerHTML = [
-    { icone: ICONE.caravane, texte: 'Caravane' },
-    { icone: ICONE.chien, texte: 'Alma' },
-    { icone: ICONE.famille, texte: 'Famille' }
+    { icone: ICONE.caravane, texte: 'Caravane' }, { icone: ICONE.chien, texte: 'Alma' }, { icone: ICONE.famille, texte: 'Famille' }
   ].map(b => `<span class="badge">${ic(b.icone)} ${b.texte}</span>`).join('');
 
   const total = tousLesItemsTracables().length;
@@ -211,12 +213,10 @@ function rendreNavOnglets() {
   const nav = document.getElementById('nav-jours');
   nav.innerHTML = ONGLETS.map(o => `
     <button class="nav-jour-btn ${o.id === ongletActif ? 'actif' : ''}" onclick="changerOnglet('${o.id}')">
-      ${ic(o.icone, 'nav-icone')}
-      <span class="nav-label">${o.label}</span>
+      ${ic(o.icone, 'nav-icone')}<span class="nav-label">${o.label}</span>
     </button>`).join('');
   rafraichirIcones();
 }
-
 function changerOnglet(id) {
   ongletActif = id;
   document.querySelectorAll('.nav-jour-btn').forEach((btn, i) => btn.classList.toggle('actif', ONGLETS[i].id === id));
@@ -230,94 +230,245 @@ function rendreOnglet(id) {
   if (id === 'camping') { main.innerHTML = rendreCamping(); rafraichirIcones(); return; }
   if (id === 'carnet')  { rendreCarnet(); return; }
 
-  const items = SEJOUR[id].map((item, i) => ({ item, id: idItem(id, i) }))
-    .sort((a, b) => {
-      if (a.item.incontournable !== b.item.incontournable) return b.item.incontournable - a.item.incontournable;
-      return b.item.etoiles - a.item.etoiles;
-    });
-
+  const items = CATALOGUE[id].slice().sort((a, b) => {
+    if (a.incontournable !== b.incontournable) return b.incontournable - a.incontournable;
+    return b.etoiles - a.etoiles;
+  });
   const meta = ONGLETS.find(o => o.id === id);
+
   main.innerHTML = `
     <div class="onglet-header">
       ${ic(meta.icone, 'onglet-icone')}
-      <div>
+      <div class="onglet-header-texte">
         <div class="onglet-titre">${meta.label}</div>
         <div class="onglet-sub">${items.length} spot${items.length > 1 ? 's' : ''} · triés par intérêt</div>
       </div>
+      <button class="btn-ajouter-spot" onclick="toggleForm('nouveau-${id}')">${ic(ICONE.ajouter)} Ajouter</button>
     </div>
-    ${items.map(({ item, id }) => rendreCarteItem(item, id)).join('')}`;
+    ${rendreFormSpot(id, null)}
+    ${items.map(item => rendreCarteItem(item, id)).join('')}`;
   rafraichirIcones();
 }
 
 // ===== ÉTOILES =====
-function rendreEtoiles(n) {
-  let html = '';
-  for (let i = 1; i <= 3; i++) html += ic('star', i <= n ? 'etoile pleine' : 'etoile vide');
-  return html;
-}
+function rendreEtoiles(n) { let h = ''; for (let i = 1; i <= 3; i++) h += ic('star', i <= n ? 'etoile pleine' : 'etoile vide'); return h; }
 
 // ===== CARTE ITEM (Terra Aventura / Randos / Visites) =====
-function rendreCarteItem(item, id) {
+function rendreCarteItem(item, cat) {
+  const id = item.id;
   const chien = CHIEN_LABEL[item.chien.statut];
   const badge = item.incontournable ? `<span class="badge-incontournable">${ic(ICONE.incontournable)} Incontournable</span>` : '';
 
   const infos = [];
-  if (item.distanceKm !== undefined) infos.push(`${ic(ICONE.distance)} ${item.distanceKm === 0 ? 'Sur place' : item.distanceKm + ' km'}`);
+  if (item.distanceKm !== null && item.distanceKm !== undefined) infos.push(`${ic(ICONE.distance)} ${item.distanceKm === 0 ? 'Sur place' : item.distanceKm + ' km'}`);
   if (item.longueur) infos.push(`${ic(ICONE.longueur)} ${item.longueur}`);
   if (item.duree) infos.push(`${ic(ICONE.duree)} ${item.duree}`);
   if (item.tarif) infos.push(`${ic(ICONE.tarif)} ${item.tarif}`);
 
-  const sources = (item.sources || []).map(s =>
-    `<a class="btn-source" href="${s.url}" target="_blank" rel="noopener">${ic(ICONE.source)} ${s.label}</a>`
-  ).join('');
+  const sources = (item.sources || []).map(s => `<a class="btn-source" href="${s.url}" target="_blank" rel="noopener">${ic(ICONE.source)} ${s.label}</a>`).join('');
+
+  const anecdoteHtml = item.anecdote ? `
+    <div class="jour-histoire anecdote-carte">
+      <div class="jour-histoire-header" onclick="toggleHistoire('anecdote-${id}')">
+        <span>${ic(ICONE.anecdote)} Une anecdote à raconter</span>
+        <span class="jour-histoire-arrow" id="arrow-anecdote-${id}">${ic(ICONE.chevron)}</span>
+      </div>
+      <div class="jour-histoire-content" id="anecdote-${id}">
+        <p>${item.anecdote}</p>
+        ${(item.anecdoteSource || []).length ? `<div class="item-footer" style="margin-top:10px">${item.anecdoteSource.map(s => `<a class="btn-source" href="${s.url}" target="_blank" rel="noopener">${ic(ICONE.source)} ${s.label}</a>`).join('')}</div>` : ''}
+      </div>
+    </div>` : '';
 
   return `
     <div class="item-carte">
       <div class="item-header">
         <div class="item-titre">${item.nom}</div>
-        ${badge}
+        <div class="item-actions">
+          ${badge}
+          <button class="btn-icone" onclick="toggleForm('${id}')" title="Modifier la fiche">${ic(ICONE.editer)}</button>
+        </div>
       </div>
-      <div class="item-lieu">${ic(ICONE.distance)} ${item.lieu}</div>
+      <div class="item-lieu">${ic(ICONE.distance)} ${item.lieu || ''}</div>
       <div class="item-etoiles">${rendreEtoiles(item.etoiles)}</div>
       <div class="item-infos">${infos.map(i => `<span>${i}</span>`).join('')}</div>
-      <p class="item-desc">${item.description}</p>
+      <p class="item-desc">${item.description || ''}</p>
+      ${anecdoteHtml}
       <div class="chien-tag ${chien.classe}">${ic(chien.icone)} ${chien.texte}${item.chien.note ? ` — <span class="chien-note">${item.chien.note}</span>` : ''}</div>
       <div class="item-footer">
-        <a class="btn-maps" href="${item.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>
+        ${item.maps.google ? `<a class="btn-maps" href="${item.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>` : ''}
         ${sources}
       </div>
+      ${rendreFormSpot(cat, item)}
       ${rendreBlocVecu(id)}
     </div>`;
+}
+
+// ===== FORMULAIRE SPOT (ajout + édition, Terra Aventura/Randos/Visites) =====
+function rendreFormSpot(cat, item) {
+  const id = item ? item.id : `nouveau-${cat}`;
+  const sourcesTexte = (item && item.sources || []).map(s => `${s.label}|${s.url}`).join('\n');
+  return `
+    <div class="spot-form" id="form-${id}" style="display:none">
+      <label class="vecu-label">Nom du spot</label>
+      <input type="text" class="vecu-input" id="sf-nom-${id}" value="${item ? echapper(item.nom) : ''}">
+
+      <label class="vecu-label">Lieu</label>
+      <input type="text" class="vecu-input" id="sf-lieu-${id}" value="${item ? echapper(item.lieu) : ''}">
+
+      <div class="spot-form-grille">
+        <div>
+          <label class="vecu-label">Distance (km)</label>
+          <input type="number" step="0.1" class="vecu-input" id="sf-distance-${id}" value="${item && item.distanceKm !== null ? item.distanceKm : ''}">
+        </div>
+        <div>
+          <label class="vecu-label">Étoiles</label>
+          <select class="vecu-input" id="sf-etoiles-${id}">
+            <option value="1" ${item && item.etoiles === 1 ? 'selected' : ''}>1 étoile</option>
+            <option value="2" ${!item || item.etoiles === 2 ? 'selected' : ''}>2 étoiles</option>
+            <option value="3" ${item && item.etoiles === 3 ? 'selected' : ''}>3 étoiles</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="spot-form-grille">
+        <div>
+          <label class="vecu-label">Longueur</label>
+          <input type="text" class="vecu-input" id="sf-longueur-${id}" placeholder="ex: 6 km" value="${item ? echapper(item.longueur) : ''}">
+        </div>
+        <div>
+          <label class="vecu-label">Durée</label>
+          <input type="text" class="vecu-input" id="sf-duree-${id}" placeholder="ex: 1h30" value="${item ? echapper(item.duree) : ''}">
+        </div>
+      </div>
+
+      <label class="vecu-label">Tarif (optionnel)</label>
+      <input type="text" class="vecu-input" id="sf-tarif-${id}" value="${item ? echapper(item.tarif) : ''}">
+
+      <label class="vecu-label">Statut chien</label>
+      <select class="vecu-input" id="sf-chien-${id}">
+        ${CHIEN_OPTIONS.map(([v, l]) => `<option value="${v}" ${item && item.chien.statut === v ? 'selected' : (!item && v === 'a_verifier' ? 'selected' : '')}>${l}</option>`).join('')}
+      </select>
+      <label class="vecu-label">Note chien (optionnel)</label>
+      <input type="text" class="vecu-input" id="sf-chien-note-${id}" value="${item ? echapper(item.chien.note) : ''}">
+
+      <label class="vecu-label">Description</label>
+      <textarea class="vecu-textarea" id="sf-desc-${id}">${item ? echapper(item.description) : ''}</textarea>
+
+      <label class="vecu-label">Anecdote à raconter (optionnel, courte — masquée par défaut dans l'app)</label>
+      <textarea class="vecu-textarea" id="sf-anecdote-${id}" placeholder="Une légende, un fait amusant...">${item ? echapper(item.anecdote) : ''}</textarea>
+      <label class="vecu-label">Source de l'anecdote (optionnel — format "Nom|https://...")</label>
+      <input type="text" class="vecu-input" id="sf-anecdote-source-${id}" value="${item && item.anecdoteSource && item.anecdoteSource[0] ? echapper(item.anecdoteSource[0].label + '|' + item.anecdoteSource[0].url) : ''}">
+
+      <label class="vecu-label">Lien Google Maps</label>
+      <input type="text" class="vecu-input" id="sf-maps-${id}" value="${item ? echapper(item.maps.google) : ''}">
+
+      <label class="vecu-label">Sources — une par ligne, format "Nom|https://..."</label>
+      <textarea class="vecu-textarea" id="sf-sources-${id}" placeholder="Office de tourisme|https://...">${sourcesTexte}</textarea>
+
+      <label class="vecu-check">
+        <input type="checkbox" id="sf-incontournable-${id}" ${item && item.incontournable ? 'checked' : ''}> Marquer comme incontournable
+      </label>
+
+      <div class="vecu-form-actions">
+        <button class="btn-vecu-save" onclick="enregistrerSpot('${cat}','${item ? item.id : ''}')">${ic(ICONE.enregistrer)} Enregistrer</button>
+        <button class="btn-vecu-annuler" onclick="toggleForm('${id}')">Annuler</button>
+        ${item ? `<button class="btn-vecu-suppr" onclick="supprimerSpot('${item.id}')">${ic(ICONE.corbeille)} Supprimer</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function toggleForm(id) {
+  const form = document.getElementById(`form-${id}`);
+  if (!form) return;
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  rafraichirIcones();
+}
+
+async function enregistrerSpot(cat, existingId) {
+  const id = existingId || `nouveau-${cat}`;
+  const nom = val(`sf-nom-${id}`).trim();
+  if (!nom) { alert('Le nom est obligatoire.'); return; }
+
+  const sourcesTexte = val(`sf-sources-${id}`).trim();
+  const sources = sourcesTexte ? sourcesTexte.split('\n').filter(l => l.trim()).map(ligne => {
+    const [label, url] = ligne.split('|').map(s => (s || '').trim());
+    return { label: label || url, url: url || label };
+  }) : [];
+
+  const distanceTexte = val(`sf-distance-${id}`);
+  const anecdoteSourceTexte = val(`sf-anecdote-source-${id}`).trim();
+  const [ancLabel, ancUrl] = anecdoteSourceTexte ? anecdoteSourceTexte.split('|').map(s => (s || '').trim()) : [null, null];
+  const anecdoteSource = ancUrl ? [{ label: ancLabel || ancUrl, url: ancUrl }] : [];
+
+  const donnees = {
+    sejour_id: SEJOUR.id,
+    categorie: cat,
+    nom,
+    lieu: val(`sf-lieu-${id}`).trim() || null,
+    distance_km: distanceTexte !== '' ? parseFloat(distanceTexte) : null,
+    longueur: val(`sf-longueur-${id}`).trim() || null,
+    duree: val(`sf-duree-${id}`).trim() || null,
+    etoiles: parseInt(val(`sf-etoiles-${id}`), 10) || 2,
+    incontournable: document.getElementById(`sf-incontournable-${id}`).checked,
+    chien_statut: val(`sf-chien-${id}`) || 'a_verifier',
+    chien_note: val(`sf-chien-note-${id}`).trim() || null,
+    tarif: val(`sf-tarif-${id}`).trim() || null,
+    description: val(`sf-desc-${id}`).trim() || null,
+    anecdote: val(`sf-anecdote-${id}`).trim() || null,
+    anecdote_source: anecdoteSource,
+    maps_url: val(`sf-maps-${id}`).trim() || null,
+    sources,
+    updated_at: new Date().toISOString()
+  };
+
+  try {
+    const { error } = existingId
+      ? await sb.from('spots').update(donnees).eq('id', existingId)
+      : await sb.from('spots').insert(donnees);
+    if (error) throw error;
+  } catch (e) { alert("Pas de réseau ou erreur d'enregistrement — réessaie."); return; }
+
+  await chargerCatalogueDistant();
+  rendreHeader();
+  rendreOnglet(ongletActif);
+}
+
+async function supprimerSpot(id) {
+  if (!confirm('Supprimer définitivement ce spot ?')) return;
+  try {
+    const { error } = await sb.from('spots').delete().eq('id', id);
+    if (error) throw error;
+  } catch (e) { alert('Erreur de suppression — réessaie.'); return; }
+  await chargerCatalogueDistant();
+  rendreHeader();
+  rendreOnglet(ongletActif);
 }
 
 // ===== BLOC "VÉCU" — coche, date, commentaire, photos =====
 function rendreBlocVecu(id) {
   const v = vecuEtat[id];
-
   if (v && v.fait) {
-    const photosHtml = rendrePhotosHtml(id, v.photos);
     return `
       <div class="vecu-bloc vecu-fait">
         <div class="vecu-fait-ligne">
           <span class="vecu-fait-tag">${ic(ICONE.fait)} Fait le ${formaterDate(v.date)}</span>
-          <button class="vecu-modifier" onclick="toggleFormVecu('${id}')">${ic(ICONE.modifier)} Modifier</button>
+          <button class="vecu-modifier" onclick="toggleForm('vecu-${id}')">${ic(ICONE.modifier)} Modifier</button>
         </div>
         ${v.commentaire ? `<p class="vecu-commentaire">${echapper(v.commentaire)}</p>` : ''}
-        ${photosHtml}
+        ${rendrePhotosHtml(id, v.photos)}
       </div>
       ${rendreFormVecu(id, v)}`;
   }
-
   return `
     <div class="vecu-bloc">
-      <button class="btn-vecu" onclick="toggleFormVecu('${id}')">${ic(ICONE.ajouter)} On l'a fait</button>
+      <button class="btn-vecu" onclick="toggleForm('vecu-${id}')">${ic(ICONE.ajouter)} On l'a fait</button>
     </div>
     ${rendreFormVecu(id, null)}`;
 }
 
 function rendreFormVecu(id, v) {
   return `
-    <div class="vecu-form" id="form-${id}" style="display:none">
+    <div class="vecu-form" id="form-vecu-${id}" style="display:none">
       <label class="vecu-label">Date</label>
       <input type="date" class="vecu-input" id="date-${id}" value="${v ? v.date : ajourdhuiISO()}">
       <label class="vecu-label">Un souvenir, une note ?</label>
@@ -326,43 +477,31 @@ function rendreFormVecu(id, v) {
       <input type="file" class="vecu-file" id="photo-${id}" accept="image/*" multiple>
       <div class="vecu-form-actions">
         <button class="btn-vecu-save" onclick="enregistrerVecu('${id}')">${ic(ICONE.enregistrer)} Enregistrer</button>
-        ${v ? `<button class="btn-vecu-annuler" onclick="decocherVecu('${id}')">${ic(ICONE.decocher)} Décocher</button>` : `<button class="btn-vecu-annuler" onclick="toggleFormVecu('${id}')">Annuler</button>`}
+        ${v ? `<button class="btn-vecu-annuler" onclick="decocherVecu('${id}')">${ic(ICONE.decocher)} Décocher</button>` : `<button class="btn-vecu-annuler" onclick="toggleForm('vecu-${id}')">Annuler</button>`}
       </div>
     </div>`;
 }
 
-function toggleFormVecu(id) {
-  const form = document.getElementById(`form-${id}`);
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
-  rafraichirIcones();
-}
-
 async function enregistrerVecu(id) {
-  const date = document.getElementById(`date-${id}`).value || ajourdhuiISO();
-  const commentaire = document.getElementById(`commentaire-${id}`).value.trim();
+  const date = val(`date-${id}`) || ajourdhuiISO();
+  const commentaire = val(`commentaire-${id}`).trim();
   const fichiers = document.getElementById(`photo-${id}`).files;
 
   const existant = vecuEtat[id] || {};
   let photos = existant.photos ? [...existant.photos] : [];
-
   if (fichiers.length) {
-    try {
-      const nouvelles = await televerserPhotos(id, fichiers);
-      photos = [...photos, ...nouvelles];
-    } catch (e) { /* pas de reseau -- la coche/note partira quand meme en file d'attente */ }
+    try { photos = [...photos, ...await televerserPhotos(id, fichiers)]; }
+    catch (e) { /* pas de réseau — la coche/note partira quand même en file d'attente */ }
   }
 
   const donnees = { sejour_id: SEJOUR.id, item_id: id, fait: true, date, commentaire, photos, updated_at: new Date().toISOString() };
-  vecuEtat[id] = { fait: true, date, commentaire, photos }; // mise a jour optimiste, immediate a l'ecran
+  vecuEtat[id] = { fait: true, date, commentaire, photos };
 
   try {
     const { error } = await sb.from('vecu_entries').upsert(donnees, { onConflict: 'sejour_id,item_id' });
     if (error) throw error;
     definirStatutReseau(false);
-  } catch (e) {
-    ajouterFileAttente({ type: 'upsert', donnees });
-    definirStatutReseau(true);
-  }
+  } catch (e) { ajouterFileAttente({ type: 'upsert', donnees }); definirStatutReseau(true); }
 
   rendreHeader();
   rendreOnglet(ongletActif);
@@ -370,37 +509,24 @@ async function enregistrerVecu(id) {
 
 async function decocherVecu(id) {
   const v = vecuEtat[id];
-  if (v && v.photos && v.photos.length) {
-    try { await sb.storage.from(BUCKET).remove(v.photos); } catch (e) { /* on continue quand meme */ }
-  }
+  if (v && v.photos && v.photos.length) { try { await sb.storage.from(BUCKET).remove(v.photos); } catch (e) {} }
   delete vecuEtat[id];
-
   try {
     const { error } = await sb.from('vecu_entries').delete().eq('sejour_id', SEJOUR.id).eq('item_id', id);
     if (error) throw error;
     definirStatutReseau(false);
-  } catch (e) {
-    ajouterFileAttente({ type: 'delete', id });
-    definirStatutReseau(true);
-  }
-
+  } catch (e) { ajouterFileAttente({ type: 'delete', id }); definirStatutReseau(true); }
   rendreHeader();
   rendreOnglet(ongletActif);
 }
 
 async function supprimerUnePhoto(id, chemin) {
-  try { await sb.storage.from(BUCKET).remove([chemin]); } catch (e) { /* on continue quand meme */ }
+  try { await sb.storage.from(BUCKET).remove([chemin]); } catch (e) {}
   const photos = vecuEtat[id].photos.filter(p => p !== chemin);
   vecuEtat[id].photos = photos;
-
   const donnees = { sejour_id: SEJOUR.id, item_id: id, fait: true, date: vecuEtat[id].date, commentaire: vecuEtat[id].commentaire, photos, updated_at: new Date().toISOString() };
-  try {
-    const { error } = await sb.from('vecu_entries').upsert(donnees, { onConflict: 'sejour_id,item_id' });
-    if (error) throw error;
-  } catch (e) {
-    ajouterFileAttente({ type: 'upsert', donnees });
-    definirStatutReseau(true);
-  }
+  try { const { error } = await sb.from('vecu_entries').upsert(donnees, { onConflict: 'sejour_id,item_id' }); if (error) throw error; }
+  catch (e) { ajouterFileAttente({ type: 'upsert', donnees }); definirStatutReseau(true); }
   rendreOnglet(ongletActif);
 }
 
@@ -422,33 +548,39 @@ function rendreCamping() {
       </div>
     </div>` : '';
 
-  const ressourcesHtml = (c.ressources || []).length ? `
+  const ressourcesHtml = `
     <div class="onglet-header" style="margin-top:18px">
       ${ic(ICONE.panier, 'onglet-icone')}
-      <div>
+      <div class="onglet-header-texte">
         <div class="onglet-titre" style="font-size:1.05rem">Ressources pratiques</div>
         <div class="onglet-sub">Tout sur place à Treignac</div>
       </div>
+      <button class="btn-ajouter-spot" onclick="toggleForm('nouvelle-ressource')">${ic(ICONE.ajouter)} Ajouter</button>
     </div>
-    ${c.ressources.map(r => `
+    ${rendreFormRessource(null)}
+    ${RESSOURCES.map(r => `
       <div class="ressource-carte">
         ${ic(ICONE[r.categorie] || 'map-pin', 'ressource-icone')}
         <div class="ressource-corps">
-          <div class="ressource-nom">${r.nom}</div>
-          <div class="ressource-adresse">${r.adresse}</div>
+          <div class="ressource-nom-ligne">
+            <div class="ressource-nom">${r.nom}</div>
+            <button class="btn-icone" onclick="toggleForm('${r.id}')" title="Modifier">${ic(ICONE.editer)}</button>
+          </div>
+          <div class="ressource-adresse">${r.adresse || ''}</div>
           ${r.horaires ? `<div class="ressource-horaires">${r.horaires}</div>` : ''}
           ${r.note ? `<div class="ressource-note">${r.note}</div>` : ''}
           <div class="item-footer" style="margin-top:8px">
-            <a class="btn-maps" href="${r.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>
+            ${r.maps.google ? `<a class="btn-maps" href="${r.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>` : ''}
             ${r.tel ? `<a class="btn-lien btn-tel" href="${r.tel}">${ic(ICONE.tel)} ${r.telAffiche}</a>` : ''}
           </div>
+          ${rendreFormRessource(r)}
         </div>
-      </div>`).join('')}` : '';
+      </div>`).join('')}`;
 
   return `
     <div class="onglet-header">
       ${ic(ICONE.camping, 'onglet-icone')}
-      <div>
+      <div class="onglet-header-texte">
         <div class="onglet-titre">${c.nom}</div>
         <div class="onglet-sub">${c.adresse}</div>
       </div>
@@ -475,10 +607,74 @@ function toggleHistoire(id) {
   arrow.classList.toggle('open');
 }
 
+// ===== FORMULAIRE RESSOURCE (ajout + édition) =====
+function rendreFormRessource(item) {
+  const id = item ? item.id : 'nouvelle-ressource';
+  return `
+    <div class="spot-form" id="form-${id}" style="display:none">
+      <label class="vecu-label">Nom</label>
+      <input type="text" class="vecu-input" id="rf-nom-${id}" value="${item ? echapper(item.nom) : ''}">
+      <label class="vecu-label">Catégorie</label>
+      <select class="vecu-input" id="rf-categorie-${id}">
+        ${RESSOURCE_CATEGORIES.map(([v, l]) => `<option value="${v}" ${item && item.categorie === v ? 'selected' : ''}>${l}</option>`).join('')}
+      </select>
+      <label class="vecu-label">Adresse</label>
+      <input type="text" class="vecu-input" id="rf-adresse-${id}" value="${item ? echapper(item.adresse) : ''}">
+      <label class="vecu-label">Téléphone</label>
+      <input type="text" class="vecu-input" id="rf-tel-${id}" value="${item ? echapper(item.telAffiche) : ''}">
+      <label class="vecu-label">Horaires</label>
+      <input type="text" class="vecu-input" id="rf-horaires-${id}" value="${item ? echapper(item.horaires) : ''}">
+      <label class="vecu-label">Note (optionnel)</label>
+      <input type="text" class="vecu-input" id="rf-note-${id}" value="${item ? echapper(item.note) : ''}">
+      <label class="vecu-label">Lien Google Maps</label>
+      <input type="text" class="vecu-input" id="rf-maps-${id}" value="${item ? echapper(item.maps.google) : ''}">
+      <div class="vecu-form-actions">
+        <button class="btn-vecu-save" onclick="enregistrerRessource('${item ? item.id : ''}')">${ic(ICONE.enregistrer)} Enregistrer</button>
+        <button class="btn-vecu-annuler" onclick="toggleForm('${id}')">Annuler</button>
+        ${item ? `<button class="btn-vecu-suppr" onclick="supprimerRessource('${item.id}')">${ic(ICONE.corbeille)} Supprimer</button>` : ''}
+      </div>
+    </div>`;
+}
+
+async function enregistrerRessource(existingId) {
+  const id = existingId || 'nouvelle-ressource';
+  const nom = val(`rf-nom-${id}`).trim();
+  if (!nom) { alert('Le nom est obligatoire.'); return; }
+
+  const donnees = {
+    sejour_id: SEJOUR.id,
+    categorie: val(`rf-categorie-${id}`),
+    nom,
+    adresse: val(`rf-adresse-${id}`).trim() || null,
+    tel: val(`rf-tel-${id}`).trim() || null,
+    horaires: val(`rf-horaires-${id}`).trim() || null,
+    note: val(`rf-note-${id}`).trim() || null,
+    maps_url: val(`rf-maps-${id}`).trim() || null,
+    updated_at: new Date().toISOString()
+  };
+
+  try {
+    const { error } = existingId
+      ? await sb.from('ressources').update(donnees).eq('id', existingId)
+      : await sb.from('ressources').insert(donnees);
+    if (error) throw error;
+  } catch (e) { alert("Pas de réseau ou erreur d'enregistrement — réessaie."); return; }
+
+  await chargerCatalogueDistant();
+  rendreOnglet(ongletActif);
+}
+
+async function supprimerRessource(id) {
+  if (!confirm('Supprimer cette ressource ?')) return;
+  try { const { error } = await sb.from('ressources').delete().eq('id', id); if (error) throw error; }
+  catch (e) { alert('Erreur de suppression — réessaie.'); return; }
+  await chargerCatalogueDistant();
+  rendreOnglet(ongletActif);
+}
+
 // ===== ONGLET CARNET — frise auto-générée + export PDF =====
 function rendreCarnet() {
   const main = document.getElementById('main-content');
-
   const entrees = tousLesItemsTracables()
     .map(({ id, cat, item }) => ({ id, cat, item, v: vecuEtat[id] }))
     .filter(e => e.v && e.v.fait)
@@ -488,7 +684,7 @@ function rendreCarnet() {
     main.innerHTML = `
       <div class="onglet-header">
         ${ic(ICONE.carnet, 'onglet-icone')}
-        <div>
+        <div class="onglet-header-texte">
           <div class="onglet-titre">Carnet de voyage</div>
           <div class="onglet-sub">Se remplit tout seul au fil du séjour</div>
         </div>
@@ -522,7 +718,7 @@ function rendreCarnet() {
               ${ic(ONGLETS.find(o => o.id === e.cat).icone, 'frise-icone')}
               <div>
                 <div class="frise-titre">${e.item.nom}</div>
-                <div class="frise-categorie">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu}</div>
+                <div class="frise-categorie">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu || ''}</div>
               </div>
             </div>
             ${e.v.commentaire ? `<p class="vecu-commentaire">${echapper(e.v.commentaire)}</p>` : ''}
@@ -541,7 +737,6 @@ function dessinerFriseCarnet() {
   const chemin = document.getElementById('frise-chemin');
   const etapes = [...conteneur.querySelectorAll('.frise-etape')];
   if (!etapes.length) return;
-
   requestAnimationFrame(() => {
     const hauteur = conteneur.offsetHeight;
     svg.setAttribute('viewBox', `0 0 30 ${hauteur}`);
