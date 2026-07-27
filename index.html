@@ -6,6 +6,7 @@
 <title>ViaRoad — Carnet de route</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
   :root{
     --papier:#F7F5F0;
@@ -101,8 +102,12 @@
     display:inline-flex; align-items:center; gap:6px;
     font-size:.85rem; font-weight:800; color:var(--vert);
   }
-  .ouvrir svg{ width:14px; height:14px; transition:transform .18s ease; }
-  a.carte:hover .ouvrir svg{ transform:translateX(3px); }
+  a.carte:hover .ouvrir .ic{ transform:translateX(3px); }
+
+  .ic{ width:14px; height:14px; stroke-width:2.2; vertical-align:-2px; transition:transform .18s ease; }
+  h1 .ic{ width:32px; height:32px; vertical-align:-6px; margin-right:2px; }
+  .statut .ic{ width:12px; height:12px; margin-right:2px; }
+  .tag{ display:inline-flex; align-items:center; gap:4px; }
 
   /* Carte fantôme — prochain séjour */
   .carte.fantome{
@@ -112,7 +117,7 @@
   }
   .carte.fantome:hover{ transform:none; box-shadow:none; }
   .carte.fantome .plus{
-    font-family:'Baloo 2',cursive; font-size:1.3rem; color:var(--ligne);
+    width:22px; height:22px; color:var(--ligne); flex-shrink:0;
   }
 
   footer{
@@ -130,8 +135,8 @@
 
 <header>
   <div class="eyebrow">Prismora Solutions</div>
-  <h1>🗺️ ViaRoad</h1>
-  <p>Le carnet de route de la famille.<br>Choisis ton séjour.</p>
+  <h1><i data-lucide="map" class="ic"></i> ViaRoad</h1>
+  <p>Le carnet de route de la famille. Choisis ton séjour.</p>
 </header>
 
 <main>
@@ -142,16 +147,16 @@
       <a class="carte" href="052026_marais-poitevin/">
         <div class="ligne1">
           <div class="destination">Marais Poitevin</div>
-          <span class="statut termine">Terminé</span>
+          <span class="statut termine"><i data-lucide="check-circle-2" class="ic"></i>Terminé</span>
         </div>
         <div class="dates">14 → 17 mai 2026 · Deux-Sèvres (79)</div>
         <div class="tags">
-          <span class="tag">🚐 Camping-car</span>
-          <span class="tag">🐕 Alma</span>
-          <span class="tag">🎮 Terra Aventura</span>
+          <span class="tag"><i data-lucide="caravan" class="ic"></i> Camping-car</span>
+          <span class="tag"><i data-lucide="dog" class="ic"></i> Alma</span>
+          <span class="tag"><i data-lucide="gamepad-2" class="ic"></i> Terra Aventura</span>
         </div>
         <div class="ouvrir">Ouvrir le séjour
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <i data-lucide="arrow-right" class="ic"></i>
         </div>
       </a>
     </div>
@@ -160,23 +165,23 @@
       <a class="carte" href="072026_correze/">
         <div class="ligne1">
           <div class="destination">Corrèze</div>
-          <span class="statut avenir">À venir</span>
+          <span class="statut avenir"><i data-lucide="clock" class="ic"></i>À venir</span>
         </div>
         <div class="dates">29 juil. → 5 août 2026 · Camping de Treignac</div>
         <div class="tags">
-          <span class="tag">🏕️ Caravane</span>
-          <span class="tag">🐕 Alma</span>
-          <span class="tag">🏛️ Visites & cascades</span>
+          <span class="tag"><i data-lucide="tent" class="ic"></i> Caravane</span>
+          <span class="tag"><i data-lucide="dog" class="ic"></i> Alma</span>
+          <span class="tag"><i data-lucide="landmark" class="ic"></i> Visites & cascades</span>
         </div>
         <div class="ouvrir">Ouvrir le séjour
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <i data-lucide="arrow-right" class="ic"></i>
         </div>
       </a>
     </div>
 
     <div class="arret fantome">
       <div class="carte fantome">
-        <span class="plus">+</span>
+        <i data-lucide="plus" class="plus"></i>
         <span>Prochain séjour à venir</span>
       </div>
     </div>
@@ -207,7 +212,7 @@
     }
     chemin.setAttribute('d', d);
   }
-  window.addEventListener('load', dessinerRoute);
+  window.addEventListener('load', () => { if (window.lucide) lucide.createIcons(); dessinerRoute(); });
   window.addEventListener('resize', dessinerRoute);
 </script>
 

@@ -9,13 +9,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
+  <div class="statut-reseau" id="statut-reseau" style="display:none">
+    <i data-lucide="wifi-off"></i> Hors-ligne — synchro au retour du réseau
+  </div>
+
   <header class="header">
     <div class="header-top">
-      <a class="logo" href="../">🗺️ ViaRoad</a>
-      <button class="btn-checklist" onclick="ouvrirChecklist()">✅ Checklist</button>
+      <a class="logo" href="../"><i data-lucide="map"></i> ViaRoad</a>
     </div>
     <div class="sejour-hero">
       <h1 class="sejour-titre" id="sejour-titre"></h1>
@@ -27,16 +32,6 @@
   <nav class="nav-jours" id="nav-jours"></nav>
 
   <main class="main" id="main-content"></main>
-
-  <div class="modal-overlay" id="modal-overlay" onclick="fermerChecklist()">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>✅ Checklist avant départ</h2>
-        <button class="modal-close" onclick="fermerChecklist()">✕</button>
-      </div>
-      <div class="modal-body" id="modal-checklist-content"></div>
-    </div>
-  </div>
 
   <script src="sejour.js"></script>
   <script src="app.js"></script>

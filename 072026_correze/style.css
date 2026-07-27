@@ -14,6 +14,7 @@
   --violet-bg:  #EDE9FE;
   --gris:       #6B7280;
   --gris-bg:    #F3F4F6;
+  --ligne:      #C9C2B4;
   --fond:       #F7F5F0;
   --texte:      #1A1A2E;
   --texte-doux: #4B5563;
@@ -33,6 +34,29 @@ body {
   overscroll-behavior: none;
 }
 
+/* ===== STATUT RÉSEAU ===== */
+.statut-reseau {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--rouge); color: white; padding: 8px; font-size: .78rem; font-weight: 800;
+  position: sticky; top: 0; z-index: 101;
+}
+
+/* ===== ICÔNES (Lucide) ===== */
+.ic { width: 15px; height: 15px; stroke-width: 2.2; vertical-align: -3px; flex-shrink: 0; }
+.logo .ic { width: 18px; height: 18px; vertical-align: -4px; }
+.nav-icone { width: 19px; height: 19px; stroke-width: 2; display: block; margin: 0 auto; }
+.onglet-icone { width: 30px; height: 30px; stroke-width: 1.8; color: var(--vert); flex-shrink: 0; }
+.ressource-icone { width: 20px; height: 20px; stroke-width: 1.8; color: var(--vert); flex-shrink: 0; margin-top: 2px; }
+.frise-icone { width: 22px; height: 22px; stroke-width: 1.8; color: var(--vert); flex-shrink: 0; }
+.carnet-vide-icone { width: 40px; height: 40px; stroke-width: 1.5; color: var(--ligne); margin-bottom: 10px; }
+
+.etoile { width: 15px; height: 15px; margin-right: 1px; }
+.etoile.pleine { fill: var(--jaune); stroke: var(--jaune); }
+.etoile.vide   { fill: none; stroke: #D8D5CC; }
+
+.jour-histoire-arrow { display: inline-flex; transition: transform .2s; }
+.jour-histoire-arrow.open { transform: rotate(90deg); }
+
 /* ===== HEADER ===== */
 .header {
   background: linear-gradient(145deg, #2D7D46 0%, #1A5C32 100%);
@@ -41,19 +65,13 @@ body {
   box-shadow: var(--ombre-lg);
 }
 .header-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 10px; }
-.logo { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; opacity: .95; color: white; text-decoration: none; }
-.btn-checklist {
-  background: rgba(255,255,255,.18); border: 1.5px solid rgba(255,255,255,.35);
-  color: white; padding: 7px 14px; border-radius: 50px;
-  font-family: 'Nunito', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer;
-}
-.btn-checklist:active { background: rgba(255,255,255,.28); }
-
+.logo { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; opacity: .95; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; }
 .sejour-hero { padding: 4px 18px 0; }
 .sejour-titre { font-family: 'Baloo 2', cursive; font-size: 1.65rem; font-weight: 800; line-height: 1.15; margin-bottom: 4px; }
 .sejour-meta  { font-size: .88rem; opacity: .82; font-weight: 600; margin-bottom: 10px; }
 .sejour-badges { display: flex; gap: 8px; flex-wrap: wrap; }
 .badge {
+  display: inline-flex; align-items: center; gap: 5px;
   background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
   color: white; padding: 4px 10px; border-radius: 50px; font-size: .75rem; font-weight: 700;
 }
@@ -71,7 +89,6 @@ body {
   transition: all .2s; white-space: nowrap;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
 }
-.nav-emoji { font-size: 1.15rem; }
 .nav-label { font-size: .72rem; font-weight: 700; }
 .nav-jour-btn.actif { color: var(--vert); border-bottom-color: var(--vert); }
 
@@ -83,7 +100,6 @@ body {
   background: white; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px;
   box-shadow: var(--ombre); display: flex; align-items: center; gap: 14px;
 }
-.onglet-emoji { font-size: 2.2rem; line-height: 1; }
 .onglet-titre { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; }
 .onglet-sub   { font-size: .82rem; color: var(--gris); font-weight: 600; margin-top: 2px; }
 
@@ -105,7 +121,6 @@ body {
   cursor: pointer; user-select: none;
 }
 .jour-histoire-header:active { background: var(--violet-bg); }
-.jour-histoire-arrow { font-size: 1rem; font-weight: 400; transition: transform .2s; }
 .jour-histoire-content {
   display: none; padding: 0 16px 16px; font-size: .85rem; color: var(--texte-doux);
   line-height: 1.6; border-top: 1px solid var(--violet-bg); padding-top: 12px;
@@ -156,33 +171,116 @@ body {
   font-size: .72rem; font-weight: 700; text-decoration: none; background: var(--violet-bg); color: var(--violet);
 }
 
+/* ===== RESSOURCES PRATIQUES ===== */
+.ressource-carte {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: white; border-radius: var(--radius-sm); padding: 12px 14px;
+  margin-bottom: 8px; box-shadow: var(--ombre);
+}
+.ressource-corps { flex: 1; min-width: 0; }
+.ressource-nom { font-weight: 800; font-size: .92rem; color: var(--texte); }
+.ressource-adresse { font-size: .78rem; color: var(--texte-doux); margin-top: 1px; }
+.ressource-horaires { font-size: .75rem; color: var(--gris); font-weight: 600; margin-top: 3px; }
+.ressource-note { font-size: .78rem; color: var(--vert); font-weight: 600; margin-top: 4px; font-style: italic; }
+
 /* ===== FICHE CAMPING ===== */
 .camping-equip-titre { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--gris); margin-bottom: 8px; }
 .camping-equip-liste { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .camping-equip-liste li { font-size: .85rem; color: var(--texte-doux); background: var(--fond); padding: 8px 12px; border-radius: var(--radius-sm); }
 
-/* ===== MODAL CHECKLIST (identique V1) ===== */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200;
-  display: none; align-items: flex-end; justify-content: center;
+/* ===== BLOC VÉCU (coche, formulaire, photos) ===== */
+.vecu-bloc { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #E5E7EB; }
+
+.btn-vecu {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; background: var(--vert-bg); color: var(--vert); border: 1.5px dashed var(--vert-clair);
+  padding: 10px; border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif;
+  font-size: .85rem; font-weight: 800; cursor: pointer;
 }
-.modal-overlay.visible { display: flex; }
-.modal {
-  background: white; border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-width: 520px;
-  max-height: 85vh; display: flex; flex-direction: column;
-  animation: slideUp .3s cubic-bezier(.34,1.56,.64,1);
+.btn-vecu:active { background: var(--vert-clair); color: white; }
+
+.vecu-fait { background: var(--vert-bg); border-radius: var(--radius-sm); padding: 12px; }
+.vecu-fait-ligne { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.vecu-fait-tag { display: inline-flex; align-items: center; gap: 5px; font-size: .8rem; font-weight: 800; color: var(--vert); }
+.vecu-modifier { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; font-size: .75rem; font-weight: 700; color: var(--vert); cursor: pointer; padding: 2px 4px; }
+.vecu-commentaire { font-size: .83rem; color: var(--texte-doux); line-height: 1.5; margin-top: 8px; font-style: italic; }
+
+.vecu-form {
+  margin-top: 10px; background: var(--fond); border-radius: var(--radius-sm); padding: 14px;
 }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 14px; border-bottom: 1px solid #E5E7EB; }
-.modal-header h2 { font-family: 'Baloo 2', cursive; font-size: 1.15rem; font-weight: 800; }
-.modal-close { background: var(--gris-bg); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; font-weight: 700; color: var(--gris); }
-.modal-body { overflow-y: auto; padding: 16px 20px 32px; flex: 1; }
-.checklist-categorie { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--gris); margin: 16px 0 8px; }
-.checklist-categorie:first-child { margin-top: 0; }
-.checklist-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--fond); border-radius: var(--radius-sm); margin-bottom: 6px; cursor: pointer; }
-.checklist-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--vert); cursor: pointer; flex-shrink: 0; }
-.checklist-item label { font-size: .87rem; font-weight: 600; color: var(--texte); cursor: pointer; line-height: 1.35; }
-.checklist-item.fait label { text-decoration: line-through; color: var(--gris); }
+.vecu-label { display: block; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: var(--gris); margin-bottom: 4px; margin-top: 10px; }
+.vecu-label:first-child { margin-top: 0; }
+.vecu-input, .vecu-textarea, .vecu-file {
+  width: 100%; border: 1.5px solid #E5E7EB; border-radius: var(--radius-sm);
+  padding: 8px 10px; font-family: 'Nunito', sans-serif; font-size: .85rem; color: var(--texte); background: white;
+}
+.vecu-textarea { min-height: 64px; resize: vertical; }
+.vecu-file { padding: 6px 8px; font-size: .78rem; }
+.vecu-form-actions { display: flex; gap: 8px; margin-top: 14px; }
+.btn-vecu-save {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  flex: 1; background: var(--vert); color: white; border: none; padding: 10px; border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif; font-size: .85rem; font-weight: 800; cursor: pointer;
+}
+.btn-vecu-annuler {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--gris-bg); color: var(--gris); border: none; padding: 10px 14px; border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif; font-size: .85rem; font-weight: 700; cursor: pointer;
+}
+
+/* ===== PHOTOS ===== */
+.vecu-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.vecu-photo-wrap { position: relative; width: 84px; height: 84px; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--ombre); }
+.vecu-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vecu-photo-suppr {
+  position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(0,0,0,.55); color: white; border: none; font-size: .68rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ===== CARNET — ÉTAT VIDE ===== */
+.carnet-vide {
+  background: white; border-radius: var(--radius); padding: 32px 24px; text-align: center;
+  box-shadow: var(--ombre);
+}
+.carnet-vide-emoji { font-size: 2.4rem; margin-bottom: 10px; }
+.carnet-vide p { font-size: .88rem; color: var(--texte-doux); line-height: 1.6; max-width: 320px; margin: 0 auto; }
+
+/* ===== FRISE DU CARNET ===== */
+.frise { position: relative; padding-left: 30px; }
+svg.frise-ligne { position: absolute; left: 0; top: 0; height: 100%; width: 30px; overflow: visible; }
+svg.frise-ligne path { fill: none; stroke: var(--ligne, #C9C2B4); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1 9; }
+.frise-etape { position: relative; margin-bottom: 20px; }
+.frise-date { font-size: .72rem; font-weight: 800; color: var(--vert); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.frise-carte { background: white; border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--ombre); }
+.frise-carte-header { display: flex; gap: 10px; align-items: flex-start; }
+.frise-emoji { font-size: 1.5rem; line-height: 1; }
+.frise-titre { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1rem; line-height: 1.25; }
+.frise-categorie { font-size: .75rem; color: var(--gris); font-weight: 700; margin-top: 2px; }
+
+/* ===== EXPORT PDF ===== */
+.carnet-header-flex { justify-content: space-between; }
+.onglet-header-gauche { display: flex; align-items: center; gap: 14px; }
+.btn-export-pdf {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--vert); color: white;
+  border: none; padding: 9px 16px; border-radius: 50px;
+  font-family: 'Nunito', sans-serif; font-size: .8rem; font-weight: 800; cursor: pointer; flex-shrink: 0;
+}
+.btn-export-pdf:active { background: #245F37; }
+
+/* ===== IMPRESSION (export PDF via le navigateur) ===== */
+@media print {
+  .header-top, .nav-jours, .sejour-badges, .btn-export-pdf { display: none !important; }
+  body { background: white; }
+  .header { position: static; box-shadow: none; background: white; color: var(--texte); }
+  .sejour-titre, .sejour-meta { color: var(--texte); }
+  .main { padding: 0; max-width: 100%; }
+  .frise-etape { break-inside: avoid; }
+  .vecu-photo-wrap { break-inside: avoid; }
+  .vecu-photo-suppr { display: none; }
+  svg.frise-ligne { display: none; }
+  .frise { padding-left: 0; }
+}
 
 /* ===== PROGRESS ===== */
 .progress-bar-wrap { background: rgba(255,255,255,.2); border-radius: 50px; height: 6px; margin-top: 10px; overflow: hidden; }
