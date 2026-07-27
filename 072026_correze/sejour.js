@@ -8,7 +8,7 @@ const SEJOUR = {
   titre: "Corrèze — Treignac",
   dates: "29 juillet → 5 août 2026",
   destination: "Treignac (19) · Rayon 40 km",
-  introPopup: "Une semaine entre gorges de la Vézère et plateau de Millevaches, avec Alma en laisse et les enfants pour dénicher cascades, panoramas et parcours Terra Aventura. Rien n'est figé — ce carnet se construit au fil du séjour, on ajoute, on raye, on colle des photos à mesure qu'on avance.",
+  introPopup: "Une semaine entre gorges de la Vézère et plateau de Millevaches, avec Alma en laisse et les filles pour dénicher cascades, panoramas et parcours Terra Aventura. Rien n'est figé — ce carnet se construit au fil du séjour, on ajoute, on raye, on colle des photos à mesure qu'on avance.",
 
   // ===== CAMPING =====
   camping: {
@@ -17,6 +17,8 @@ const SEJOUR = {
     tel: "tel:+33555980854",
     telAffiche: "05 55 98 08 54",
     maps: { google: "https://maps.app.goo.gl/e9WGoXZ1gZvgC2Lt5" },
+    imageUrl: "https://www.tourismecorreze.com/sites/default/files/styles/1200xauto/public/photos_oit/HPAAQU019V5001UP-FLOWER-CAMPING-LA-PLAGE-TREIGNAC-1.jpg?itok=tFGtD0f9",
+    imageCredit: "Tourisme Corrèze",
     intro: "Ici, la Vézère sculpte des gorges avant de se calmer dans le lac des Bariousses. Treignac veille dessus depuis son pont du XIIIe siècle, encadrée par les crêtes des Monédières et l'immensité du plateau de Millevaches. Une semaine pour remonter les rivières, dénicher des cascades, flâner dans des cités médiévales — et laisser Alma courir en laisse au bord de l'eau.",
     histoire: "Millevaches ne doit peut-être rien aux vaches. L'étymologie populaire y voit « mille vaches », mais plusieurs linguistes penchent pour l'occitan mila vacca, « mille sources » — un nom qui collerait bien à ce plateau qui donne naissance à la Vézère, la Vienne et la Corrèze. Le débat n'est toujours pas tranché.\n\nÀ Gimel, les trois chutes de la Montane ont inspiré Abel Hugo, frère de Victor Hugo, qui les décrivit dès 1883 dans « La France pittoresque ».",
     histoireSources: [

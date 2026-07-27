@@ -670,13 +670,16 @@ function rendreCamping() {
   return `
     ${bienvenueHtml}
     ${histoireHtml}
-    <div class="label-manuscrit">Le camp de base</div>
-    <div class="onglet-header">
-      ${ic(ICONE.camping, 'onglet-icone')}
-      <div class="onglet-header-texte">
-        <div class="onglet-titre">${c.nom}</div>
-        <div class="onglet-sub">${c.adresse}</div>
+    <div class="label-manuscrit">Notre camp de base</div>
+    <div class="onglet-header camping-header-photo">
+      <div class="onglet-header-ligne">
+        ${ic(ICONE.camping, 'onglet-icone')}
+        <div class="onglet-header-texte">
+          <div class="onglet-titre">${c.nom}</div>
+          <div class="onglet-sub">${c.adresse}</div>
+        </div>
       </div>
+      ${c.imageUrl ? `<div class="item-photo-wrap"><img class="item-photo" src="${c.imageUrl}" loading="lazy">${c.imageCredit ? `<div class="item-photo-legende">${echapper(c.imageCredit)}</div>` : ''}</div>` : ''}
     </div>
     <div class="item-carte">
       <div class="item-footer" style="margin-top:0;margin-bottom:14px">
