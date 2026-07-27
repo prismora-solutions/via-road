@@ -121,6 +121,18 @@ function rendreCamping() {
   const chien = CHIEN_LABEL[c.chien.statut];
   const sources = c.sources.map(s => `<a class="btn-source" href="${s.url}" target="_blank" rel="noopener">🔗 ${s.label}</a>`).join('');
 
+  const histoireHtml = c.histoire ? `
+    <div class="jour-histoire">
+      <div class="jour-histoire-header" onclick="toggleHistoire('histoire-camping')">
+        💡 Le saviez-vous ?
+        <span class="jour-histoire-arrow" id="arrow-histoire-camping">▸</span>
+      </div>
+      <div class="jour-histoire-content" id="histoire-camping">
+        ${c.histoire.split('\n\n').map(p => `<p>${p}</p>`).join('')}
+        ${(c.histoireSources || []).length ? `<div class="item-footer" style="margin-top:10px">${c.histoireSources.map(s => `<a class="btn-source" href="${s.url}" target="_blank" rel="noopener">🔗 ${s.label}</a>`).join('')}</div>` : ''}
+      </div>
+    </div>` : '';
+
   return `
     <div class="onglet-header">
       <div class="onglet-emoji">🏕️</div>
@@ -129,6 +141,8 @@ function rendreCamping() {
         <div class="onglet-sub">${c.adresse}</div>
       </div>
     </div>
+    ${c.intro ? `<div class="intro-texte">${c.intro}</div>` : ''}
+    ${histoireHtml}
     <div class="item-carte">
       <div class="item-footer" style="margin-top:0;margin-bottom:14px">
         <a class="btn-maps" href="${c.maps.google}" target="_blank" rel="noopener">📍 Maps</a>
@@ -139,6 +153,13 @@ function rendreCamping() {
       <div class="chien-tag ${chien.classe}">${chien.texte} — <span class="chien-note">${c.chien.note}</span></div>
       <div class="item-footer">${sources}</div>
     </div>`;
+}
+
+function toggleHistoire(id) {
+  const el = document.getElementById(id);
+  const arrow = document.getElementById('arrow-' + id);
+  el.classList.toggle('open');
+  arrow.textContent = el.classList.contains('open') ? '▾' : '▸';
 }
 
 // ===== CHECKLIST (identique V1) =====

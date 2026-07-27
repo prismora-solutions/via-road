@@ -15,6 +15,12 @@ const SEJOUR = {
     tel: "tel:+33555980854",
     telAffiche: "05 55 98 08 54",
     maps: { google: "https://maps.app.goo.gl/e9WGoXZ1gZvgC2Lt5" },
+    intro: "Ici, la Vézère sculpte des gorges avant de se calmer dans le lac des Bariousses. Treignac veille dessus depuis son pont du XIIIe siècle, encadrée par les crêtes des Monédières et l'immensité du plateau de Millevaches. Une semaine pour remonter les rivières, dénicher des cascades, flâner dans des cités médiévales — et laisser Alma courir en laisse au bord de l'eau.",
+    histoire: "Millevaches ne doit peut-être rien aux vaches. L'étymologie populaire y voit « mille vaches », mais plusieurs linguistes penchent pour l'occitan mila vacca, « mille sources » — un nom qui collerait bien à ce plateau qui donne naissance à la Vézère, la Vienne et la Corrèze. Le débat n'est toujours pas tranché.\n\nÀ Gimel, les trois chutes de la Montane ont inspiré Abel Hugo, frère de Victor Hugo, qui les décrivit dès 1883 dans « La France pittoresque ».",
+    histoireSources: [
+      { label: "Wikipédia — Plateau de Millevaches", url: "https://fr.wikipedia.org/wiki/Plateau_de_Millevaches" },
+      { label: "Cascades de Gimel — le site", url: "https://www.cascadesdegimel.com/" }
+    ],
     equipements: [
       "Piscine couverte chauffée",
       "Plage lac des Bariousses (Pavillon Bleu)",
