@@ -116,6 +116,16 @@ body {
 }
 .btn-ajouter-spot:active { background: var(--rouille); color: white; }
 
+.label-manuscrit {
+  font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 700; color: var(--rouille);
+  margin: 4px 0 6px 6px; transform: rotate(-1.5deg); display: inline-block;
+}
+
+.onglet-intro {
+  font-family: 'Fraunces', serif; font-style: italic; font-size: .92rem; color: var(--encre-doux);
+  line-height: 1.55; padding: 0 4px 14px; border-bottom: 1px dashed var(--ligne); margin-bottom: 14px;
+}
+
 /* ===== INTRO SÉJOUR ===== */
 .intro-texte {
   background: var(--rouille-bg); color: #7A3D1D;

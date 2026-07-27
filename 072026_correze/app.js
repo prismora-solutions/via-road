@@ -43,10 +43,14 @@ const RESSOURCE_CATEGORIES = [
 
 const ONGLETS = [
   { id: 'camping',       icone: ICONE.camping,       label: 'Bienvenue' },
-  { id: 'terraAventura', icone: ICONE.terraAventura, label: 'Terra Aventura' },
-  { id: 'randos',        icone: ICONE.randos,        label: 'Randos' },
-  { id: 'visites',       icone: ICONE.visites,       label: 'Visites' },
-  { id: 'carnet',        icone: ICONE.carnet,        label: 'Carnet' }
+  { id: 'terraAventura', icone: ICONE.terraAventura, label: 'Terra Aventura',
+    intro: "Le prétexte parfait pour explorer un village à hauteur d'enfant : on cherche les indices, on lève le nez, on découvre ce qu'on ne verrait jamais depuis la voiture." },
+  { id: 'randos',        icone: ICONE.randos,        label: 'Randos',
+    intro: "Des balades courtes, en forêt ou au bord de l'eau — pensées pour des petites jambes et une truffe curieuse, pas pour battre des records." },
+  { id: 'visites',       icone: ICONE.visites,       label: 'Visites',
+    intro: "Les haltes où on pose le sac : villages, panoramas, cascades — pour souffler et admirer, sans forcément marcher des heures." },
+  { id: 'carnet',        icone: ICONE.carnet,        label: 'Carnet',
+    intro: "Le résumé du séjour qui s'écrit tout seul au fil des coches — à relire ce soir, sous l'auvent." }
 ];
 
 // ===== INIT =====
@@ -309,6 +313,7 @@ function rendreOnglet(id) {
       </div>
       <button class="btn-ajouter-spot" onclick="toggleForm('nouveau-${id}')">${ic(ICONE.ajouter)} Ajouter</button>
     </div>
+    ${meta.intro ? `<div class="onglet-intro">${meta.intro}</div>` : ''}
     ${erreurHtml}
     ${rendreFormSpot(id, null)}
     ${items.map(item => rendreCarteItem(item, id)).join('')}`;
@@ -665,6 +670,7 @@ function rendreCamping() {
   return `
     ${bienvenueHtml}
     ${histoireHtml}
+    <div class="label-manuscrit">Le camp de base</div>
     <div class="onglet-header">
       ${ic(ICONE.camping, 'onglet-icone')}
       <div class="onglet-header-texte">
@@ -771,6 +777,7 @@ function rendreCarnet() {
           <div class="onglet-sub">Se remplit tout seul au fil du séjour</div>
         </div>
       </div>
+      <div class="onglet-intro">Le résumé du séjour qui s'écrit tout seul au fil des coches — à relire ce soir, sous l'auvent.</div>
       <div class="carnet-vide">
         ${ic(ICONE.sejour, 'carnet-vide-icone')}
         <p>Rien pour l'instant. Coche "On l'a fait" sur une visite, une rando ou un parcours Terra Aventura — elle apparaîtra ici automatiquement, avec la date, tes notes et tes photos.</p>
@@ -794,6 +801,7 @@ function rendreCarnet() {
       </div>
       <button class="btn-export-pdf" onclick="window.print()">${ic(ICONE.export)} Exporter</button>
     </div>
+    <div class="onglet-intro">Le résumé du séjour qui s'écrit tout seul au fil des coches — à relire ce soir, sous l'auvent.</div>
     <div class="scrapbook">
       ${entrees.map((e, i) => `
         <div class="scrap-entree" style="transform: rotate(${ROTATIONS[i % ROTATIONS.length]})">
