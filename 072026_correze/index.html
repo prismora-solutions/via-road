@@ -21,6 +21,7 @@
   <header class="header">
     <div class="header-top">
       <a class="logo" href="../"><i data-lucide="map"></i> ViaRoad</a>
+      <button class="btn-info" onclick="ouvrirIntro()" title="À propos de ce séjour"><i data-lucide="info"></i></button>
     </div>
     <div class="sejour-hero">
       <h1 class="sejour-titre" id="sejour-titre"></h1>
@@ -28,6 +29,16 @@
       <div class="sejour-badges" id="sejour-badges"></div>
     </div>
   </header>
+
+  <div class="intro-overlay" id="intro-overlay" onclick="if(event.target===this) fermerIntro()">
+    <div class="intro-carte">
+      <span class="intro-tape"></span>
+      <div class="intro-tampon"><i data-lucide="compass"></i></div>
+      <div class="intro-titre" id="intro-titre"></div>
+      <p class="intro-texte-popup" id="intro-texte"></p>
+      <button class="btn-intro-fermer" onclick="fermerIntro()">C'est parti <i data-lucide="arrow-right"></i></button>
+    </div>
+  </div>
 
   <nav class="nav-jours" id="nav-jours"></nav>
 

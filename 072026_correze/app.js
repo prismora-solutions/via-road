@@ -22,7 +22,7 @@ const ICONE = {
   ajouter: 'circle-plus', supprimer: 'x', ampoule: 'lightbulb', chevron: 'chevron-right',
   supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print', autre: 'store',
   panier: 'shopping-basket', avertissement: 'triangle-alert', interdit: 'ban', export: 'download',
-  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera'
+  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera', info: 'info', tampon: 'stamp'
 };
 
 const CHIEN_LABEL = {
@@ -58,7 +58,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   ecouterTempsReel();
   window.addEventListener('online', synchroniserFileAttente);
   synchroniserFileAttente();
+  afficherIntroSiPremiereFois();
 });
+
+function afficherIntroSiPremiereFois() {
+  if (!localStorage.getItem(`intro-vue-${SEJOUR.id}`)) ouvrirIntro();
+}
+function ouvrirIntro() {
+  document.getElementById('intro-titre').textContent = SEJOUR.titre;
+  document.getElementById('intro-texte').textContent = SEJOUR.introPopup;
+  document.getElementById('intro-overlay').classList.add('visible');
+  rafraichirIcones();
+}
+function fermerIntro() {
+  document.getElementById('intro-overlay').classList.remove('visible');
+  localStorage.setItem(`intro-vue-${SEJOUR.id}`, '1');
+}
 
 function rafraichirIcones() { if (window.lucide) lucide.createIcons(); }
 function ic(nom, classe) { return `<i data-lucide="${nom}" class="ic ${classe || ''}"></i>`; }
@@ -310,15 +325,16 @@ function rendreCarteItem(item, cat) {
       </div>
     </div>` : '';
 
-  let photoHtml;
+  let photoHtml = '';
   if (item.imageUrl) {
     photoHtml = `<div class="item-photo-wrap"><img class="item-photo" src="${item.imageUrl}" loading="lazy">${item.imageCredit ? `<div class="item-photo-legende">${echapper(item.imageCredit)}</div>` : ''}</div>`;
   } else if (item.imagePath) {
     photoHtml = `<div class="item-photo-wrap" onclick="declencherPhotoSpot('${id}')"><img class="item-photo" src="${urlPhoto(item.imagePath)}" loading="lazy"></div>`;
-  } else {
-    photoHtml = `<div class="item-photo-vide" onclick="declencherPhotoSpot('${id}')">${ic(ICONE.photo)}<span>Ajouter une photo</span></div>`;
   }
   const inputPhotoCache = `<input type="file" id="photo-spot-${id}" accept="image/*" style="display:none" onchange="televerserPhotoSpotEtEnregistrer('${id}')">`;
+
+  const btnPhotoDiscret = (!item.imageUrl && !item.imagePath)
+    ? `<button class="btn-icone" onclick="declencherPhotoSpot('${id}')" title="Ajouter une photo">${ic(ICONE.photo)}</button>` : '';
 
   return `
     <div class="item-carte">
@@ -327,6 +343,7 @@ function rendreCarteItem(item, cat) {
         <div class="item-titre">${item.nom}</div>
         <div class="item-actions">
           ${badge}
+          ${btnPhotoDiscret}
           <button class="btn-icone" onclick="toggleForm('${id}')" title="Modifier la fiche">${ic(ICONE.editer)}</button>
         </div>
       </div>
@@ -739,6 +756,10 @@ function rendreCarnet() {
     return;
   }
 
+  const ROTATIONS = ['-2.4deg', '1.6deg', '-1.1deg', '2.1deg', '-1.7deg', '1.1deg', '-2deg'];
+  const TAPES = ['tape-bleu', 'tape-sauge', 'tape-rouille'];
+  const CAT_INDEX = { terraAventura: 0, randos: 1, visites: 2 };
+
   main.innerHTML = `
     <div class="onglet-header carnet-header-flex">
       <div class="onglet-header-gauche">
@@ -750,46 +771,18 @@ function rendreCarnet() {
       </div>
       <button class="btn-export-pdf" onclick="window.print()">${ic(ICONE.export)} Exporter</button>
     </div>
-    <div class="frise" id="frise-carnet">
-      <svg class="frise-ligne" id="frise-svg"><path id="frise-chemin"/></svg>
-      ${entrees.map(e => `
-        <div class="frise-etape">
-          <div class="frise-date">${formaterDate(e.v.date)}</div>
-          <div class="frise-carte">
-            <div class="frise-carte-header">
-              ${ic(ONGLETS.find(o => o.id === e.cat).icone, 'frise-icone')}
-              <div>
-                <div class="frise-titre">${e.item.nom}</div>
-                <div class="frise-categorie">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu || ''}</div>
-              </div>
-            </div>
-            ${e.v.commentaire ? `<p class="vecu-commentaire">${echapper(e.v.commentaire)}</p>` : ''}
-            ${rendrePhotosHtml(e.id, e.v.photos)}
-          </div>
+    <div class="scrapbook">
+      ${entrees.map((e, i) => `
+        <div class="scrap-entree" style="transform: rotate(${ROTATIONS[i % ROTATIONS.length]})">
+          <span class="scrap-tape ${TAPES[CAT_INDEX[e.cat]]}"></span>
+          <div class="scrap-tampon">${ic(ONGLETS.find(o => o.id === e.cat).icone)}</div>
+          <div class="scrap-postmark">${formaterDate(e.v.date)}</div>
+          <div class="scrap-titre">${e.item.nom}</div>
+          <div class="scrap-lieu">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu || ''}</div>
+          ${e.v.commentaire ? `<p class="scrap-commentaire">${echapper(e.v.commentaire)}</p>` : ''}
+          ${rendrePhotosHtml(e.id, e.v.photos)}
         </div>`).join('')}
     </div>`;
 
   rafraichirIcones();
-  dessinerFriseCarnet();
-}
-
-function dessinerFriseCarnet() {
-  const conteneur = document.getElementById('frise-carnet');
-  const svg = document.getElementById('frise-svg');
-  const chemin = document.getElementById('frise-chemin');
-  const etapes = [...conteneur.querySelectorAll('.frise-etape')];
-  if (!etapes.length) return;
-  requestAnimationFrame(() => {
-    const hauteur = conteneur.offsetHeight;
-    svg.setAttribute('viewBox', `0 0 30 ${hauteur}`);
-    svg.style.height = hauteur + 'px';
-    const centres = etapes.map(el => el.offsetTop + 30);
-    let d = `M15 ${centres[0]}`;
-    for (let i = 1; i < centres.length; i++) {
-      const yMid = (centres[i - 1] + centres[i]) / 2;
-      const decalage = i % 2 === 0 ? 5 : -5;
-      d += ` Q ${15 + decalage} ${yMid} 15 ${centres[i]}`;
-    }
-    chemin.setAttribute('d', d);
-  });
 }

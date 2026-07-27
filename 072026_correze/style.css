@@ -48,7 +48,6 @@ body {
 .nav-icone { width: 19px; height: 19px; stroke-width: 1.9; display: block; margin: 0 auto; }
 .onglet-icone { width: 28px; height: 28px; stroke-width: 1.6; color: var(--rouille); flex-shrink: 0; }
 .ressource-icone { width: 20px; height: 20px; stroke-width: 1.7; color: var(--rouille); flex-shrink: 0; margin-top: 2px; }
-.frise-icone { width: 22px; height: 22px; stroke-width: 1.7; color: var(--rouille); flex-shrink: 0; }
 .carnet-vide-icone { width: 40px; height: 40px; stroke-width: 1.4; color: var(--ligne); margin-bottom: 10px; }
 
 .etoile { width: 15px; height: 15px; margin-right: 1px; }
@@ -163,16 +162,9 @@ body {
 .item-photo { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--gris-bg); }
 .item-photo-legende { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--encre-doux); text-align: center; margin-top: 4px; }
 
-.item-photo-vide {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  background: var(--papier); border: 2px dashed var(--ligne); border-radius: var(--radius-sm);
-  padding: 20px; margin: 2px 0 14px; cursor: pointer; color: var(--gris);
-}
-.item-photo-vide .ic { width: 22px; height: 22px; }
-.item-photo-vide span { font-family: 'Caveat', cursive; font-size: 1.05rem; font-weight: 700; }
-
 /* ===== CARTE ITEM ===== */
 .item-carte {
+  position: relative;
   background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px;
   box-shadow: var(--ombre);
 }
@@ -332,28 +324,80 @@ body {
 
 /* ===== IMPRESSION ===== */
 @media print {
-  .header-top, .nav-jours, .sejour-badges, .btn-export-pdf, .item-photo-vide { display: none !important; }
+  .header-top, .nav-jours, .sejour-badges, .btn-export-pdf, .btn-info, .intro-overlay { display: none !important; }
   body { background: white; }
   .header { position: static; box-shadow: none; background: white; color: var(--encre); }
   .sejour-titre, .sejour-meta { color: var(--encre); }
   .main { padding: 0; max-width: 100%; }
-  .frise-etape { break-inside: avoid; }
+  .scrap-entree { break-inside: avoid; transform: none !important; margin-bottom: 16px; }
   .vecu-photo-wrap { break-inside: avoid; }
   .vecu-photo-suppr { display: none; }
-  svg.frise-ligne { display: none; }
-  .frise { padding-left: 0; }
 }
 
-/* ===== FRISE DU CARNET ===== */
-.frise { position: relative; padding-left: 30px; }
-svg.frise-ligne { position: absolute; left: 0; top: 0; height: 100%; width: 30px; overflow: visible; }
-svg.frise-ligne path { fill: none; stroke: var(--ligne); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1 9; }
-.frise-etape { position: relative; margin-bottom: 20px; }
-.frise-date { font-family: 'Caveat', cursive; font-size: 1.1rem; font-weight: 700; color: var(--rouille); margin-bottom: 4px; }
-.frise-carte { background: var(--papier-carte); border: 1px solid var(--ligne); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--ombre); }
-.frise-carte-header { display: flex; gap: 10px; align-items: flex-start; }
-.frise-titre { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; line-height: 1.3; }
-.frise-categorie { font-size: .75rem; color: var(--gris); font-weight: 700; margin-top: 2px; }
+/* ===== BOUTON INFO (rouvre l'intro) ===== */
+.btn-info {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(243,236,221,.25); color: #F3ECDD;
+  width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+
+/* ===== POPUP D'INTRO ===== */
+.intro-overlay {
+  position: fixed; inset: 0; background: rgba(43,38,32,.55); z-index: 200;
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.intro-overlay.visible { display: flex; }
+.intro-carte {
+  position: relative; background: var(--papier-carte); border-radius: var(--radius);
+  padding: 32px 26px 26px; max-width: 380px; box-shadow: var(--ombre-lg);
+  animation: intro-pop .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes intro-pop { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.intro-tape {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+  width: 70px; height: 22px; background: rgba(181,86,42,.35);
+}
+.intro-tampon {
+  width: 46px; height: 46px; border-radius: 50%; border: 2px dashed var(--rouille); color: var(--rouille);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; transform: rotate(-6deg);
+}
+.intro-tampon .ic { width: 22px; height: 22px; }
+.intro-titre { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; text-align: center; margin-bottom: 10px; }
+.intro-texte-popup { font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 1.45; color: var(--encre-doux); text-align: center; margin-bottom: 20px; }
+.btn-intro-fermer {
+  display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+  background: var(--rouille); color: white; border: none; padding: 12px; border-radius: 50px;
+  font-family: 'Nunito', sans-serif; font-size: .88rem; font-weight: 800; cursor: pointer;
+}
+
+/* ===== CARNET — SCRAPBOOK ===== */
+.scrapbook { display: flex; flex-direction: column; gap: 22px; padding: 6px 4px; }
+.scrap-entree {
+  position: relative; background: var(--papier-carte); border-radius: var(--radius);
+  padding: 20px 18px 16px; box-shadow: var(--ombre-lg);
+}
+.scrap-tape {
+  position: absolute; top: -10px; left: 24px; width: 56px; height: 20px; transform: rotate(-3deg); z-index: 2;
+}
+.tape-bleu    { background: rgba(74,107,122,.4); }
+.tape-sauge   { background: rgba(107,127,94,.4); }
+.tape-rouille { background: rgba(181,86,42,.4); }
+.scrap-tampon {
+  position: absolute; top: 14px; right: 16px; width: 40px; height: 40px; border-radius: 50%;
+  border: 2px dashed var(--gris); color: var(--gris); display: flex; align-items: center; justify-content: center;
+  transform: rotate(8deg); opacity: .8;
+}
+.scrap-tampon .ic { width: 18px; height: 18px; }
+.scrap-postmark {
+  display: inline-block; font-family: 'Caveat', cursive; font-size: 1.15rem; font-weight: 700; color: var(--rouille);
+  border: 1.5px solid var(--rouille); border-radius: 50px; padding: 2px 14px; margin-bottom: 8px; transform: rotate(-2deg);
+}
+.scrap-titre { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.15rem; line-height: 1.3; padding-right: 40px; }
+.scrap-lieu { font-size: .76rem; color: var(--gris); font-weight: 700; margin-top: 2px; margin-bottom: 10px; }
+.scrap-commentaire { font-family: 'Caveat', cursive; font-size: 1.25rem; color: var(--encre-doux); line-height: 1.4; margin-bottom: 4px; }
+.scrap-entree .vecu-photos { margin-top: 10px; }
+.scrap-entree .vecu-photos .vecu-photo-wrap:first-child {
+  width: 100%; height: auto; aspect-ratio: 4/3; border: 6px solid white; box-shadow: var(--ombre-lg); transform: rotate(-1deg);
+}
 
 /* ===== PROGRESS ===== */
 .progress-bar-wrap { background: rgba(243,236,221,.2); border-radius: 50px; height: 6px; margin-top: 10px; overflow: hidden; }
