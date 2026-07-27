@@ -1,0 +1,163 @@
+/* ===== VARIABLES (identiques V1 pour cohérence de marque) ===== */
+:root {
+  --vert:       #2D7D46;
+  --vert-clair: #4CAF70;
+  --vert-bg:    #E8F5EE;
+  --orange:     #E07B39;
+  --orange-bg:  #FDF0E8;
+  --bleu:       #3A7FC1;
+  --bleu-bg:    #E8F0FA;
+  --jaune:      #F0B429;
+  --rouge:      #D94F4F;
+  --rouge-bg:   #FDEAEA;
+  --violet:     #7C3AED;
+  --violet-bg:  #EDE9FE;
+  --gris:       #6B7280;
+  --gris-bg:    #F3F4F6;
+  --fond:       #F7F5F0;
+  --texte:      #1A1A2E;
+  --texte-doux: #4B5563;
+  --ombre:      0 2px 12px rgba(0,0,0,0.08);
+  --ombre-lg:   0 8px 32px rgba(0,0,0,0.12);
+  --radius:     16px;
+  --radius-sm:  10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--fond);
+  color: var(--texte);
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(145deg, #2D7D46 0%, #1A5C32 100%);
+  color: white; padding: 0 0 20px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--ombre-lg);
+}
+.header-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 10px; }
+.logo { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; opacity: .95; color: white; text-decoration: none; }
+.btn-checklist {
+  background: rgba(255,255,255,.18); border: 1.5px solid rgba(255,255,255,.35);
+  color: white; padding: 7px 14px; border-radius: 50px;
+  font-family: 'Nunito', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer;
+}
+.btn-checklist:active { background: rgba(255,255,255,.28); }
+
+.sejour-hero { padding: 4px 18px 0; }
+.sejour-titre { font-family: 'Baloo 2', cursive; font-size: 1.65rem; font-weight: 800; line-height: 1.15; margin-bottom: 4px; }
+.sejour-meta  { font-size: .88rem; opacity: .82; font-weight: 600; margin-bottom: 10px; }
+.sejour-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge {
+  background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3);
+  color: white; padding: 4px 10px; border-radius: 50px; font-size: .75rem; font-weight: 700;
+}
+
+/* ===== NAV ONGLETS ===== */
+.nav-jours {
+  display: flex; background: white; border-bottom: 2px solid #E5E7EB;
+  overflow-x: auto; scrollbar-width: none;
+  position: sticky; top: 0; z-index: 99; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.nav-jours::-webkit-scrollbar { display: none; }
+.nav-jour-btn {
+  flex: 1 0 auto; padding: 12px 16px; border: none; background: transparent; cursor: pointer;
+  font-family: 'Nunito', sans-serif; color: var(--gris); border-bottom: 3px solid transparent;
+  transition: all .2s; white-space: nowrap;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.nav-emoji { font-size: 1.15rem; }
+.nav-label { font-size: .72rem; font-weight: 700; }
+.nav-jour-btn.actif { color: var(--vert); border-bottom-color: var(--vert); }
+
+/* ===== MAIN ===== */
+.main { padding: 16px 14px 80px; max-width: 560px; margin: 0 auto; }
+
+/* ===== EN-TÊTE D'ONGLET ===== */
+.onglet-header {
+  background: white; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px;
+  box-shadow: var(--ombre); display: flex; align-items: center; gap: 14px;
+}
+.onglet-emoji { font-size: 2.2rem; line-height: 1; }
+.onglet-titre { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; }
+.onglet-sub   { font-size: .82rem; color: var(--gris); font-weight: 600; margin-top: 2px; }
+
+/* ===== CARTE ITEM ===== */
+.item-carte {
+  background: white; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+  box-shadow: var(--ombre);
+}
+.item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.item-titre { font-family: 'Baloo 2', cursive; font-size: 1.08rem; font-weight: 800; line-height: 1.25; }
+.badge-incontournable {
+  flex-shrink: 0; background: var(--orange-bg); color: var(--orange);
+  font-size: .68rem; font-weight: 800; padding: 3px 9px; border-radius: 50px; white-space: nowrap;
+}
+.item-lieu { font-size: .78rem; color: var(--gris); font-weight: 700; margin-bottom: 4px; }
+.item-etoiles { font-size: .9rem; margin-bottom: 8px; letter-spacing: 1px; }
+.item-infos { display: flex; gap: 10px; flex-wrap: wrap; font-size: .78rem; font-weight: 700; color: var(--texte-doux); margin-bottom: 8px; }
+.item-desc { font-size: .85rem; color: var(--texte-doux); line-height: 1.5; margin-bottom: 10px; }
+
+/* ===== TAG CHIEN ===== */
+.chien-tag {
+  font-size: .78rem; font-weight: 700; padding: 8px 12px; border-radius: var(--radius-sm);
+  margin-bottom: 12px; line-height: 1.4;
+}
+.chien-tag .chien-note { font-weight: 500; }
+.chien-ok   { background: var(--vert-bg); color: var(--vert); }
+.chien-warn { background: #FEF3C7; color: #92400E; }
+.chien-non  { background: var(--rouge-bg); color: var(--rouge); }
+
+/* ===== FOOTER ITEM (liens) ===== */
+.item-footer { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.btn-maps {
+  display: inline-flex; align-items: center; gap: 4px; background: var(--bleu); color: white;
+  padding: 5px 13px; border-radius: 50px; font-size: .75rem; font-weight: 700; text-decoration: none;
+}
+.btn-lien {
+  display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 50px;
+  font-size: .75rem; font-weight: 700; text-decoration: none; background: var(--vert-bg); color: var(--vert);
+}
+.btn-tel  { background: var(--orange-bg); color: var(--orange); }
+.btn-source {
+  display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 50px;
+  font-size: .72rem; font-weight: 700; text-decoration: none; background: var(--violet-bg); color: var(--violet);
+}
+
+/* ===== FICHE CAMPING ===== */
+.camping-equip-titre { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--gris); margin-bottom: 8px; }
+.camping-equip-liste { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.camping-equip-liste li { font-size: .85rem; color: var(--texte-doux); background: var(--fond); padding: 8px 12px; border-radius: var(--radius-sm); }
+
+/* ===== MODAL CHECKLIST (identique V1) ===== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200;
+  display: none; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.visible { display: flex; }
+.modal {
+  background: white; border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-width: 520px;
+  max-height: 85vh; display: flex; flex-direction: column;
+  animation: slideUp .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 14px; border-bottom: 1px solid #E5E7EB; }
+.modal-header h2 { font-family: 'Baloo 2', cursive; font-size: 1.15rem; font-weight: 800; }
+.modal-close { background: var(--gris-bg); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; font-weight: 700; color: var(--gris); }
+.modal-body { overflow-y: auto; padding: 16px 20px 32px; flex: 1; }
+.checklist-categorie { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--gris); margin: 16px 0 8px; }
+.checklist-categorie:first-child { margin-top: 0; }
+.checklist-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--fond); border-radius: var(--radius-sm); margin-bottom: 6px; cursor: pointer; }
+.checklist-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--vert); cursor: pointer; flex-shrink: 0; }
+.checklist-item label { font-size: .87rem; font-weight: 600; color: var(--texte); cursor: pointer; line-height: 1.35; }
+.checklist-item.fait label { text-decoration: line-through; color: var(--gris); }
+
+/* ===== PROGRESS ===== */
+.progress-bar-wrap { background: rgba(255,255,255,.2); border-radius: 50px; height: 6px; margin-top: 10px; overflow: hidden; }
+.progress-bar { height: 100%; background: white; border-radius: 50px; transition: width .4s; }
+.progress-label { font-size: .75rem; opacity: .85; font-weight: 700; margin-top: 4px; }
