@@ -10,6 +10,7 @@ let vecuEtat = {};    // { [spotId]: { fait, date, commentaire, photos: [chemin,
 let CATALOGUE = { terraAventura: [], randos: [], visites: [] }; // rempli depuis Supabase (table "spots")
 let RESSOURCES = [];  // rempli depuis Supabase (table "ressources")
 let horsLigne = false;
+let erreurCatalogue = null;
 
 // Icônes Lucide (https://lucide.dev) — un nom par usage
 const ICONE = {
@@ -95,7 +96,11 @@ async function chargerCatalogueDistant() {
     CATALOGUE = { terraAventura: [], randos: [], visites: [] };
     (spots || []).forEach(row => CATALOGUE[row.categorie].push(normaliserSpot(row)));
     RESSOURCES = (ress || []).map(normaliserRessource);
-  } catch (e) { /* pas de réseau — le catalogue reste vide ou celui déjà chargé */ }
+    erreurCatalogue = null;
+  } catch (e) {
+    erreurCatalogue = (e && e.message) ? e.message : String(e);
+    console.error('Erreur de chargement du catalogue Supabase :', e);
+  }
 }
 
 function ecouterTempsReel() {
@@ -236,6 +241,12 @@ function rendreOnglet(id) {
   });
   const meta = ONGLETS.find(o => o.id === id);
 
+  const erreurHtml = erreurCatalogue ? `
+    <div class="carnet-vide" style="border:2px dashed var(--rouge);margin-bottom:14px">
+      ${ic(ICONE.avertissement, 'carnet-vide-icone')}
+      <p style="color:var(--rouge)"><strong>Connexion à la base impossible.</strong><br>${echapper(erreurCatalogue)}</p>
+    </div>` : '';
+
   main.innerHTML = `
     <div class="onglet-header">
       ${ic(meta.icone, 'onglet-icone')}
@@ -245,6 +256,7 @@ function rendreOnglet(id) {
       </div>
       <button class="btn-ajouter-spot" onclick="toggleForm('nouveau-${id}')">${ic(ICONE.ajouter)} Ajouter</button>
     </div>
+    ${erreurHtml}
     ${rendreFormSpot(id, null)}
     ${items.map(item => rendreCarteItem(item, id)).join('')}`;
   rafraichirIcones();
