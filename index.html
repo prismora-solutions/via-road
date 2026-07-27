@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViaRoad — Carnet de route</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papier:#F7F5F0;
+    --encre:#1A1A2E;
+    --encre-doux:#5B5A6E;
+    --vert:#2D7D46;
+    --vert-clair:#4CAF70;
+    --vert-bg:#E8F5EE;
+    --orange:#E07B39;
+    --orange-bg:#FDF0E8;
+    --ligne:#C9C2B4;
+    --ombre:0 10px 30px rgba(26,26,46,.08);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito',sans-serif;
+    background:
+      radial-gradient(ellipse at top left, rgba(45,125,70,.05), transparent 55%),
+      var(--papier);
+    color:var(--encre);
+    min-height:100vh;
+  }
+
+  /* ===== EN-TÊTE ===== */
+  header{ padding:56px 24px 24px; text-align:center; }
+  .eyebrow{
+    font-size:.72rem; font-weight:800; letter-spacing:2px;
+    text-transform:uppercase; color:var(--vert);
+  }
+  h1{
+    font-family:'Baloo 2',cursive; font-weight:800;
+    font-size:clamp(2.4rem,7vw,3.4rem);
+    margin:6px 0 8px; color:var(--encre);
+  }
+  header p{
+    color:var(--encre-doux); font-size:1rem; font-weight:600;
+    max-width:420px; margin:0 auto;
+  }
+
+  /* ===== ITINÉRAIRE ===== */
+  main{ max-width:640px; margin:0 auto; padding:24px 24px 80px; position:relative; }
+
+  .itineraire{ position:relative; padding-left:38px; }
+
+  svg.route{
+    position:absolute; left:0; top:0; height:100%; width:38px;
+    overflow:visible;
+  }
+  svg.route path{
+    fill:none; stroke:var(--ligne); stroke-width:2.5;
+    stroke-linecap:round; stroke-dasharray:1 10;
+  }
+
+  .arret{ position:relative; margin-bottom:28px; }
+  .pin{
+    position:absolute; left:-38px; top:22px;
+    width:16px; height:16px; border-radius:50%;
+    background:var(--vert); border:3px solid var(--papier);
+    box-shadow:0 0 0 2px var(--vert);
+  }
+  .arret.fantome .pin{
+    background:var(--papier); box-shadow:0 0 0 2px var(--ligne);
+  }
+
+  .carte{
+    display:block; text-decoration:none; color:inherit;
+    background:#fff; border-radius:18px; padding:20px 22px;
+    box-shadow:var(--ombre);
+    border:1px solid rgba(26,26,46,.04);
+    transition:transform .18s ease, box-shadow .18s ease;
+    opacity:0; transform:translateY(14px);
+    animation:apparait .5s ease forwards;
+  }
+  .arret:nth-child(1) .carte{ animation-delay:.05s }
+  .arret:nth-child(2) .carte{ animation-delay:.15s }
+  .arret:nth-child(3) .carte{ animation-delay:.25s }
+  @keyframes apparait{ to{ opacity:1; transform:translateY(0) } }
+
+  a.carte:hover{ transform:translateY(-3px); box-shadow:0 16px 34px rgba(26,26,46,.12); }
+  a.carte:focus-visible{ outline:3px solid var(--vert); outline-offset:2px; }
+
+  .ligne1{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px; }
+  .destination{
+    font-family:'Baloo 2',cursive; font-weight:800; font-size:1.25rem; line-height:1.2;
+  }
+  .statut{
+    flex-shrink:0; font-size:.68rem; font-weight:800; letter-spacing:.4px;
+    padding:4px 10px; border-radius:50px; text-transform:uppercase;
+  }
+  .statut.termine{ background:var(--vert-bg); color:var(--vert); }
+  .statut.avenir{ background:var(--orange-bg); color:var(--orange); }
+
+  .dates{ font-size:.85rem; font-weight:700; color:var(--encre-doux); margin-bottom:12px; }
+
+  .tags{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tag{
+    font-size:.72rem; font-weight:700; background:var(--papier);
+    color:var(--encre-doux); padding:4px 10px; border-radius:50px;
+  }
+
+  .ouvrir{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:.85rem; font-weight:800; color:var(--vert);
+  }
+  .ouvrir svg{ width:14px; height:14px; transition:transform .18s ease; }
+  a.carte:hover .ouvrir svg{ transform:translateX(3px); }
+
+  /* Carte fantôme — prochain séjour */
+  .carte.fantome{
+    background:transparent; border:2px dashed var(--ligne);
+    box-shadow:none; display:flex; align-items:center; gap:10px;
+    color:var(--encre-doux); cursor:default;
+  }
+  .carte.fantome:hover{ transform:none; box-shadow:none; }
+  .carte.fantome .plus{
+    font-family:'Baloo 2',cursive; font-size:1.3rem; color:var(--ligne);
+  }
+
+  footer{
+    text-align:center; padding:0 24px 48px;
+    font-size:.78rem; font-weight:700; color:var(--encre-doux);
+  }
+  footer span{ color:var(--vert); }
+
+  @media (prefers-reduced-motion: reduce){
+    .carte{ animation:none; opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Prismora Solutions</div>
+  <h1>🗺️ ViaRoad</h1>
+  <p>Le carnet de route de la famille. Choisis ton séjour.</p>
+</header>
+
+<main>
+  <div class="itineraire" id="itineraire">
+    <svg class="route" id="svg-route"><path id="chemin"/></svg>
+
+    <div class="arret">
+      <span class="pin"></span>
+      <a class="carte" href="052026_marais-poitevin/">
+        <div class="ligne1">
+          <div class="destination">Marais Poitevin</div>
+          <span class="statut termine">Terminé</span>
+        </div>
+        <div class="dates">14 → 17 mai 2026 · Deux-Sèvres (79)</div>
+        <div class="tags">
+          <span class="tag">🚐 Camping-car</span>
+          <span class="tag">🐕 Alma</span>
+          <span class="tag">🎮 Terra Aventura</span>
+        </div>
+        <div class="ouvrir">Ouvrir le séjour
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </a>
+    </div>
+
+    <div class="arret">
+      <span class="pin"></span>
+      <a class="carte" href="072026_correze/">
+        <div class="ligne1">
+          <div class="destination">Corrèze</div>
+          <span class="statut avenir">À venir</span>
+        </div>
+        <div class="dates">29 juil. → 5 août 2026 · Camping de Treignac</div>
+        <div class="tags">
+          <span class="tag">🏕️ Caravane</span>
+          <span class="tag">🐕 Alma</span>
+          <span class="tag">🏛️ Visites & cascades</span>
+        </div>
+        <div class="ouvrir">Ouvrir le séjour
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </a>
+    </div>
+
+    <div class="arret fantome">
+      <span class="pin"></span>
+      <div class="carte fantome">
+        <span class="plus">+</span>
+        <span>Prochain séjour à venir</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Prismora Solutions · <span>L'IA propose, l'humain dispose</span></footer>
+
+<script>
+  // Trace une ligne pointillée légèrement sinueuse reliant chaque étape
+  function dessinerRoute(){
+    const conteneur = document.getElementById('itineraire');
+    const svg = document.getElementById('svg-route');
+    const chemin = document.getElementById('chemin');
+    const pins = [...conteneur.querySelectorAll('.pin')];
+    if(!pins.length) return;
+
+    const hauteur = conteneur.offsetHeight;
+    svg.setAttribute('viewBox', `0 0 38 ${hauteur}`);
+    svg.style.height = hauteur + 'px';
+
+    const centres = pins.map(p => p.offsetTop + p.offsetHeight/2);
+    let d = `M19 ${centres[0]}`;
+    for(let i=1;i<centres.length;i++){
+      const yMid = (centres[i-1]+centres[i])/2;
+      const decalage = i % 2 === 0 ? 6 : -6;
+      d += ` Q ${19+decalage} ${yMid} 19 ${centres[i]}`;
+    }
+    chemin.setAttribute('d', d);
+  }
+  window.addEventListener('load', dessinerRoute);
+  window.addEventListener('resize', dessinerRoute);
+</script>
+
+</body>
+</html>
