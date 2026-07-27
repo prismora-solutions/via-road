@@ -60,15 +60,6 @@
   }
 
   .arret{ position:relative; margin-bottom:28px; }
-  .pin{
-    position:absolute; left:-38px; top:22px;
-    width:16px; height:16px; border-radius:50%;
-    background:var(--vert); border:3px solid var(--papier);
-    box-shadow:0 0 0 2px var(--vert);
-  }
-  .arret.fantome .pin{
-    background:var(--papier); box-shadow:0 0 0 2px var(--ligne);
-  }
 
   .carte{
     display:block; text-decoration:none; color:inherit;
@@ -148,7 +139,6 @@
     <svg class="route" id="svg-route"><path id="chemin"/></svg>
 
     <div class="arret">
-      <span class="pin"></span>
       <a class="carte" href="052026_marais-poitevin/">
         <div class="ligne1">
           <div class="destination">Marais Poitevin</div>
@@ -167,7 +157,6 @@
     </div>
 
     <div class="arret">
-      <span class="pin"></span>
       <a class="carte" href="072026_correze/">
         <div class="ligne1">
           <div class="destination">Corrèze</div>
@@ -186,7 +175,6 @@
     </div>
 
     <div class="arret fantome">
-      <span class="pin"></span>
       <div class="carte fantome">
         <span class="plus">+</span>
         <span>Prochain séjour à venir</span>
@@ -203,14 +191,14 @@
     const conteneur = document.getElementById('itineraire');
     const svg = document.getElementById('svg-route');
     const chemin = document.getElementById('chemin');
-    const pins = [...conteneur.querySelectorAll('.pin')];
-    if(!pins.length) return;
+    const etapes = [...conteneur.querySelectorAll('.arret')];
+    if(!etapes.length) return;
 
     const hauteur = conteneur.offsetHeight;
     svg.setAttribute('viewBox', `0 0 38 ${hauteur}`);
     svg.style.height = hauteur + 'px';
 
-    const centres = pins.map(p => p.offsetTop + p.offsetHeight/2);
+    const centres = etapes.map(p => p.offsetTop + p.offsetHeight/2);
     let d = `M19 ${centres[0]}`;
     for(let i=1;i<centres.length;i++){
       const yMid = (centres[i-1]+centres[i])/2;
