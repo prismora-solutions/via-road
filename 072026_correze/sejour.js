@@ -14,7 +14,7 @@ const SEJOUR = {
     adresse: "27 Route de Guéret, Lac des Bariousses, 19260 Treignac",
     tel: "tel:+33555980854",
     telAffiche: "05 55 98 08 54",
-    maps: { google: "https://www.google.com/maps/search/?api=1&query=45.5470,1.7920" },
+    maps: { google: "https://maps.app.goo.gl/e9WGoXZ1gZvgC2Lt5" },
     equipements: [
       "Piscine couverte chauffée",
       "Plage lac des Bariousses (Pavillon Bleu)",
