@@ -249,25 +249,46 @@ function rendreHeader() {
   ].map(b => `<span class="badge">${ic(b.icone)} ${b.texte}</span>`).join('');
 
   const entrees = entreesVecuTriees();
-  const total = tousLesItemsTracables().length;
 
   const friseHtml = entrees.length
-    ? `<div class="header-frise">${entrees.map(e => `
-        <div class="header-frise-chip" title="${echapper(e.item.nom)}">
-          ${ic(ONGLETS.find(o => o.id === e.cat).icone)}
-          <div class="header-frise-chip-texte">
-            <span class="header-frise-date">${formaterDateCourte(e.v.date)}</span>
-            <span class="header-frise-titre">${echapper(e.item.nom)}</span>
-          </div>
-        </div>`).join('')}</div>`
+    ? `<div class="header-frise-scroll">
+        <svg class="header-frise-svg" id="header-frise-svg"><path id="header-frise-chemin"/></svg>
+        <div class="header-frise-points" id="header-frise-points">
+          ${entrees.map(e => `
+            <div class="header-frise-point" title="${echapper(e.item.nom)}">
+              <div class="header-frise-cercle">${ic(ONGLETS.find(o => o.id === e.cat).icone)}</div>
+              <span class="header-frise-date">${formaterDateCourte(e.v.date)}</span>
+            </div>`).join('')}
+        </div>
+      </div>`
     : `<div class="header-frise-vide">Coche ta première étape pour démarrer la frise</div>`;
 
-  badges.innerHTML += `
-    <div style="width:100%;margin-top:8px">
-      <div class="progress-label">${ic(ICONE.sejour)} Séjour vécu : ${entrees.length}/${total} étapes</div>
-      ${friseHtml}
-    </div>`;
+  badges.innerHTML += `<div style="width:100%;margin-top:10px">${friseHtml}</div>`;
   rafraichirIcones();
+  if (entrees.length) dessinerFriseHeader();
+}
+
+function dessinerFriseHeader() {
+  const scroll = document.querySelector('.header-frise-scroll');
+  const svg = document.getElementById('header-frise-svg');
+  const chemin = document.getElementById('header-frise-chemin');
+  const points = [...document.querySelectorAll('.header-frise-point')];
+  if (!scroll || !points.length) return;
+
+  requestAnimationFrame(() => {
+    const largeur = document.getElementById('header-frise-points').scrollWidth;
+    svg.setAttribute('viewBox', `0 0 ${largeur} 56`);
+    svg.style.width = largeur + 'px';
+
+    const centres = points.map(p => p.offsetLeft + p.offsetWidth / 2);
+    let d = `M${centres[0]} 20`;
+    for (let i = 1; i < centres.length; i++) {
+      const xMid = (centres[i - 1] + centres[i]) / 2;
+      const decalage = i % 2 === 0 ? 12 : -12;
+      d += ` Q ${xMid} ${20 + decalage} ${centres[i]} 20`;
+    }
+    chemin.setAttribute('d', d);
+  });
 }
 
 // ===== NAVIGATION =====
