@@ -26,8 +26,7 @@ const SEJOUR = {
       note: "4€/nuit/animal. Chiens catégories 1 et 2 interdits. Carnet de vaccination obligatoire, à régler sur place. ⚠️ Un avis récent signale la plage du lac interdite aux chiens — à confirmer à l'accueil."
     },
     sources: [
-      { label: "Tourisme Corrèze — fiche camping", url: "https://www.tourismecorreze.com/fr/tourisme_detail/flower_camping_la_plage.html" },
-      { label: "Tarifs & conditions chien", url: "https://www.lafrancedunordausud.fr/flower-camping-la-plage_60337.html" }
+      { label: "Tourisme Corrèze — fiche camping", url: "https://www.tourismecorreze.com/fr/tourisme_detail/flower_camping_la_plage.html" }
     ]
   },
 
