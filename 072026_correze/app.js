@@ -314,7 +314,12 @@ function rendreOnglet(id) {
   if (id === 'camping') { main.innerHTML = rendreCamping(); rafraichirIcones(); return; }
   if (id === 'carnet')  { rendreCarnet(); return; }
 
-  const items = CATALOGUE[id].slice().sort((a, b) => b.etoiles - a.etoiles || a.nom.localeCompare(b.nom));
+  const items = CATALOGUE[id].slice().sort((a, b) => {
+    const pouceA = (a.likes !== null && a.likes !== undefined) ? a.likes : -1;
+    const pouceB = (b.likes !== null && b.likes !== undefined) ? b.likes : -1;
+    if (pouceB !== pouceA) return pouceB - pouceA;
+    return b.etoiles - a.etoiles || a.nom.localeCompare(b.nom);
+  });
   const meta = ONGLETS.find(o => o.id === id);
 
   const erreurHtml = erreurCatalogue ? `
