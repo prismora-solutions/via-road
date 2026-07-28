@@ -474,6 +474,11 @@ function rendreFormSpot(cat, item) {
       <label class="vecu-label">Lien Google Maps</label>
       <input type="text" class="vecu-input" id="sf-maps-${id}" value="${item ? echapper(item.maps.google) : ''}">
 
+      <label class="vecu-label">${ic(ICONE.photo)} Lien de la photo (URL)</label>
+      <input type="text" class="vecu-input" id="sf-image-${id}" placeholder="https://..." value="${item ? echapper(item.imageUrl) : ''}">
+      <label class="vecu-label">Crédit photo (optionnel)</label>
+      <input type="text" class="vecu-input" id="sf-image-credit-${id}" placeholder="Tourisme Corrèze..." value="${item ? echapper(item.imageCredit) : ''}">
+
       <label class="vecu-label">Sources — une par ligne, format "Nom|https://..."</label>
       <textarea class="vecu-textarea" id="sf-sources-${id}" placeholder="Office de tourisme|https://...">${sourcesTexte}</textarea>
 
@@ -529,6 +534,8 @@ async function enregistrerSpot(cat, existingId) {
     anecdote: val(`sf-anecdote-${id}`).trim() || null,
     anecdote_source: anecdoteSource,
     maps_url: val(`sf-maps-${id}`).trim() || null,
+    image_url: val(`sf-image-${id}`).trim() || null,
+    image_credit: val(`sf-image-credit-${id}`).trim() || null,
     sources,
     updated_at: new Date().toISOString()
   };
