@@ -21,6 +21,7 @@ const ICONE = {
   fait: 'check-circle-2', modifier: 'pencil', enregistrer: 'save', decocher: 'undo-2',
   ajouter: 'circle-plus', supprimer: 'x', ampoule: 'lightbulb', chevron: 'chevron-right',
   supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print', autre: 'store',
+  nautique: 'sailboat', loisirs: 'trees',
   panier: 'shopping-basket', avertissement: 'triangle-alert', interdit: 'ban', export: 'download',
   horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera', info: 'info', tampon: 'stamp', pouce: 'thumbs-up', avis: 'users', app: 'smartphone'
 };
@@ -38,7 +39,8 @@ const CHIEN_OPTIONS = [
 ];
 const RESSOURCE_CATEGORIES = [
   ['supermarche', 'Supermarché'], ['epicerie', 'Épicerie / commerce'], ['boulangerie', 'Boulangerie'],
-  ['pharmacie', 'Pharmacie'], ['veterinaire', 'Vétérinaire'], ['autre', 'Autre']
+  ['pharmacie', 'Pharmacie'], ['veterinaire', 'Vétérinaire'],
+  ['nautique', 'Activité nautique'], ['loisirs', 'Loisirs / activité'], ['autre', 'Autre']
 ];
 
 const ONGLETS = [
@@ -93,6 +95,7 @@ function normaliserSpot(row) {
     anecdote: row.anecdote, anecdoteSource: row.anecdote_source || [],
     likes: row.likes,
     difficulte: row.difficulte, theme: row.theme, noteDecathlon: row.note_decathlon, nbAvis: row.nb_avis, appUrl: row.app_url,
+    noteGoogle: row.note_google, avisGoogle: row.avis_google,
     imagePath: row.image_path, imageUrl: row.image_url, imageCredit: row.image_credit,
     maps: { google: row.maps_url },
     sources: row.sources || []
@@ -398,7 +401,7 @@ function rendreCarteItem(item, cat) {
       </div>
       <div class="item-lieu">${ic(ICONE.distance)} ${item.lieu || ''}</div>
       ${(item.difficulte || item.theme) ? `<div class="item-tags-decathlon">${item.difficulte ? `<span class="tag-difficulte tag-${item.difficulte}">${item.difficulte === 'facile' ? 'Facile' : 'Modérée'}</span>` : ''}${item.theme ? `<span class="tag-theme">${item.theme}</span>` : ''}</div>` : ''}
-      <div class="item-etoiles">${rendreEtoiles(item.etoiles)}${(item.likes !== null && item.likes !== undefined) ? `<span class="item-likes">${ic(ICONE.pouce)} ${item.likes}</span>` : ''}${(item.noteDecathlon !== null && item.noteDecathlon !== undefined) ? `<span class="item-likes">${ic(ICONE.avis)} ${item.noteDecathlon}/5 (${item.nbAvis || 0} avis)</span>` : ''}</div>
+      <div class="item-etoiles">${rendreEtoiles(item.etoiles)}${(item.likes !== null && item.likes !== undefined) ? `<span class="item-likes">${ic(ICONE.pouce)} ${item.likes}</span>` : ''}${(item.noteDecathlon !== null && item.noteDecathlon !== undefined) ? `<span class="item-likes">${ic(ICONE.avis)} ${item.noteDecathlon}/5 (${item.nbAvis || 0} avis)</span>` : ''}${(item.noteGoogle !== null && item.noteGoogle !== undefined) ? `<span class="item-likes">${ic(ICONE.avis)} ${item.noteGoogle}/5 (${item.avisGoogle || 0} avis Google)</span>` : ''}</div>
       <div class="item-infos">${infos.map(i => `<span>${i}</span>`).join('')}</div>
       <p class="item-desc">${item.description || ''}</p>
       ${anecdoteHtml}
@@ -697,17 +700,8 @@ function rendreCamping() {
       </div>
     </div>` : '';
 
-  const ressourcesHtml = `
-    <div class="onglet-header" style="margin-top:18px">
-      ${ic(ICONE.panier, 'onglet-icone')}
-      <div class="onglet-header-texte">
-        <div class="onglet-titre" style="font-size:1.05rem">Ressources pratiques</div>
-        <div class="onglet-sub">Tout sur place à Treignac</div>
-      </div>
-      <button class="btn-ajouter-spot" onclick="toggleForm('nouvelle-ressource')">${ic(ICONE.ajouter)} Ajouter</button>
-    </div>
-    ${rendreFormRessource(null)}
-    ${RESSOURCES.map(r => `
+  function rendreListeRessources(liste) {
+    return liste.map(r => `
       <div class="ressource-carte">
         ${ic(ICONE[r.categorie] || 'map-pin', 'ressource-icone')}
         <div class="ressource-corps">
@@ -724,7 +718,33 @@ function rendreCamping() {
           </div>
           ${rendreFormRessource(r)}
         </div>
-      </div>`).join('')}`;
+      </div>`).join('');
+  }
+
+  const CAT_PRATIQUE = ['supermarche', 'epicerie', 'boulangerie', 'pharmacie', 'veterinaire', 'autre'];
+  const ressourcesPratiques = RESSOURCES.filter(r => CAT_PRATIQUE.includes(r.categorie));
+  const activites = RESSOURCES.filter(r => !CAT_PRATIQUE.includes(r.categorie));
+
+  const ressourcesHtml = `
+    <div class="onglet-header" style="margin-top:18px">
+      ${ic(ICONE.panier, 'onglet-icone')}
+      <div class="onglet-header-texte">
+        <div class="onglet-titre" style="font-size:1.05rem">Ressources pratiques</div>
+        <div class="onglet-sub">Tout sur place à Treignac</div>
+      </div>
+      <button class="btn-ajouter-spot" onclick="toggleForm('nouvelle-ressource')">${ic(ICONE.ajouter)} Ajouter</button>
+    </div>
+    ${rendreFormRessource(null)}
+    ${rendreListeRessources(ressourcesPratiques)}
+
+    <div class="onglet-header" style="margin-top:18px">
+      ${ic(ICONE.nautique, 'onglet-icone')}
+      <div class="onglet-header-texte">
+        <div class="onglet-titre" style="font-size:1.05rem">Activités</div>
+        <div class="onglet-sub">Autour du camping</div>
+      </div>
+    </div>
+    ${rendreListeRessources(activites)}`;
 
   const bienvenueHtml = `
     <div class="accueil-bienvenue">
