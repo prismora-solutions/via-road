@@ -123,6 +123,15 @@ body {
   font-family: 'Caveat', cursive; font-size: 1.9rem; font-weight: 700; color: var(--rouille);
   margin: 4px 0 6px 6px; display: inline-block;
 }
+.label-manuscrit-ligne {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 20px 0 6px 0;
+}
+.label-manuscrit-ligne .label-manuscrit { margin: 0 0 0 6px; }
+
+.activite-note { margin-top: 6px; margin-bottom: 8px; }
+.activite-note .etoile { width: 14px; height: 14px; }
+.activite-note .item-likes { font-weight: 800; color: var(--rouille); font-size: .82rem; margin-left: 4px; }
 
 .onglet-intro {
   font-family: 'Fraunces', serif; font-style: italic; font-size: .92rem; color: var(--encre-doux);

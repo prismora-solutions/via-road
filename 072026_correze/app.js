@@ -106,6 +106,7 @@ function normaliserRessource(row) {
     id: row.id, nom: row.nom, categorie: row.categorie, adresse: row.adresse,
     tel: row.tel ? 'tel:' + row.tel.replace(/\s+/g, '') : null, telAffiche: row.tel,
     horaires: row.horaires, note: row.note,
+    noteGoogle: row.note_google, avisGoogle: row.avis_google,
     maps: { google: row.maps_url }
   };
 }
@@ -350,6 +351,7 @@ function rendreOnglet(id) {
 
 // ===== ÉTOILES =====
 function rendreEtoiles(n) { let h = ''; for (let i = 1; i <= 3; i++) h += ic('star', i <= n ? 'etoile pleine' : 'etoile vide'); return h; }
+function rendreEtoilesGoogle(note) { const arrondi = Math.round(note); let h = ''; for (let i = 1; i <= 5; i++) h += ic('star', i <= arrondi ? 'etoile pleine' : 'etoile vide'); return h; }
 
 // ===== CARTE ITEM (Terra Aventura / Randos / Visites) =====
 function rendreCarteItem(item, cat) {
@@ -701,7 +703,12 @@ function rendreCamping() {
     </div>` : '';
 
   function rendreListeRessources(liste) {
-    return liste.map(r => `
+    return liste.map(r => {
+      const estActivite = r.categorie === 'nautique' || r.categorie === 'loisirs';
+      const noteHtml = (estActivite && r.noteGoogle !== null && r.noteGoogle !== undefined)
+        ? `<div class="item-etoiles activite-note">${rendreEtoilesGoogle(r.noteGoogle)}<span class="item-likes">${ic(ICONE.avis)} ${r.noteGoogle}/5 (${r.avisGoogle || 0} avis)</span></div>`
+        : '';
+      return `
       <div class="ressource-carte">
         ${ic(ICONE[r.categorie] || 'map-pin', 'ressource-icone')}
         <div class="ressource-corps">
@@ -711,6 +718,7 @@ function rendreCamping() {
           </div>
           <div class="ressource-adresse">${r.adresse || ''}</div>
           ${r.horaires ? `<div class="ressource-horaires">${r.horaires}</div>` : ''}
+          ${noteHtml}
           ${r.note ? `<div class="ressource-note">${r.note}</div>` : ''}
           <div class="item-footer" style="margin-top:8px">
             ${r.maps.google ? `<a class="btn-maps" href="${r.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>` : ''}
@@ -718,33 +726,29 @@ function rendreCamping() {
           </div>
           ${rendreFormRessource(r)}
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   const CAT_PRATIQUE = ['supermarche', 'epicerie', 'boulangerie', 'pharmacie', 'veterinaire', 'autre'];
   const ressourcesPratiques = RESSOURCES.filter(r => CAT_PRATIQUE.includes(r.categorie));
   const activites = RESSOURCES.filter(r => !CAT_PRATIQUE.includes(r.categorie));
 
-  const ressourcesHtml = `
-    <div class="onglet-header" style="margin-top:18px">
-      ${ic(ICONE.panier, 'onglet-icone')}
-      <div class="onglet-header-texte">
-        <div class="onglet-titre" style="font-size:1.05rem">Ressources pratiques</div>
-        <div class="onglet-sub">Tout sur place à Treignac</div>
-      </div>
-      <button class="btn-ajouter-spot" onclick="toggleForm('nouvelle-ressource')">${ic(ICONE.ajouter)} Ajouter</button>
+  const activitesHtml = `
+    <div class="label-manuscrit-ligne">
+      <span class="label-manuscrit">Activités</span>
+      <button class="btn-icone" onclick="toggleForm('nouvelle-ressource')" title="Ajouter">${ic(ICONE.ajouter)}</button>
     </div>
     ${rendreFormRessource(null)}
-    ${rendreListeRessources(ressourcesPratiques)}
-
-    <div class="onglet-header" style="margin-top:18px">
-      ${ic(ICONE.nautique, 'onglet-icone')}
-      <div class="onglet-header-texte">
-        <div class="onglet-titre" style="font-size:1.05rem">Activités</div>
-        <div class="onglet-sub">Autour du camping</div>
-      </div>
-    </div>
     ${rendreListeRessources(activites)}`;
+
+  const ressourcesHtml = `
+    <div class="label-manuscrit-ligne">
+      <span class="label-manuscrit">Ressources pratiques</span>
+      <button class="btn-icone" onclick="toggleForm('nouvelle-ressource-pratique')" title="Ajouter">${ic(ICONE.ajouter)}</button>
+    </div>
+    ${rendreFormRessource(null, 'nouvelle-ressource-pratique')}
+    ${rendreListeRessources(ressourcesPratiques)}`;
 
   const bienvenueHtml = `
     <div class="accueil-bienvenue">
@@ -777,6 +781,7 @@ function rendreCamping() {
       <div class="chien-tag ${chien.classe}">${ic(chien.icone)} ${chien.texte} — <span class="chien-note">${c.chien.note}</span></div>
       <div class="item-footer">${sources}</div>
     </div>
+    ${activitesHtml}
     ${ressourcesHtml}`;
 }
 
@@ -788,8 +793,8 @@ function toggleHistoire(id) {
 }
 
 // ===== FORMULAIRE RESSOURCE (ajout + édition) =====
-function rendreFormRessource(item) {
-  const id = item ? item.id : 'nouvelle-ressource';
+function rendreFormRessource(item, idNouveau) {
+  const id = item ? item.id : (idNouveau || 'nouvelle-ressource');
   return `
     <div class="spot-form" id="form-${id}" style="display:none">
       <label class="vecu-label">Nom</label>
@@ -804,23 +809,35 @@ function rendreFormRessource(item) {
       <input type="text" class="vecu-input" id="rf-tel-${id}" value="${item ? echapper(item.telAffiche) : ''}">
       <label class="vecu-label">Horaires</label>
       <input type="text" class="vecu-input" id="rf-horaires-${id}" value="${item ? echapper(item.horaires) : ''}">
-      <label class="vecu-label">Note (optionnel)</label>
+      <label class="vecu-label">Note (texte libre, optionnel)</label>
       <input type="text" class="vecu-input" id="rf-note-${id}" value="${item ? echapper(item.note) : ''}">
+      <div class="spot-form-grille">
+        <div>
+          <label class="vecu-label">Note Google (activités)</label>
+          <input type="number" step="0.1" min="0" max="5" class="vecu-input" id="rf-noteg-${id}" value="${item && item.noteGoogle !== null && item.noteGoogle !== undefined ? item.noteGoogle : ''}">
+        </div>
+        <div>
+          <label class="vecu-label">Nombre d'avis</label>
+          <input type="number" class="vecu-input" id="rf-avisg-${id}" value="${item && item.avisGoogle !== null && item.avisGoogle !== undefined ? item.avisGoogle : ''}">
+        </div>
+      </div>
       <label class="vecu-label">Lien Google Maps</label>
       <input type="text" class="vecu-input" id="rf-maps-${id}" value="${item ? echapper(item.maps.google) : ''}">
       <div class="vecu-form-actions">
-        <button class="btn-vecu-save" onclick="enregistrerRessource('${item ? item.id : ''}')">${ic(ICONE.enregistrer)} Enregistrer</button>
+        <button class="btn-vecu-save" onclick="enregistrerRessource('${item ? item.id : ''}','${id}')">${ic(ICONE.enregistrer)} Enregistrer</button>
         <button class="btn-vecu-annuler" onclick="toggleForm('${id}')">Annuler</button>
         ${item ? `<button class="btn-vecu-suppr" onclick="supprimerRessource('${item.id}')">${ic(ICONE.corbeille)} Supprimer</button>` : ''}
       </div>
     </div>`;
 }
 
-async function enregistrerRessource(existingId) {
-  const id = existingId || 'nouvelle-ressource';
+async function enregistrerRessource(existingId, idFormulaire) {
+  const id = existingId || idFormulaire || 'nouvelle-ressource';
   const nom = val(`rf-nom-${id}`).trim();
   if (!nom) { alert('Le nom est obligatoire.'); return; }
 
+  const noteGTexte = val(`rf-noteg-${id}`);
+  const avisGTexte = val(`rf-avisg-${id}`);
   const donnees = {
     sejour_id: SEJOUR.id,
     categorie: val(`rf-categorie-${id}`),
@@ -829,6 +846,8 @@ async function enregistrerRessource(existingId) {
     tel: val(`rf-tel-${id}`).trim() || null,
     horaires: val(`rf-horaires-${id}`).trim() || null,
     note: val(`rf-note-${id}`).trim() || null,
+    note_google: noteGTexte !== '' ? parseFloat(noteGTexte) : null,
+    avis_google: avisGTexte !== '' ? parseInt(avisGTexte, 10) : null,
     maps_url: val(`rf-maps-${id}`).trim() || null,
     updated_at: new Date().toISOString()
   };
