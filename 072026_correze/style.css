@@ -296,6 +296,9 @@ body {
 .spot-form .vecu-input, .spot-form .vecu-textarea { border-color: rgba(74,107,122,.3); }
 .spot-form-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .spot-form-grille .vecu-label { margin-top: 10px; }
+.vecu-note-etoiles {
+  font-family: 'Caveat', cursive; font-size: 1rem; color: var(--gris); margin-top: 12px;
+}
 .vecu-check {
   display: flex; align-items: center; gap: 8px; margin-top: 14px;
   font-size: .85rem; font-weight: 700; color: var(--encre); cursor: pointer;

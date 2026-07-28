@@ -313,10 +313,7 @@ function rendreOnglet(id) {
   if (id === 'camping') { main.innerHTML = rendreCamping(); rafraichirIcones(); return; }
   if (id === 'carnet')  { rendreCarnet(); return; }
 
-  const items = CATALOGUE[id].slice().sort((a, b) => {
-    if (a.incontournable !== b.incontournable) return b.incontournable - a.incontournable;
-    return b.etoiles - a.etoiles;
-  });
+  const items = CATALOGUE[id].slice().sort((a, b) => b.etoiles - a.etoiles || a.nom.localeCompare(b.nom));
   const meta = ONGLETS.find(o => o.id === id);
 
   const erreurHtml = erreurCatalogue ? `
@@ -348,7 +345,7 @@ function rendreEtoiles(n) { let h = ''; for (let i = 1; i <= 3; i++) h += ic('st
 function rendreCarteItem(item, cat) {
   const id = item.id;
   const chien = CHIEN_LABEL[item.chien.statut];
-  const badge = item.incontournable ? `<span class="badge-incontournable">${ic(ICONE.incontournable)} Incontournable</span>` : '';
+  const badge = item.etoiles === 3 ? `<span class="badge-incontournable">${ic(ICONE.incontournable)} Incontournable</span>` : '';
 
   const infos = [];
   if (item.distanceKm !== null && item.distanceKm !== undefined) infos.push(`${ic(ICONE.distance)} ${item.distanceKm === 0 ? 'Sur place' : item.distanceKm + ' km'}`);
@@ -469,9 +466,7 @@ function rendreFormSpot(cat, item) {
       <label class="vecu-label">Sources — une par ligne, format "Nom|https://..."</label>
       <textarea class="vecu-textarea" id="sf-sources-${id}" placeholder="Office de tourisme|https://...">${sourcesTexte}</textarea>
 
-      <label class="vecu-check">
-        <input type="checkbox" id="sf-incontournable-${id}" ${item && item.incontournable ? 'checked' : ''}> Marquer comme incontournable
-      </label>
+      <p class="vecu-note-etoiles">Le tampon "Incontournable" s'affiche automatiquement à 3 étoiles.</p>
 
       <div class="vecu-form-actions">
         <button class="btn-vecu-save" onclick="enregistrerSpot('${cat}','${item ? item.id : ''}')">${ic(ICONE.enregistrer)} Enregistrer</button>
@@ -513,7 +508,7 @@ async function enregistrerSpot(cat, existingId) {
     longueur: val(`sf-longueur-${id}`).trim() || null,
     duree: val(`sf-duree-${id}`).trim() || null,
     etoiles: parseInt(val(`sf-etoiles-${id}`), 10) || 2,
-    incontournable: document.getElementById(`sf-incontournable-${id}`).checked,
+    incontournable: (parseInt(val(`sf-etoiles-${id}`), 10) || 2) === 3,
     chien_statut: val(`sf-chien-${id}`) || 'a_verifier',
     chien_note: val(`sf-chien-note-${id}`).trim() || null,
     tarif: val(`sf-tarif-${id}`).trim() || null,
