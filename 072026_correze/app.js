@@ -911,16 +911,24 @@ function rendreCarnet() {
     </div>
     <div class="onglet-intro">Le résumé du séjour qui s'écrit tout seul au fil des coches — à relire ce soir, sous l'auvent.</div>
     <div class="scrapbook">
-      ${entrees.map((e, i) => `
+      ${entrees.map((e, i) => {
+        const commentaireHtml = e.v.commentaire
+          ? `<p class="scrap-commentaire">${echapper(e.v.commentaire)}</p>`
+          : (e.item.description ? `<p class="scrap-description-off">${e.item.description}</p>` : '');
+        const photoHtml = (e.v.photos && e.v.photos.length)
+          ? rendrePhotosHtml(e.id, e.v.photos)
+          : (e.item.imageUrl ? `<div class="item-photo-wrap scrap-photo-off"><img class="item-photo" src="${e.item.imageUrl}" loading="lazy">${e.item.imageCredit ? `<div class="item-photo-legende">${echapper(e.item.imageCredit)}</div>` : ''}</div>` : '');
+        return `
         <div class="scrap-entree" style="transform: rotate(${ROTATIONS[i % ROTATIONS.length]})">
           <span class="scrap-tape ${TAPES[CAT_INDEX[e.cat]]}"></span>
           <div class="scrap-tampon">${ic(ONGLETS.find(o => o.id === e.cat).icone)}</div>
           <div class="scrap-postmark">${formaterDate(e.v.date)}</div>
           <div class="scrap-titre">${e.item.nom}</div>
           <div class="scrap-lieu">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu || ''}</div>
-          ${e.v.commentaire ? `<p class="scrap-commentaire">${echapper(e.v.commentaire)}</p>` : ''}
-          ${rendrePhotosHtml(e.id, e.v.photos)}
-        </div>`).join('')}
+          ${photoHtml}
+          ${commentaireHtml}
+        </div>`;
+      }).join('')}
     </div>`;
 
   rafraichirIcones();

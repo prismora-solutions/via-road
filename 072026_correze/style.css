@@ -357,12 +357,14 @@ body {
 
 /* ===== IMPRESSION ===== */
 @media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   .header-top, .nav-jours, .sejour-badges, .btn-export-pdf, .btn-info, .intro-overlay { display: none !important; }
-  body { background: white; }
-  .header { position: static; box-shadow: none; background: white; color: var(--encre); }
+  body { background: var(--papier) !important; }
+  .header { position: static; box-shadow: none; background: white !important; color: var(--encre); }
   .sejour-titre, .sejour-meta { color: var(--encre); }
   .main { padding: 0; max-width: 100%; }
-  .scrap-entree { break-inside: avoid; transform: none !important; margin-bottom: 16px; }
+  .scrap-entree { break-inside: avoid; margin: 0 8px 22px; transform: rotate(-0.7deg) !important; }
+  .scrap-entree:nth-child(even) { transform: rotate(0.7deg) !important; }
   .vecu-photo-wrap { break-inside: avoid; }
   .vecu-photo-suppr { display: none; }
 }
@@ -427,6 +429,8 @@ body {
 .scrap-titre { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.15rem; line-height: 1.3; padding-right: 40px; }
 .scrap-lieu { font-size: .76rem; color: var(--gris); font-weight: 700; margin-top: 2px; margin-bottom: 10px; }
 .scrap-commentaire { font-family: 'Caveat', cursive; font-size: 1.25rem; color: var(--encre-doux); line-height: 1.4; margin-bottom: 4px; }
+.scrap-description-off { font-family: 'Fraunces', serif; font-style: italic; font-size: .85rem; color: var(--gris); line-height: 1.5; margin-bottom: 4px; }
+.scrap-photo-off { margin: 8px 0 10px; }
 .scrap-entree .vecu-photos { margin-top: 10px; }
 .scrap-entree .vecu-photos .vecu-photo-wrap:first-child {
   width: 100%; height: auto; aspect-ratio: 4/3; border: 6px solid white; box-shadow: var(--ombre-lg); transform: rotate(-1deg);
