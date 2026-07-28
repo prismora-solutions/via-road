@@ -40,6 +40,16 @@
     </div>
   </div>
 
+  <div class="zone-overlay" id="zone-overlay" onclick="if(event.target===this) fermerZone()">
+    <div class="zone-carte">
+      <div class="zone-header">
+        <div class="zone-titre-ligne"><i data-lucide="map-pin"></i><span id="zone-titre"></span></div>
+        <button class="btn-icone" onclick="fermerZone()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="zone-liste" id="zone-liste"></div>
+    </div>
+  </div>
+
   <nav class="nav-jours" id="nav-jours"></nav>
 
   <main class="main" id="main-content"></main>

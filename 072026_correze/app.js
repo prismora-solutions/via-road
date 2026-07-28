@@ -95,7 +95,7 @@ function normaliserSpot(row) {
     anecdote: row.anecdote, anecdoteSource: row.anecdote_source || [],
     likes: row.likes,
     difficulte: row.difficulte, theme: row.theme, noteDecathlon: row.note_decathlon, nbAvis: row.nb_avis, appUrl: row.app_url,
-    noteGoogle: row.note_google, avisGoogle: row.avis_google,
+    noteGoogle: row.note_google, avisGoogle: row.avis_google, zone: row.zone,
     imagePath: row.image_path, imageUrl: row.image_url, imageCredit: row.image_credit,
     maps: { google: row.maps_url },
     sources: row.sources || []
@@ -154,6 +154,38 @@ function tousLesItemsTracables() {
     CATALOGUE[cat].forEach(item => liste.push({ id: item.id, cat, item }));
   });
   return liste;
+}
+
+// ===== SECTEURS (popup navigation géographique) =====
+function ouvrirZone(zone) {
+  const membres = tousLesItemsTracables().filter(e => e.item.zone === zone);
+  const html = membres.map(e => `
+    <button class="zone-item" onclick="allerAuSpot('${e.cat}','${e.id}')">
+      ${ic(ONGLETS.find(o => o.id === e.cat).icone)}
+      <span class="zone-item-texte">
+        <span class="zone-item-nom">${e.item.nom}</span>
+        <span class="zone-item-cat">${CATEGORIE_LABEL[e.cat]}</span>
+      </span>
+      ${ic('chevron-right')}
+    </button>`).join('');
+  document.getElementById('zone-titre').textContent = zone;
+  document.getElementById('zone-liste').innerHTML = html;
+  document.getElementById('zone-overlay').classList.add('visible');
+  rafraichirIcones();
+}
+function fermerZone() {
+  document.getElementById('zone-overlay').classList.remove('visible');
+}
+function allerAuSpot(cat, id) {
+  fermerZone();
+  changerOnglet(cat);
+  requestAnimationFrame(() => {
+    const el = document.getElementById(`carte-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('carte-flash');
+    setTimeout(() => el.classList.remove('carte-flash'), 1600);
+  });
 }
 
 // ===== PERSISTANCE VÉCU — Supabase + file d'attente hors-ligne =====
@@ -391,7 +423,7 @@ function rendreCarteItem(item, cat) {
     ? `<button class="btn-icone" onclick="declencherPhotoSpot('${id}')" title="Ajouter une photo">${ic(ICONE.photo)}</button>` : '';
 
   return `
-    <div class="item-carte">
+    <div class="item-carte" id="carte-${id}">
       ${photoHtml}${inputPhotoCache}
       <div class="item-header">
         <div class="item-titre">${item.nom}</div>
@@ -402,6 +434,7 @@ function rendreCarteItem(item, cat) {
         </div>
       </div>
       <div class="item-lieu">${ic(ICONE.distance)} ${item.lieu || ''}</div>
+      ${item.zone ? `<button class="tag-zone" onclick="ouvrirZone('${echapper(item.zone)}')">${ic('map-pin')} Secteur : ${item.zone}</button>` : ''}
       ${(item.difficulte || item.theme) ? `<div class="item-tags-decathlon">${item.difficulte ? `<span class="tag-difficulte tag-${item.difficulte}">${item.difficulte === 'facile' ? 'Facile' : 'Modérée'}</span>` : ''}${item.theme ? `<span class="tag-theme">${item.theme}</span>` : ''}</div>` : ''}
       <div class="item-etoiles">${rendreEtoiles(item.etoiles)}${(item.likes !== null && item.likes !== undefined) ? `<span class="item-likes">${ic(ICONE.pouce)} ${item.likes}</span>` : ''}${(item.noteDecathlon !== null && item.noteDecathlon !== undefined) ? `<span class="item-likes">${ic(ICONE.avis)} ${item.noteDecathlon}/5 (${item.nbAvis || 0} avis)</span>` : ''}${(item.noteGoogle !== null && item.noteGoogle !== undefined) ? `<span class="item-likes">${ic(ICONE.avis)} ${item.noteGoogle}/5 (${item.avisGoogle || 0} avis Google)</span>` : ''}</div>
       <div class="item-infos">${infos.map(i => `<span>${i}</span>`).join('')}</div>
