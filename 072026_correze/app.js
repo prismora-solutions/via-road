@@ -22,7 +22,7 @@ const ICONE = {
   ajouter: 'circle-plus', supprimer: 'x', ampoule: 'lightbulb', chevron: 'chevron-right',
   supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print', autre: 'store',
   panier: 'shopping-basket', avertissement: 'triangle-alert', interdit: 'ban', export: 'download',
-  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera', info: 'info', tampon: 'stamp'
+  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera', info: 'info', tampon: 'stamp', pouce: 'thumbs-up'
 };
 
 const CHIEN_LABEL = {
@@ -91,6 +91,7 @@ function normaliserSpot(row) {
     chien: { statut: row.chien_statut, note: row.chien_note },
     tarif: row.tarif, description: row.description,
     anecdote: row.anecdote, anecdoteSource: row.anecdote_source || [],
+    likes: row.likes,
     imagePath: row.image_path, imageUrl: row.image_url, imageCredit: row.image_credit,
     maps: { google: row.maps_url },
     sources: row.sources || []
@@ -390,7 +391,7 @@ function rendreCarteItem(item, cat) {
         </div>
       </div>
       <div class="item-lieu">${ic(ICONE.distance)} ${item.lieu || ''}</div>
-      <div class="item-etoiles">${rendreEtoiles(item.etoiles)}</div>
+      <div class="item-etoiles">${rendreEtoiles(item.etoiles)}${(item.likes !== null && item.likes !== undefined) ? `<span class="item-likes">${ic(ICONE.pouce)} ${item.likes}</span>` : ''}</div>
       <div class="item-infos">${infos.map(i => `<span>${i}</span>`).join('')}</div>
       <p class="item-desc">${item.description || ''}</p>
       ${anecdoteHtml}
@@ -452,6 +453,11 @@ function rendreFormSpot(cat, item) {
       <label class="vecu-label">Note chien (optionnel)</label>
       <input type="text" class="vecu-input" id="sf-chien-note-${id}" value="${item ? echapper(item.chien.note) : ''}">
 
+      ${cat === 'terraAventura' ? `
+      <label class="vecu-label">${ic(ICONE.pouce)} Nombre de pouces (page Terra Aventura)</label>
+      <input type="number" class="vecu-input" id="sf-likes-${id}" value="${item && item.likes !== null && item.likes !== undefined ? item.likes : ''}">
+      ` : ''}
+
       <label class="vecu-label">Description</label>
       <textarea class="vecu-textarea" id="sf-desc-${id}">${item ? echapper(item.description) : ''}</textarea>
 
@@ -495,6 +501,7 @@ async function enregistrerSpot(cat, existingId) {
   }) : [];
 
   const distanceTexte = val(`sf-distance-${id}`);
+  const likesTexte = val(`sf-likes-${id}`);
   const anecdoteSourceTexte = val(`sf-anecdote-source-${id}`).trim();
   const [ancLabel, ancUrl] = anecdoteSourceTexte ? anecdoteSourceTexte.split('|').map(s => (s || '').trim()) : [null, null];
   const anecdoteSource = ancUrl ? [{ label: ancLabel || ancUrl, url: ancUrl }] : [];
@@ -511,6 +518,7 @@ async function enregistrerSpot(cat, existingId) {
     incontournable: (parseInt(val(`sf-etoiles-${id}`), 10) || 2) === 3,
     chien_statut: val(`sf-chien-${id}`) || 'a_verifier',
     chien_note: val(`sf-chien-note-${id}`).trim() || null,
+    likes: likesTexte !== '' ? parseInt(likesTexte, 10) : null,
     tarif: val(`sf-tarif-${id}`).trim() || null,
     description: val(`sf-desc-${id}`).trim() || null,
     anecdote: val(`sf-anecdote-${id}`).trim() || null,
