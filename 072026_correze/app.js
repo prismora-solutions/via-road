@@ -22,7 +22,7 @@ const ICONE = {
   ajouter: 'circle-plus', supprimer: 'x', ampoule: 'lightbulb', chevron: 'chevron-right',
   supermarche: 'shopping-cart', epicerie: 'store', boulangerie: 'croissant', pharmacie: 'pill', veterinaire: 'paw-print', autre: 'store',
   panier: 'shopping-basket', avertissement: 'triangle-alert', interdit: 'ban', export: 'download',
-  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera', info: 'info', tampon: 'stamp', pouce: 'thumbs-up'
+  horsligne: 'wifi-off', synchro: 'refresh-cw', editer: 'file-pen-line', corbeille: 'trash-2', anecdote: 'sparkles', photo: 'camera', info: 'info', tampon: 'stamp', pouce: 'thumbs-up', avis: 'users', app: 'smartphone'
 };
 
 const CHIEN_LABEL = {
@@ -92,6 +92,7 @@ function normaliserSpot(row) {
     tarif: row.tarif, description: row.description,
     anecdote: row.anecdote, anecdoteSource: row.anecdote_source || [],
     likes: row.likes,
+    difficulte: row.difficulte, theme: row.theme, noteDecathlon: row.note_decathlon, nbAvis: row.nb_avis, appUrl: row.app_url,
     imagePath: row.image_path, imageUrl: row.image_url, imageCredit: row.image_credit,
     maps: { google: row.maps_url },
     sources: row.sources || []
@@ -396,13 +397,15 @@ function rendreCarteItem(item, cat) {
         </div>
       </div>
       <div class="item-lieu">${ic(ICONE.distance)} ${item.lieu || ''}</div>
-      <div class="item-etoiles">${rendreEtoiles(item.etoiles)}${(item.likes !== null && item.likes !== undefined) ? `<span class="item-likes">${ic(ICONE.pouce)} ${item.likes}</span>` : ''}</div>
+      ${(item.difficulte || item.theme) ? `<div class="item-tags-decathlon">${item.difficulte ? `<span class="tag-difficulte tag-${item.difficulte}">${item.difficulte === 'facile' ? 'Facile' : 'Modérée'}</span>` : ''}${item.theme ? `<span class="tag-theme">${item.theme}</span>` : ''}</div>` : ''}
+      <div class="item-etoiles">${rendreEtoiles(item.etoiles)}${(item.likes !== null && item.likes !== undefined) ? `<span class="item-likes">${ic(ICONE.pouce)} ${item.likes}</span>` : ''}${(item.noteDecathlon !== null && item.noteDecathlon !== undefined) ? `<span class="item-likes">${ic(ICONE.avis)} ${item.noteDecathlon}/5 (${item.nbAvis || 0} avis)</span>` : ''}</div>
       <div class="item-infos">${infos.map(i => `<span>${i}</span>`).join('')}</div>
       <p class="item-desc">${item.description || ''}</p>
       ${anecdoteHtml}
       <div class="chien-tag ${chien.classe}">${ic(chien.icone)} ${chien.texte}${item.chien.note ? ` — <span class="chien-note">${item.chien.note}</span>` : ''}</div>
       <div class="item-footer">
         ${item.maps.google ? `<a class="btn-maps" href="${item.maps.google}" target="_blank" rel="noopener">${ic(ICONE.maps)} Maps</a>` : ''}
+        ${item.appUrl ? `<a class="btn-lien" href="${item.appUrl}" target="_blank" rel="noopener">${ic(ICONE.app)} Ouvrir l'app</a>` : ''}
         ${sources}
       </div>
       ${rendreFormSpot(cat, item)}
@@ -447,6 +450,28 @@ function rendreFormSpot(cat, item) {
           <input type="text" class="vecu-input" id="sf-duree-${id}" placeholder="ex: 1h30" value="${item ? echapper(item.duree) : ''}">
         </div>
       </div>
+
+      ${cat === 'randos' ? `
+      <label class="vecu-label">Difficulté (Decathlon Outdoor)</label>
+      <select class="vecu-input" id="sf-difficulte-${id}">
+        <option value="facile" ${item && item.difficulte === 'facile' ? 'selected' : ''}>Facile</option>
+        <option value="moderee" ${item && item.difficulte === 'moderee' ? 'selected' : ''}>Modérée</option>
+      </select>
+      <label class="vecu-label">Thème</label>
+      <input type="text" class="vecu-input" id="sf-theme-${id}" placeholder="Forêt, Cascade, Lac, Panorama..." value="${item ? echapper(item.theme) : ''}">
+      <div class="spot-form-grille">
+        <div>
+          <label class="vecu-label">Note Decathlon</label>
+          <input type="number" step="0.1" min="0" max="5" class="vecu-input" id="sf-note-${id}" value="${item && item.noteDecathlon !== null && item.noteDecathlon !== undefined ? item.noteDecathlon : ''}">
+        </div>
+        <div>
+          <label class="vecu-label">Nombre d'avis</label>
+          <input type="number" class="vecu-input" id="sf-nbavis-${id}" value="${item && item.nbAvis !== null && item.nbAvis !== undefined ? item.nbAvis : ''}">
+        </div>
+      </div>
+      <label class="vecu-label">Lien "Ouvrir l'app" (Decathlon Outdoor)</label>
+      <input type="text" class="vecu-input" id="sf-appurl-${id}" placeholder="https://..." value="${item ? echapper(item.appUrl) : ''}">
+      ` : ''}
 
       <label class="vecu-label">Tarif (optionnel)</label>
       <input type="text" class="vecu-input" id="sf-tarif-${id}" value="${item ? echapper(item.tarif) : ''}">
@@ -529,6 +554,11 @@ async function enregistrerSpot(cat, existingId) {
     chien_statut: val(`sf-chien-${id}`) || 'a_verifier',
     chien_note: val(`sf-chien-note-${id}`).trim() || null,
     likes: likesTexte !== '' ? parseInt(likesTexte, 10) : null,
+    difficulte: cat === 'randos' ? (val(`sf-difficulte-${id}`) || null) : null,
+    theme: cat === 'randos' ? (val(`sf-theme-${id}`).trim() || null) : null,
+    note_decathlon: (cat === 'randos' && val(`sf-note-${id}`) !== '') ? parseFloat(val(`sf-note-${id}`)) : null,
+    nb_avis: (cat === 'randos' && val(`sf-nbavis-${id}`) !== '') ? parseInt(val(`sf-nbavis-${id}`), 10) : null,
+    app_url: cat === 'randos' ? (val(`sf-appurl-${id}`).trim() || null) : null,
     tarif: val(`sf-tarif-${id}`).trim() || null,
     description: val(`sf-desc-${id}`).trim() || null,
     anecdote: val(`sf-anecdote-${id}`).trim() || null,
