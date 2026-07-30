@@ -263,10 +263,14 @@ body {
   display: none; align-items: center; justify-content: center;
 }
 .lightbox-overlay.visible { display: flex; }
+/* Les enfants ne s'affichent que si l'overlay est visible (robustesse) */
+.lightbox-overlay > * { display: none; }
+.lightbox-overlay.visible > * { display: flex; }
 .lightbox-img {
   max-width: 92vw; max-height: 86vh; object-fit: contain;
   border-radius: 6px; box-shadow: 0 8px 40px rgba(0,0,0,.5);
 }
+.lightbox-overlay.visible .lightbox-img { display: block; }
 .lightbox-fermer {
   position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,.12);
   border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%;
@@ -281,6 +285,7 @@ body {
 .lightbox-nav .ic { width: 26px; height: 26px; }
 .lightbox-prev { left: 14px; }
 .lightbox-next { right: 14px; }
+.lightbox-overlay.visible .lightbox-nav.cache { display: none; }
 .lightbox-compteur {
   position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
   color: #fff; font-family: 'Nunito', sans-serif; font-size: .9rem; font-weight: 700;

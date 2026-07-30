@@ -134,11 +134,7 @@ async function chargerCatalogueDistant() {
 function ecouterTempsReel() {
   sb.channel(`vecu-${SEJOUR.id}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'vecu_entries', filter: `sejour_id=eq.${SEJOUR.id}` },
-      (payload) => {
-        if (payload.eventType === 'DELETE') delete vecuEtat[payload.old.item_id];
-        else { const r = payload.new; vecuEtat[r.item_id] = { fait: r.fait, date: r.date, commentaire: r.commentaire, photos: r.photos || [] }; }
-        rendreHeader(); rendreOnglet(ongletActif);
-      }).subscribe();
+      async () => { await chargerVecuDistant(); rendreHeader(); rendreOnglet(ongletActif); }).subscribe();
 
   sb.channel(`spots-${SEJOUR.id}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'spots', filter: `sejour_id=eq.${SEJOUR.id}` },
@@ -321,8 +317,8 @@ function lightboxNav(delta, ev) {
 function majLightbox() {
   document.getElementById('lightbox-img').src = lightboxUrls[lightboxIndex];
   const multi = lightboxUrls.length > 1;
-  document.getElementById('lightbox-prev').style.display = multi ? '' : 'none';
-  document.getElementById('lightbox-next').style.display = multi ? '' : 'none';
+  document.getElementById('lightbox-prev').classList.toggle('cache', !multi);
+  document.getElementById('lightbox-next').classList.toggle('cache', !multi);
   document.getElementById('lightbox-compteur').textContent = multi ? `${lightboxIndex + 1} / ${lightboxUrls.length}` : '';
 }
 
