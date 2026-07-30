@@ -7,6 +7,7 @@ const BUCKET = 'carnet-photos';
 // ===== ÉTAT =====
 let ongletActif = 'camping';
 let vecuEtat = {};    // { [spotId]: { fait, date, commentaire, photos: [chemin,...] } }
+let souvenirsLibres = [];  // souvenirs de carnet non rattachés à un spot
 let CATALOGUE = { terraAventura: [], randos: [], visites: [] }; // rempli depuis Supabase (table "spots")
 let RESSOURCES = [];  // rempli depuis Supabase (table "ressources")
 let horsLigne = false;
@@ -33,7 +34,7 @@ const CHIEN_LABEL = {
   interdit:   { texte: 'Chien interdit',         classe: 'chien-non',  icone: ICONE.interdit }
 };
 
-const CATEGORIE_LABEL = { terraAventura: 'Terra Aventura', randos: 'Rando / balade', visites: 'Visite' };
+const CATEGORIE_LABEL = { terraAventura: 'Terra Aventura', randos: 'Rando / balade', visites: 'Visite', libre: 'Souvenir' };
 const CHIEN_OPTIONS = [
   ['accepte', 'Accepté'], ['laisse', 'Accepté (laisse)'], ['a_verifier', 'À vérifier'], ['interdit', 'Interdit']
 ];
@@ -194,7 +195,17 @@ async function chargerVecuDistant() {
     const { data, error } = await sb.from('vecu_entries').select('*').eq('sejour_id', SEJOUR.id);
     if (error) throw error;
     vecuEtat = {};
-    (data || []).forEach(row => { vecuEtat[row.item_id] = { fait: row.fait, date: row.date, commentaire: row.commentaire, photos: row.photos || [] }; });
+    souvenirsLibres = [];
+    (data || []).forEach(row => {
+      if (row.type === 'libre' || (!row.item_id && row.titre)) {
+        souvenirsLibres.push({
+          id: row.id, titre: row.titre, lieu: row.lieu, lien: row.lien,
+          date: row.date, commentaire: row.commentaire, photos: row.photos || []
+        });
+      } else {
+        vecuEtat[row.item_id] = { fait: row.fait, date: row.date, commentaire: row.commentaire, photos: row.photos || [] };
+      }
+    });
     definirStatutReseau(false);
   } catch (e) { definirStatutReseau(true); }
 }
@@ -226,13 +237,38 @@ function definirStatutReseau(actif) {
 
 // ===== PHOTOS (Supabase Storage) =====
 function cheminSanitize(nom) { return nom.replace(/[^a-zA-Z0-9.\-]/g, '_'); }
+// Compresse une image côté navigateur (max 1600px, JPEG qualité 0.82) pour éviter
+// les rejets d'upload (photos iPhone brutes trop lourdes) et économiser le stockage.
+async function compresserImage(fichier) {
+  if (!fichier.type.startsWith('image/')) return fichier;
+  try {
+    const bitmap = await createImageBitmap(fichier);
+    const maxDim = 1600;
+    let { width, height } = bitmap;
+    if (width > maxDim || height > maxDim) {
+      const ratio = Math.min(maxDim / width, maxDim / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = width; canvas.height = height;
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.82));
+    if (!blob) return fichier;
+    return new File([blob], fichier.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { return fichier; } // en cas d'échec, on tente l'upload du fichier d'origine
+}
+
 async function televerserPhotos(id, fichiers) {
   const chemins = [];
+  const echecs = [];
   for (let i = 0; i < fichiers.length; i++) {
-    const chemin = `${SEJOUR.id}/${id}/${Date.now()}-${i}-${cheminSanitize(fichiers[i].name)}`;
-    const { error } = await sb.storage.from(BUCKET).upload(chemin, fichiers[i]);
-    if (!error) chemins.push(chemin);
+    const compresse = await compresserImage(fichiers[i]);
+    const chemin = `${SEJOUR.id}/${id}/${Date.now()}-${i}-${cheminSanitize(compresse.name)}`;
+    const { error } = await sb.storage.from(BUCKET).upload(chemin, compresse);
+    if (error) echecs.push(fichiers[i].name); else chemins.push(chemin);
   }
+  if (echecs.length) throw new Error('Photos non téléversées : ' + echecs.join(', '));
   return chemins;
 }
 function urlPhoto(chemin) { return sb.storage.from(BUCKET).getPublicUrl(chemin).data.publicUrl; }
@@ -271,10 +307,15 @@ function echapper(txt) { const div = document.createElement('div'); div.textCont
 function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
 function entreesVecuTriees() {
-  return tousLesItemsTracables()
+  const spotsCoches = tousLesItemsTracables()
     .map(({ id, cat, item }) => ({ id, cat, item, v: vecuEtat[id] }))
-    .filter(e => e.v && e.v.fait)
-    .sort((a, b) => a.v.date.localeCompare(b.v.date));
+    .filter(e => e.v && e.v.fait);
+  const libres = souvenirsLibres.map(s => ({
+    id: s.id, cat: 'libre',
+    item: { nom: s.titre, lieu: s.lieu, description: null, imageUrl: null, lien: s.lien },
+    v: { fait: true, date: s.date, commentaire: s.commentaire, photos: s.photos }
+  }));
+  return spotsCoches.concat(libres).sort((a, b) => (a.v.date || '').localeCompare(b.v.date || ''));
 }
 
 // ===== HEADER =====
@@ -676,9 +717,10 @@ async function enregistrerVecu(id) {
 
   const existant = vecuEtat[id] || {};
   let photos = existant.photos ? [...existant.photos] : [];
+  let messagePhoto = '';
   if (fichiers.length) {
     try { photos = [...photos, ...await televerserPhotos(id, fichiers)]; }
-    catch (e) { /* pas de réseau — la coche/note partira quand même en file d'attente */ }
+    catch (e) { messagePhoto = e.message || 'Certaines photos n\'ont pas pu être ajoutées.'; }
   }
 
   const donnees = { sejour_id: SEJOUR.id, item_id: id, fait: true, date, commentaire, photos, updated_at: new Date().toISOString() };
@@ -692,6 +734,7 @@ async function enregistrerVecu(id) {
 
   rendreHeader();
   rendreOnglet(ongletActif);
+  if (messagePhoto) alert(messagePhoto + '\n\nLa note et la date ont bien été enregistrées.');
 }
 
 async function decocherVecu(id) {
@@ -709,6 +752,21 @@ async function decocherVecu(id) {
 
 async function supprimerUnePhoto(id, chemin) {
   try { await sb.storage.from(BUCKET).remove([chemin]); } catch (e) {}
+
+  // Cas souvenir libre (id = id de ligne, pas dans vecuEtat)
+  const libre = souvenirsLibres.find(s => s.id === id);
+  if (libre) {
+    const photos = libre.photos.filter(p => p !== chemin);
+    try {
+      const { error } = await sb.from('vecu_entries').update({ photos }).eq('id', id);
+      if (error) throw error;
+    } catch (e) { alert('Suppression photo impossible — réessaie.'); return; }
+    await chargerVecuDistant();
+    rendreCarnet();
+    return;
+  }
+
+  // Cas spot coché
   const photos = vecuEtat[id].photos.filter(p => p !== chemin);
   vecuEtat[id].photos = photos;
   const donnees = { sejour_id: SEJOUR.id, item_id: id, fait: true, date: vecuEtat[id].date, commentaire: vecuEtat[id].commentaire, photos, updated_at: new Date().toISOString() };
@@ -929,7 +987,8 @@ function rendreCarnet() {
 
   const ROTATIONS = ['-2.4deg', '1.6deg', '-1.1deg', '2.1deg', '-1.7deg', '1.1deg', '-2deg'];
   const TAPES = ['tape-bleu', 'tape-sauge', 'tape-rouille'];
-  const CAT_INDEX = { terraAventura: 0, randos: 1, visites: 2 };
+  const CAT_INDEX = { terraAventura: 0, randos: 1, visites: 2, libre: 2 };
+  const ICONE_CAT = { terraAventura: 'gamepad-2', randos: 'footprints', visites: 'landmark', libre: 'sparkles' };
 
   main.innerHTML = `
     <div class="onglet-header carnet-header-flex">
@@ -943,26 +1002,116 @@ function rendreCarnet() {
       <button class="btn-export-pdf" onclick="window.print()">${ic(ICONE.export)} Exporter</button>
     </div>
     <div class="onglet-intro">Le résumé du séjour qui s'écrit tout seul au fil des coches — à relire ce soir, sous l'auvent.</div>
+    <div class="carnet-ajout-ligne">
+      <button class="btn-ajout-souvenir" onclick="toggleForm('nouveau-souvenir')">${ic(ICONE.ajouter)} Ajouter un souvenir</button>
+    </div>
+    ${rendreFormSouvenir(null)}
     <div class="scrapbook">
       ${entrees.map((e, i) => {
+        const estLibre = e.cat === 'libre';
         const commentaireHtml = e.v.commentaire
           ? `<p class="scrap-commentaire">${echapper(e.v.commentaire)}</p>`
           : (e.item.description ? `<p class="scrap-description-off">${e.item.description}</p>` : '');
         const photoHtml = (e.v.photos && e.v.photos.length)
           ? rendrePhotosHtml(e.id, e.v.photos)
           : (e.item.imageUrl ? `<div class="item-photo-wrap scrap-photo-off"><img class="item-photo" src="${e.item.imageUrl}" loading="lazy">${e.item.imageCredit ? `<div class="item-photo-legende">${echapper(e.item.imageCredit)}</div>` : ''}</div>` : '');
+        const lieuLigne = estLibre
+          ? (e.item.lieu ? `<div class="scrap-lieu">${CATEGORIE_LABEL[e.cat]} · ${echapper(e.item.lieu)}</div>` : `<div class="scrap-lieu">${CATEGORIE_LABEL[e.cat]}</div>`)
+          : `<div class="scrap-lieu">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu || ''}</div>`;
+        const boutonEdit = estLibre
+          ? `<button class="scrap-edit" onclick="toggleForm('souvenir-${e.id}')" title="Modifier ce souvenir">${ic(ICONE.editer)}</button>` : '';
         return `
         <div class="scrap-entree" style="transform: rotate(${ROTATIONS[i % ROTATIONS.length]})">
           <span class="scrap-tape ${TAPES[CAT_INDEX[e.cat]]}"></span>
-          <div class="scrap-tampon">${ic(ONGLETS.find(o => o.id === e.cat).icone)}</div>
+          <div class="scrap-tampon">${ic(ICONE_CAT[e.cat] || 'map-pin')}</div>
+          ${boutonEdit}
           <div class="scrap-postmark">${formaterDate(e.v.date)}</div>
-          <div class="scrap-titre">${e.item.nom}</div>
-          <div class="scrap-lieu">${CATEGORIE_LABEL[e.cat]} · ${e.item.lieu || ''}</div>
+          <div class="scrap-titre">${echapper(e.item.nom)}</div>
+          ${lieuLigne}
           ${photoHtml}
           ${commentaireHtml}
+          ${(estLibre && e.item.lien) ? `<div class="item-footer" style="margin-top:8px"><a class="btn-lien" href="${echapper(e.item.lien)}" target="_blank" rel="noopener">${ic('link')} Voir le lien</a></div>` : ''}
+          ${estLibre ? rendreFormSouvenir({ id: e.id, titre: e.item.nom, lieu: e.item.lieu, date: e.v.date, commentaire: e.v.commentaire, lien: e.item.lien }) : ''}
         </div>`;
       }).join('')}
     </div>`;
 
   rafraichirIcones();
+}
+
+// ===== FORMULAIRE SOUVENIR LIBRE =====
+function rendreFormSouvenir(item) {
+  const id = item ? `souvenir-${item.id}` : 'nouveau-souvenir';
+  return `
+    <div class="spot-form" id="form-${id}" style="display:none">
+      <label class="vecu-label">Titre du souvenir</label>
+      <input type="text" class="vecu-input" id="sv-titre-${id}" placeholder="Baignade surprise aux Bariousses" value="${item ? echapper(item.titre) : ''}">
+      <label class="vecu-label">Lieu (optionnel)</label>
+      <input type="text" class="vecu-input" id="sv-lieu-${id}" value="${item && item.lieu ? echapper(item.lieu) : ''}">
+      <label class="vecu-label">Date</label>
+      <input type="date" class="vecu-input" id="sv-date-${id}" value="${item ? item.date : ajourdhuiISO()}">
+      <label class="vecu-label">Description</label>
+      <textarea class="vecu-input vecu-textarea" id="sv-commentaire-${id}" rows="3" placeholder="Ce qu'on a vécu...">${item && item.commentaire ? echapper(item.commentaire) : ''}</textarea>
+      <label class="vecu-label">Lien (optionnel)</label>
+      <input type="url" class="vecu-input" id="sv-lien-${id}" placeholder="https://..." value="${item && item.lien ? echapper(item.lien) : ''}">
+      <label class="vecu-label">Photos</label>
+      <input type="file" class="vecu-input" id="sv-photos-${id}" accept="image/*" multiple>
+      <div class="vecu-form-actions">
+        <button class="btn-vecu-save" onclick="enregistrerSouvenir('${item ? item.id : ''}','${id}')">${ic(ICONE.enregistrer)} Enregistrer</button>
+        <button class="btn-vecu-annuler" onclick="toggleForm('${id}')">Annuler</button>
+        ${item ? `<button class="btn-vecu-suppr" onclick="supprimerSouvenir('${item.id}')">${ic(ICONE.corbeille)} Supprimer</button>` : ''}
+      </div>
+    </div>`;
+}
+
+async function enregistrerSouvenir(existingId, idFormulaire) {
+  const id = idFormulaire;
+  const titre = val(`sv-titre-${id}`).trim();
+  if (!titre) { alert('Le titre est obligatoire.'); return; }
+  const date = val(`sv-date-${id}`) || ajourdhuiISO();
+
+  // Téléversement des éventuelles nouvelles photos
+  const inputPhotos = document.getElementById(`sv-photos-${id}`);
+  let cheminsPhotos = [];
+  if (existingId) {
+    const existant = souvenirsLibres.find(s => s.id === existingId);
+    cheminsPhotos = existant ? existant.photos.slice() : [];
+  }
+  if (inputPhotos && inputPhotos.files.length) {
+    try {
+      const nouveaux = await televerserPhotos(existingId || `libre-${Date.now()}`, inputPhotos.files);
+      cheminsPhotos = cheminsPhotos.concat(nouveaux);
+    } catch (e) { alert("Photo non téléversée — vérifie ta connexion."); }
+  }
+
+  const donnees = {
+    sejour_id: SEJOUR.id, type: 'libre', item_id: null,
+    titre, lieu: val(`sv-lieu-${id}`).trim() || null,
+    lien: val(`sv-lien-${id}`).trim() || null,
+    date, fait: true,
+    commentaire: val(`sv-commentaire-${id}`).trim() || null,
+    photos: cheminsPhotos
+  };
+
+  try {
+    const { error } = existingId
+      ? await sb.from('vecu_entries').update(donnees).eq('id', existingId)
+      : await sb.from('vecu_entries').insert(donnees);
+    if (error) throw error;
+  } catch (e) { alert("Enregistrement impossible — réessaie."); return; }
+
+  await chargerVecuDistant();
+  rendreHeader();
+  rendreCarnet();
+}
+
+async function supprimerSouvenir(id) {
+  if (!confirm('Supprimer ce souvenir ?')) return;
+  try {
+    const { error } = await sb.from('vecu_entries').delete().eq('id', id);
+    if (error) throw error;
+  } catch (e) { alert('Suppression impossible — réessaie.'); return; }
+  await chargerVecuDistant();
+  rendreHeader();
+  rendreCarnet();
 }
