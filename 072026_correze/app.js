@@ -292,11 +292,37 @@ async function televerserPhotoSpotEtEnregistrer(id) {
 }
 function rendrePhotosHtml(id, photos) {
   if (!photos || !photos.length) return '';
-  return `<div class="vecu-photos">${photos.map(chemin => `
+  const urls = photos.map(urlPhoto);
+  return `<div class="vecu-photos">${photos.map((chemin, i) => `
     <div class="vecu-photo-wrap">
-      <img class="vecu-photo" src="${urlPhoto(chemin)}" loading="lazy">
+      <img class="vecu-photo" src="${urlPhoto(chemin)}" loading="lazy" onclick="ouvrirLightbox(${JSON.stringify(urls).replace(/"/g, '&quot;')}, ${i})">
       <button class="vecu-photo-suppr" onclick="supprimerUnePhoto('${id}','${chemin}')">${ic(ICONE.supprimer)}</button>
     </div>`).join('')}</div>`;
+}
+
+// ===== LIGHTBOX (visionneuse plein écran) =====
+let lightboxUrls = [];
+let lightboxIndex = 0;
+function ouvrirLightbox(urls, index) {
+  lightboxUrls = urls;
+  lightboxIndex = index;
+  majLightbox();
+  document.getElementById('lightbox-overlay').classList.add('visible');
+}
+function fermerLightbox() {
+  document.getElementById('lightbox-overlay').classList.remove('visible');
+}
+function lightboxNav(delta, ev) {
+  if (ev) ev.stopPropagation();
+  lightboxIndex = (lightboxIndex + delta + lightboxUrls.length) % lightboxUrls.length;
+  majLightbox();
+}
+function majLightbox() {
+  document.getElementById('lightbox-img').src = lightboxUrls[lightboxIndex];
+  const multi = lightboxUrls.length > 1;
+  document.getElementById('lightbox-prev').style.display = multi ? '' : 'none';
+  document.getElementById('lightbox-next').style.display = multi ? '' : 'none';
+  document.getElementById('lightbox-compteur').textContent = multi ? `${lightboxIndex + 1} / ${lightboxUrls.length}` : '';
 }
 
 // ===== UTILS =====
@@ -1098,7 +1124,7 @@ async function enregistrerSouvenir(existingId, idFormulaire) {
       ? await sb.from('vecu_entries').update(donnees).eq('id', existingId)
       : await sb.from('vecu_entries').insert(donnees);
     if (error) throw error;
-  } catch (e) { alert("Enregistrement impossible — réessaie."); return; }
+  } catch (e) { alert("Enregistrement impossible : " + (e.message || e.details || JSON.stringify(e))); return; }
 
   await chargerVecuDistant();
   rendreHeader();
