@@ -50,6 +50,14 @@
     </div>
   </div>
 
+  <div class="lightbox-overlay" id="lightbox-overlay" onclick="fermerLightbox()">
+    <button class="lightbox-fermer" onclick="fermerLightbox()"><i data-lucide="x"></i></button>
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev" onclick="lightboxNav(-1, event)"><i data-lucide="chevron-left"></i></button>
+    <img class="lightbox-img" id="lightbox-img" src="" onclick="event.stopPropagation()">
+    <button class="lightbox-nav lightbox-next" id="lightbox-next" onclick="lightboxNav(1, event)"><i data-lucide="chevron-right"></i></button>
+    <div class="lightbox-compteur" id="lightbox-compteur"></div>
+  </div>
+
   <nav class="nav-jours" id="nav-jours"></nav>
 
   <main class="main" id="main-content"></main>

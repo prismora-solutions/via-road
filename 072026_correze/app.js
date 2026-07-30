@@ -35,6 +35,7 @@ const CHIEN_LABEL = {
 };
 
 const CATEGORIE_LABEL = { terraAventura: 'Terra Aventura', randos: 'Rando / balade', visites: 'Visite', libre: 'Souvenir' };
+const ICONE_FRISE = { terraAventura: 'gamepad-2', randos: 'footprints', visites: 'landmark', libre: 'sparkles' };
 const CHIEN_OPTIONS = [
   ['accepte', 'Accepté'], ['laisse', 'Accepté (laisse)'], ['a_verifier', 'À vérifier'], ['interdit', 'Interdit']
 ];
@@ -361,7 +362,7 @@ function rendreHeader() {
         <div class="header-frise-points" id="header-frise-points">
           ${entrees.map(e => `
             <div class="header-frise-point" title="${echapper(e.item.nom)}">
-              <div class="header-frise-cercle">${ic(ONGLETS.find(o => o.id === e.cat).icone)}</div>
+              <div class="header-frise-cercle">${ic(ICONE_FRISE[e.cat] || 'map-pin')}</div>
               <span class="header-frise-date">${formaterDateCourte(e.v.date)}</span>
             </div>`).join('')}
         </div>
