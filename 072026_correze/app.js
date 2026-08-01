@@ -1057,9 +1057,63 @@ function rendreCarnet() {
           ${estLibre ? rendreFormSouvenir({ id: e.id, titre: e.item.nom, lieu: e.item.lieu, date: e.v.date, commentaire: e.v.commentaire, lien: e.item.lien }) : ''}
         </div>`;
       }).join('')}
-    </div>`;
+    </div>
+    ${rendreCarnetExport(entrees, ICONE_CAT)}`;
 
   rafraichirIcones();
+}
+
+// ===== VUE EXPORT — patchwork carnet, une page par entrée (visible à l'impression) =====
+function rendreCarnetExport(entrees, ICONE_CAT) {
+  const pages = entrees.map((e, i) => {
+    const rot = ['-1.4deg', '1.2deg', '-0.8deg', '1.5deg'][i % 4];
+    const photos = (e.v.photos && e.v.photos.length) ? e.v.photos.map(urlPhoto) : [];
+    // Repli sur la photo officielle si aucune photo perso
+    if (!photos.length && e.item.imageUrl) photos.push(e.item.imageUrl);
+
+    let photosHtml = '';
+    if (photos.length === 1) {
+      photosHtml = `<div class="cx-photos cx-un"><div class="cx-photo"><img src="${photos[0]}"></div></div>`;
+    } else if (photos.length) {
+      const hero = photos[0];
+      const reste = photos.slice(1);
+      photosHtml = `
+        <div class="cx-photos">
+          <div class="cx-hero"><img src="${hero}"></div>
+          <div class="cx-grille">
+            ${reste.map(u => `<div class="cx-photo"><img src="${u}"></div>`).join('')}
+          </div>
+        </div>`;
+    }
+
+    const desc = e.v.commentaire
+      ? `<p class="cx-note">${echapper(e.v.commentaire)}</p>`
+      : (e.item.description ? `<p class="cx-desc">${e.item.description}</p>` : '');
+    const lieu = e.item.lieu ? `${CATEGORIE_LABEL[e.cat]} · ${echapper(e.item.lieu)}` : CATEGORIE_LABEL[e.cat];
+
+    return `
+      <section class="cx-page" style="--rot:${rot}">
+        <header class="cx-entete">
+          <div class="cx-tampon">${ic(ICONE_CAT[e.cat] || 'map-pin')}</div>
+          <div class="cx-date">${formaterDate(e.v.date)}</div>
+        </header>
+        <h2 class="cx-titre">${echapper(e.item.nom)}</h2>
+        <div class="cx-lieu">${lieu}</div>
+        ${desc}
+        ${photosHtml}
+      </section>`;
+  }).join('');
+
+  return `
+    <div id="carnet-print" aria-hidden="true">
+      <section class="cx-couverture">
+        <div class="cx-couv-tampon">${ic('map')}</div>
+        <h1 class="cx-couv-titre">${echapper(SEJOUR.titre)}</h1>
+        <div class="cx-couv-sub">${echapper((SEJOUR.dates || '') + (SEJOUR.destination ? '  ·  ' + SEJOUR.destination : ''))}</div>
+        <div class="cx-couv-compte">${entrees.length} souvenir${entrees.length > 1 ? 's' : ''}</div>
+      </section>
+      ${pages}
+    </div>`;
 }
 
 // ===== FORMULAIRE SOUVENIR LIBRE =====
