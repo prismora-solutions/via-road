@@ -8,7 +8,7 @@
   <title>ViaRoad — Corrèze</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700&family=Fraunces:ital,wght@0,500;0,600;1,500&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260730b">
+  <link rel="stylesheet" href="style.css?v=20260730c">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
@@ -58,11 +58,20 @@
     <div class="lightbox-compteur" id="lightbox-compteur"></div>
   </div>
 
+  <div class="pdf-overlay" id="pdf-overlay">
+    <div class="pdf-carte">
+      <div class="pdf-spinner"></div>
+      <div class="pdf-titre">Composition du livre</div>
+      <div class="pdf-progress-texte" id="pdf-progress-texte">Préparation…</div>
+      <div class="pdf-sous">Les photos sont assemblées page par page. Garde l'onglet ouvert.</div>
+    </div>
+  </div>
+
   <nav class="nav-jours" id="nav-jours"></nav>
 
   <main class="main" id="main-content"></main>
 
   <script src="sejour.js"></script>
-  <script src="app.js?v=20260730b"></script>
+  <script src="app.js?v=20260730c"></script>
 </body>
 </html>

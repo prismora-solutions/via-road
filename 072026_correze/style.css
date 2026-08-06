@@ -440,74 +440,25 @@ body {
 .btn-export-pdf:active { background: #8A3F1C; }
 
 /* ===== IMPRESSION ===== */
-/* ===== VUE EXPORT CARNET (patchwork) — masquée à l'écran ===== */
-#carnet-print { display: none; }
-
-@media print {
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-  @page { margin: 12mm; }
-
-  /* On masque toute l'app visible, on n'imprime que le carnet dédié */
-  .header, .header-top, .nav-jours, .sejour-badges, .intro-overlay, .zone-overlay, .lightbox-overlay { display: none !important; }
-  /* Le main reste dans le flux mais on masque tous ses enfants directs... */
-  .main > * { display: none !important; }
-  /* ...sauf la vue export */
-  .main { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
-
-  body { background: #fff !important; }
-  #carnet-print { display: block !important; }
-
-  /* Couverture */
-  .cx-couverture {
-    break-after: page; text-align: center; padding-top: 32mm;
-    height: 240mm; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  }
-  .cx-couv-tampon {
-    width: 74px; height: 74px; border-radius: 50%; border: 2.5px solid var(--rouille);
-    display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
-  }
-  .cx-couv-tampon .ic { width: 34px; height: 34px; color: var(--rouille); }
-  .cx-couv-titre { font-family: 'Fraunces', serif; font-size: 34pt; color: var(--encre); margin: 0 0 10px; line-height: 1.1; }
-  .cx-couv-sub { font-family: 'Caveat', cursive; font-size: 19pt; color: var(--rouille); margin-bottom: 6px; }
-  .cx-couv-compte { font-family: 'Nunito', sans-serif; font-size: 11pt; color: var(--gris); letter-spacing: .5px; }
-
-  /* Une entrée = une page */
-  .cx-page {
-    break-before: page; break-inside: avoid;
-    background: var(--papier); border: 1px solid var(--ligne); border-radius: 10px;
-    padding: 16mm 14mm; transform: rotate(var(--rot)); transform-origin: center top;
-  }
-  .cx-entete { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-  .cx-tampon {
-    width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--rouille);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .cx-tampon .ic { width: 20px; height: 20px; color: var(--rouille); }
-  .cx-date {
-    font-family: 'Caveat', cursive; font-size: 17pt; color: var(--rouille); font-weight: 700;
-    border: 1.5px solid var(--rouille); border-radius: 50px; padding: 2px 16px;
-  }
-  .cx-titre { font-family: 'Fraunces', serif; font-size: 21pt; color: var(--encre); margin: 8px 0 2px; line-height: 1.15; }
-  .cx-lieu { font-family: 'Nunito', sans-serif; font-size: 10pt; font-weight: 700; color: var(--gris); margin-bottom: 10px; }
-  .cx-note { font-family: 'Caveat', cursive; font-size: 16pt; color: var(--encre-doux); line-height: 1.35; margin: 0 0 12px; }
-  .cx-desc { font-family: 'Fraunces', serif; font-style: italic; font-size: 11pt; color: var(--gris); line-height: 1.5; margin: 0 0 12px; }
-
-  /* Patchwork photos : héros large + mosaïque lisible (2 colonnes) */
-  .cx-photos { break-inside: avoid; }
-  .cx-hero { break-inside: avoid; margin-bottom: 4mm; }
-  .cx-hero img {
-    width: 100%; max-height: 128mm; object-fit: cover; border-radius: 6px;
-    border: 5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.18);
-  }
-  .cx-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
-  .cx-photo { break-inside: avoid; }
-  .cx-photo img {
-    width: 100%; height: 62mm; object-fit: cover; border-radius: 6px;
-    border: 5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.18);
-  }
-  /* Cas photo unique : grand format centré */
-  .cx-un .cx-photo img { height: auto; max-height: 180mm; }
+/* ===== OVERLAY GÉNÉRATION DU LIVRE PDF ===== */
+.pdf-overlay {
+  position: fixed; inset: 0; background: rgba(43,38,32,.62); z-index: 400;
+  display: none; align-items: center; justify-content: center;
 }
+.pdf-overlay.visible { display: flex; }
+.pdf-carte {
+  background: var(--papier-carte); border-radius: 18px; padding: 30px 34px; max-width: 320px;
+  text-align: center; box-shadow: 0 12px 44px rgba(0,0,0,.3);
+}
+.pdf-spinner {
+  width: 42px; height: 42px; margin: 0 auto 18px; border-radius: 50%;
+  border: 4px solid var(--rouille-bg); border-top-color: var(--rouille);
+  animation: pdf-tourne .8s linear infinite;
+}
+@keyframes pdf-tourne { to { transform: rotate(360deg); } }
+.pdf-titre { font-family: 'Fraunces', serif; font-size: 1.15rem; color: var(--encre); margin-bottom: 6px; }
+.pdf-progress-texte { font-family: 'Caveat', cursive; font-size: 1.3rem; color: var(--rouille); font-weight: 700; margin-bottom: 8px; }
+.pdf-sous { font-family: 'Nunito', sans-serif; font-size: .82rem; color: var(--gris); line-height: 1.4; }
 
 /* ===== BOUTON INFO (rouvre l'intro) ===== */
 .btn-info {

@@ -1022,7 +1022,7 @@ function rendreCarnet() {
           <div class="onglet-sub">${entrees.length} souvenir${entrees.length > 1 ? 's' : ''}</div>
         </div>
       </div>
-      <button class="btn-export-pdf" onclick="window.print()">${ic(ICONE.export)} Exporter</button>
+      <button class="btn-export-pdf" onclick="genererCarnetPdf()">${ic(ICONE.export)} Exporter le livre</button>
     </div>
     <div class="onglet-intro">Le résumé du séjour qui s'écrit tout seul au fil des coches — à relire ce soir, sous l'auvent.</div>
     <div class="carnet-ajout-ligne">
@@ -1057,63 +1057,213 @@ function rendreCarnet() {
           ${estLibre ? rendreFormSouvenir({ id: e.id, titre: e.item.nom, lieu: e.item.lieu, date: e.v.date, commentaire: e.v.commentaire, lien: e.item.lien }) : ''}
         </div>`;
       }).join('')}
-    </div>
-    ${rendreCarnetExport(entrees, ICONE_CAT)}`;
+    </div>`;
 
   rafraichirIcones();
 }
 
-// ===== VUE EXPORT — patchwork carnet, une page par entrée (visible à l'impression) =====
-function rendreCarnetExport(entrees, ICONE_CAT) {
-  const pages = entrees.map((e, i) => {
-    const rot = ['-1.4deg', '1.2deg', '-0.8deg', '1.5deg'][i % 4];
-    const photos = (e.v.photos && e.v.photos.length) ? e.v.photos.map(urlPhoto) : [];
-    // Repli sur la photo officielle si aucune photo perso
-    if (!photos.length && e.item.imageUrl) photos.push(e.item.imageUrl);
+// ============================================================
+//  GÉNÉRATEUR DE LIVRE PHOTO (PDF) — format paysage 230x210mm
+//  Compression photo dédiée + agencement justifié (jamais de crop)
+//  + pagination façon livre feuilletable, dans la charte.
+// ============================================================
 
-    let photosHtml = '';
-    if (photos.length === 1) {
-      photosHtml = `<div class="cx-photos cx-un"><div class="cx-photo"><img src="${photos[0]}"></div></div>`;
-    } else if (photos.length) {
+// -- Palette (charte) --
+const PDF_COULEURS = {
+  papier: [243, 236, 221], papierCarte: [255, 253, 248],
+  encre: [43, 38, 32], encreDoux: [107, 95, 82],
+  rouille: [181, 86, 42], gris: [138, 127, 112], ligne: [216, 203, 176], blanc: [255, 255, 255]
+};
+
+// -- Géométrie page (mm) --
+const PDF_PAGE = { L: 230, H: 210, margeLat: 16, margeVert: 15, espace: 4 };
+
+// Charge dynamiquement une librairie externe une seule fois.
+function chargerScript(url) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${url}"]`)) return resolve();
+    const s = document.createElement('script');
+    s.src = url; s.onload = resolve; s.onerror = () => reject(new Error('Chargement échoué : ' + url));
+    document.head.appendChild(s);
+  });
+}
+
+// Récupère une image (Supabase ou officielle), la recompresse pour le PDF.
+// Passe par fetch->blob->bitmap pour éviter le "canvas tainted" (CORS).
+async function chargerImagePdf(url, maxDim = 1100, qualite = 0.7) {
+  const resp = await fetch(url, { mode: 'cors' });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  const blob = await resp.blob();
+  const bitmap = await createImageBitmap(blob);
+  let w = bitmap.width, h = bitmap.height;
+  const echelle = Math.min(1, maxDim / Math.max(w, h));
+  w = Math.round(w * echelle); h = Math.round(h * echelle);
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+  bitmap.close && bitmap.close();
+  return { dataUrl: canvas.toDataURL('image/jpeg', qualite), w, h };
+}
+
+// Agence des photos en rangées justifiées (hauteur homogène par rangée,
+// largeur totale = largeur dispo). Aucune déformation, aucun recadrage.
+function agencerRangees(photos, largeurDispo, hauteurCible) {
+  const esp = PDF_PAGE.espace;
+  const rangees = [];
+  let courante = [], sommeRatios = 0;
+  for (const p of photos) {
+    courante.push(p);
+    sommeRatios += p.w / p.h;
+    const largeur = hauteurCible * sommeRatios + esp * (courante.length - 1);
+    if (largeur >= largeurDispo) {
+      const haut = (largeurDispo - esp * (courante.length - 1)) / sommeRatios;
+      rangees.push({ hauteur: haut, items: courante.map(ph => ({ p: ph, largeur: haut * (ph.w / ph.h) })) });
+      courante = []; sommeRatios = 0;
+    }
+  }
+  if (courante.length) {
+    // Dernière rangée : ne pas étirer démesurément (cap à 1.15x la cible), aligné à gauche
+    let haut = (largeurDispo - esp * (courante.length - 1)) / sommeRatios;
+    haut = Math.min(haut, hauteurCible * 1.15);
+    rangees.push({ hauteur: haut, items: courante.map(ph => ({ p: ph, largeur: haut * (ph.w / ph.h) })) });
+  }
+  return rangees;
+}
+
+async function genererCarnetPdf() {
+  const entrees = entreesVecuTriees();
+  if (!entrees.length) { alert('Aucun souvenir à exporter pour le moment.'); return; }
+
+  const overlay = document.getElementById('pdf-overlay');
+  const texte = document.getElementById('pdf-progress-texte');
+  overlay.classList.add('visible');
+  texte.textContent = 'Préparation…';
+
+  try {
+    await chargerScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [PDF_PAGE.L, PDF_PAGE.H] });
+
+    const { L, H, margeLat, margeVert, espace } = PDF_PAGE;
+    const largeurUtile = L - 2 * margeLat;
+    const basPage = H - margeVert;
+    let y = margeVert;
+
+    const fond = () => { doc.setFillColor(...PDF_COULEURS.papier); doc.rect(0, 0, L, H, 'F'); };
+    const nouvellePage = () => { doc.addPage(); fond(); y = margeVert; };
+    const assurer = (h) => { if (y + h > basPage) nouvellePage(); };
+
+    // Dessine une photo avec cadre blanc facon tirage + ombre légère
+    const dessinerPhoto = (p, x, yy, larg, haut) => {
+      const b = 1.4; // bord blanc
+      doc.setFillColor(220, 214, 202); doc.rect(x - b + 0.6, yy - b + 0.9, larg + 2 * b, haut + 2 * b, 'F'); // ombre
+      doc.setFillColor(...PDF_COULEURS.blanc); doc.rect(x - b, yy - b, larg + 2 * b, haut + 2 * b, 'F'); // cadre
+      doc.addImage(p.dataUrl, 'JPEG', x, yy, larg, haut, undefined, 'FAST');
+    };
+
+    // ---------- COUVERTURE ----------
+    fond();
+    doc.setDrawColor(...PDF_COULEURS.rouille); doc.setLineWidth(0.8);
+    doc.circle(L / 2, 58, 11);
+    doc.setFont('times', 'bold'); doc.setFontSize(34); doc.setTextColor(...PDF_COULEURS.encre);
+    doc.text(SEJOUR.titre, L / 2, 100, { align: 'center' });
+    doc.setFont('times', 'italic'); doc.setFontSize(15); doc.setTextColor(...PDF_COULEURS.rouille);
+    const sous = (SEJOUR.dates || '') + (SEJOUR.destination ? '   ·   ' + SEJOUR.destination : '');
+    doc.text(sous, L / 2, 114, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...PDF_COULEURS.gris);
+    doc.text(`${entrees.length} souvenir${entrees.length > 1 ? 's' : ''}`, L / 2, 126, { align: 'center' });
+
+    // ---------- UNE ENTRÉE = NOUVELLE PAGE, PUIS FLUX ----------
+    for (let idx = 0; idx < entrees.length; idx++) {
+      const e = entrees[idx];
+      texte.textContent = `Souvenir ${idx + 1} / ${entrees.length}…`;
+
+      // Chargement + compression des photos de l'entrée
+      let urls = (e.v.photos && e.v.photos.length) ? e.v.photos.map(urlPhoto) : [];
+      if (!urls.length && e.item.imageUrl) urls = [e.item.imageUrl];
+      const photos = [];
+      for (const u of urls) {
+        try { photos.push(await chargerImagePdf(u)); } catch (err) { /* photo ignorée si échec */ }
+      }
+
+      nouvellePage();
+
+      // En-tête : pastille date + catégorie
+      doc.setFillColor(...PDF_COULEURS.rouille);
+      const dateTxt = formaterDate(e.v.date);
+      doc.setFont('times', 'italic'); doc.setFontSize(14);
+      const wDate = doc.getTextWidth(dateTxt) + 10;
+      doc.roundedRect(margeLat, y, wDate, 8, 4, 4, 'F');
+      doc.setTextColor(...PDF_COULEURS.blanc);
+      doc.text(dateTxt, margeLat + 5, y + 5.6);
+      y += 13;
+
+      // Titre + lieu
+      doc.setFont('times', 'bold'); doc.setFontSize(20); doc.setTextColor(...PDF_COULEURS.encre);
+      const titreLignes = doc.splitTextToSize(e.item.nom, largeurUtile);
+      doc.text(titreLignes, margeLat, y + 5);
+      y += titreLignes.length * 8 + 1;
+      const lieuTxt = e.item.lieu ? `${CATEGORIE_LABEL[e.cat]}  ·  ${e.item.lieu}` : CATEGORIE_LABEL[e.cat];
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...PDF_COULEURS.gris);
+      doc.text(lieuTxt.toUpperCase(), margeLat, y + 3);
+      y += 8;
+
+      // Description (note perso en encre, description officielle en gris italique)
+      const descTxt = e.v.commentaire || e.item.description || '';
+      if (descTxt) {
+        doc.setFontSize(11);
+        if (e.v.commentaire) { doc.setFont('times', 'normal'); doc.setTextColor(...PDF_COULEURS.encreDoux); }
+        else { doc.setFont('times', 'italic'); doc.setTextColor(...PDF_COULEURS.gris); }
+        const descLignes = doc.splitTextToSize(descTxt, largeurUtile);
+        doc.text(descLignes, margeLat, y + 4);
+        y += descLignes.length * 5.2 + 4;
+      }
+
+      if (!photos.length) continue;
+
+      // Photo héros : pleine largeur utile, hauteur plafonnée à l'espace restant (max ~110mm)
       const hero = photos[0];
+      const heroLargMax = largeurUtile;
+      let heroLarg = heroLargMax;
+      let heroHaut = heroLarg * (hero.h / hero.w);
+      const heroHautMax = Math.min(112, basPage - y - 2);
+      if (heroHaut > heroHautMax) { heroHaut = heroHautMax; heroLarg = heroHaut * (hero.w / hero.h); }
+      assurer(heroHaut + 4);
+      dessinerPhoto(hero, margeLat + (largeurUtile - heroLarg) / 2, y, heroLarg, heroHaut);
+      y += heroHaut + espace + 2;
+
+      // Reste : rangées justifiées, paginées, jamais coupées
       const reste = photos.slice(1);
-      photosHtml = `
-        <div class="cx-photos">
-          <div class="cx-hero"><img src="${hero}"></div>
-          <div class="cx-grille">
-            ${reste.map(u => `<div class="cx-photo"><img src="${u}"></div>`).join('')}
-          </div>
-        </div>`;
+      if (reste.length) {
+        const rangees = agencerRangees(reste, largeurUtile, 52);
+        for (const r of rangees) {
+          assurer(r.hauteur + espace);
+          let x = margeLat;
+          for (const it of r.items) {
+            dessinerPhoto(it.p, x, y, it.largeur, r.hauteur);
+            x += it.largeur + espace;
+          }
+          y += r.hauteur + espace;
+        }
+      }
     }
 
-    const desc = e.v.commentaire
-      ? `<p class="cx-note">${echapper(e.v.commentaire)}</p>`
-      : (e.item.description ? `<p class="cx-desc">${e.item.description}</p>` : '');
-    const lieu = e.item.lieu ? `${CATEGORIE_LABEL[e.cat]} · ${echapper(e.item.lieu)}` : CATEGORIE_LABEL[e.cat];
+    // Pied de page : numérotation
+    const total = doc.getNumberOfPages();
+    for (let i = 2; i <= total; i++) {
+      doc.setPage(i);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COULEURS.gris);
+      doc.text(`${i - 1}`, L / 2, H - 6, { align: 'center' });
+    }
 
-    return `
-      <section class="cx-page" style="--rot:${rot}">
-        <header class="cx-entete">
-          <div class="cx-tampon">${ic(ICONE_CAT[e.cat] || 'map-pin')}</div>
-          <div class="cx-date">${formaterDate(e.v.date)}</div>
-        </header>
-        <h2 class="cx-titre">${echapper(e.item.nom)}</h2>
-        <div class="cx-lieu">${lieu}</div>
-        ${desc}
-        ${photosHtml}
-      </section>`;
-  }).join('');
-
-  return `
-    <div id="carnet-print" aria-hidden="true">
-      <section class="cx-couverture">
-        <div class="cx-couv-tampon">${ic('map')}</div>
-        <h1 class="cx-couv-titre">${echapper(SEJOUR.titre)}</h1>
-        <div class="cx-couv-sub">${echapper((SEJOUR.dates || '') + (SEJOUR.destination ? '  ·  ' + SEJOUR.destination : ''))}</div>
-        <div class="cx-couv-compte">${entrees.length} souvenir${entrees.length > 1 ? 's' : ''}</div>
-      </section>
-      ${pages}
-    </div>`;
+    texte.textContent = 'Finalisation…';
+    const nomFichier = `carnet-${SEJOUR.id}.pdf`;
+    doc.save(nomFichier);
+  } catch (e) {
+    alert("La génération du livre a échoué : " + (e.message || e) + "\n\nRéessaie avec une connexion stable.");
+  } finally {
+    overlay.classList.remove('visible');
+  }
 }
 
 // ===== FORMULAIRE SOUVENIR LIBRE =====
